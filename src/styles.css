@@ -1,0 +1,25 @@
+.App {
+  font-family: sans-serif;
+  text-align: center;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+:root:root {
+  /* --adm-color-primary: #a062d4; */
+  --adm-color-primary: #d0171f;
+}
+
+.h-screen {
+  height: 100vh; /* Fallback for browsers that do not support Custom Properties */
+  height: calc(var(--vh, 1vh) * 100);
+}
