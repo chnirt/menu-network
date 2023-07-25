@@ -1,5 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
-import { Loadable, PrivateRoute, PublicRoute } from "./utils";
+import { Common, Loadable, PrivateRoute, PublicRoute } from "./utils";
 import Home from "../screens/Home";
 import App from "../screens/App";
 import Skeleton from "../components/Skeleton";
@@ -128,6 +128,22 @@ export const router = createBrowserRouter([
             ),
           },
         ],
+      },
+      {
+        element: <Common />,
+        // children: [
+        //   {
+        //     path: routes.menu,
+        //     element: (
+        //       <Loadable
+        //         {...{
+        //           factory: () => import("../screens/Menu"),
+        //           fallback: <Skeleton screens="menu" />,
+        //         }}
+        //       />
+        //     ),
+        //   },
+        // ],
       },
     ],
   },

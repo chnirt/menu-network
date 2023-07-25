@@ -3,6 +3,7 @@ import { useCallback } from "react";
 import { LeftOutline } from "antd-mobile-icons";
 import useAuth from "../../hooks/useAuth";
 import { signOutFirebase } from "../../firebase/service";
+import { Loading } from "../../global";
 
 const Profile = () => {
   const { user, logout } = useAuth();
@@ -12,6 +13,7 @@ const Profile = () => {
       cancelText: "Cancel",
       confirmText: "Log out",
       onConfirm: async () => {
+        Loading.get().show();
         signOutFirebase();
         // const logoutFromAPI = async () => {
         //   const data: boolean = await new Promise((resolve) =>

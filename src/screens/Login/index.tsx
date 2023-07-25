@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { routes } from "../../routes";
 import { signInWithEmailAndPasswordFirebase } from "../../firebase/service";
 import { MASTER_MOCK_DATA } from "../../mocks";
+import { Loading } from "../../global";
 
 const initialValues = MASTER_MOCK_DATA.LOGIN;
 
@@ -14,6 +15,7 @@ const Login = () => {
 
   const onFinish = async (values: typeof initialValues) => {
     try {
+      Loading.get().show();
       const { email, password } = values;
       await signInWithEmailAndPasswordFirebase(email, password);
       // logAnalyticsEvent(eventNames.login, { email })
@@ -23,6 +25,7 @@ const Login = () => {
         icon: "error",
         content: error.message,
       });
+      Loading.get().hide();
     } finally {
     }
     // if (values.username === "chnirt" && values.password === "Admin@123") {

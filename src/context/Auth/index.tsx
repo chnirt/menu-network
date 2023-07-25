@@ -14,6 +14,7 @@ import { DocumentData, DocumentReference } from "firebase/firestore";
 import { AuthContextType } from "./type";
 import { auth } from "../../firebase";
 import { getDocRef, getDocument } from "../../firebase/service";
+import { Loading } from "../../global";
 
 export enum AuthStatus {
   loading = "loading",
@@ -127,6 +128,7 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
       } catch (error) {
       } finally {
         setStatus(AuthStatus.loaded);
+        Loading.get().hide();
       }
     },
     [userDocReference]
@@ -151,6 +153,7 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
         setUserDocReference(null);
         setUser(null);
         setStatus(AuthStatus.loaded);
+        Loading.get().hide();
       }
     });
     return unsubscribe;

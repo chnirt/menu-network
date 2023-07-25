@@ -92,6 +92,6 @@ export const deleteStorageFile = async (url: string) => {
     const result = await deleteObject(fileRef);
     return result;
   } catch (error) {
-    console.log(error);
+    // console.log(error);
   }
 };

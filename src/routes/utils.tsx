@@ -25,7 +25,7 @@ export const Loadable = ({ factory, fallback, ...rest }: ILoadable) => {
 const MyOutlet = ({
   status,
   condition,
-  redirect
+  redirect,
 }: {
   status: AuthStatus;
   condition: boolean;
@@ -36,7 +36,7 @@ const MyOutlet = ({
   ) : condition ? (
     <Navigate
       to={{
-        pathname: redirect
+        pathname: redirect,
       }}
       replace
     />
@@ -56,4 +56,8 @@ export const PublicRoute = () => {
   return (
     <MyOutlet status={status} condition={isLoggedIn} redirect={routes.app} />
   );
+};
+
+export const Common = () => {
+  return <Outlet />;
 };

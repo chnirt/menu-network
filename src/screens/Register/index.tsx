@@ -10,6 +10,7 @@ import {
   getDocRef,
 } from "../../firebase/service";
 import { MASTER_MOCK_DATA } from "../../mocks";
+import { Loading } from "../../global";
 
 const initialValues = MASTER_MOCK_DATA.REGISTER;
 
@@ -18,6 +19,7 @@ const Register = () => {
   // const { login } = useAuth();
   const onFinish = async (values: typeof initialValues) => {
     try {
+      Loading.get().show();
       // console.log('Success:', values)
       const { fullName, email, username, password } = values;
       const providers = await fetchSignInMethodsForEmailFirebase(email);
@@ -54,6 +56,7 @@ const Register = () => {
         icon: "error",
         content: error.message,
       });
+      Loading.get().hide();
     } finally {
     }
     // if (values.username === "chnirt" && values.password === "Admin@123") {

@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
-import { ConfigProvider, WaterMark } from "antd-mobile";
+import { ConfigProvider } from "antd-mobile";
 import enUS from "antd-mobile/es/locales/en-US";
 import { router } from "./routes";
 import { AuthProvider } from "./context/Auth";
@@ -34,10 +34,5 @@ root.render(
         <RouterProvider router={router} />
       </ConfigProvider>
     </AuthProvider>
-    <WaterMark
-      {...{
-        content: "Chnirt"
-      }}
-    />
   </React.StrictMode>
 );
