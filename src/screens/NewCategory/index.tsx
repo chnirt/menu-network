@@ -12,18 +12,20 @@ import { useNavigate } from "react-router-dom";
 import { routes } from "../../routes";
 import { addDocument, getColRef } from "../../firebase/service";
 import useAuth from "../../hooks/useAuth";
+import { MASTER_MOCK_DATA } from "../../mocks";
+
+const initialValues = MASTER_MOCK_DATA.NEW_CATEGORY;
 
 const NewCategory = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const onFinish = async (values: any) => {
+  const onFinish = async (values: typeof initialValues) => {
     if (user === null) return;
     try {
       const { categoryName } = values;
       const uid = user.uid;
       const categoryData = {
         categoryName,
-        uid,
       };
       const userDocRef = getColRef("users", uid, "categories");
       await addDocument(userDocRef, categoryData);
@@ -55,9 +57,7 @@ const NewCategory = () => {
       <Tabs>
         <Tabs.Tab title="New" key="new">
           <Form
-            initialValues={{
-              categoryName: "Cocktail",
-            }}
+            initialValues={initialValues}
             layout="horizontal"
             onFinish={onFinish}
             footer={

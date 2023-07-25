@@ -1,5 +1,28 @@
 import { nanoid } from "nanoid";
 
+const isDevelop = !true;
+
+export const MASTER_MOCK_DATA = {
+  LOGIN: {
+    email: isDevelop ? "chnirt@gmail.com" : "",
+    password: isDevelop ? "Admin@123" : "",
+  },
+  REGISTER: {
+    fullName: isDevelop ? "Chnirt Chnirt" : "",
+    email: isDevelop ? "chnirt@gmail.com" : "",
+    username: isDevelop ? "chnirt" : "",
+    password: isDevelop ? "Admin@123" : "",
+    confirmPassword: isDevelop ? "Admin@123" : "",
+  },
+  NEW_CATEGORY: {
+    categoryName: isDevelop ? "Cocktail" : "",
+  },
+  NEW_DISH: {
+    dishName: isDevelop ? "Phatty’S Nachos" : "",
+    price: isDevelop ? 99000 : 0,
+  },
+};
+
 export const SAMPLE_DATA = {
   reply: {
     menu_infos: [
@@ -9,41 +32,41 @@ export const SAMPLE_DATA = {
         dishes: [
           {
             price: {
-              text: "99,000đ"
+              text: "99,000đ",
             },
             photos: [
               {
-                value: "https://wjhjnr.csb.app/milk-coffee.jpeg"
-              }
+                value: "https://wjhjnr.csb.app/milk-coffee.jpeg",
+              },
             ],
             id: nanoid(),
-            name: "Milk Coffee"
+            name: "Milk Coffee",
           },
           {
             price: {
-              text: "99,000đ"
+              text: "99,000đ",
             },
             photos: [
               {
-                value: "https://wjhjnr.csb.app/black-coffee.jpeg"
-              }
+                value: "https://wjhjnr.csb.app/black-coffee.jpeg",
+              },
             ],
             id: nanoid(),
-            name: "Black Coffee"
+            name: "Black Coffee",
           },
           {
             price: {
-              text: "99,000đ"
+              text: "99,000đ",
             },
             photos: [
               {
-                value: "https://wjhjnr.csb.app/latte.jpeg"
-              }
+                value: "https://wjhjnr.csb.app/latte.jpeg",
+              },
             ],
             id: nanoid(),
-            name: "Latte"
-          }
-        ]
+            name: "Latte",
+          },
+        ],
       },
       {
         dish_type_id: nanoid(),
@@ -51,65 +74,66 @@ export const SAMPLE_DATA = {
         dishes: [
           {
             price: {
-              text: "99,000đ"
+              text: "99,000đ",
             },
             photos: [
               {
-                value: "https://wjhjnr.csb.app/peach-orange-lemongrass-tea.jpeg"
-              }
+                value:
+                  "https://wjhjnr.csb.app/peach-orange-lemongrass-tea.jpeg",
+              },
             ],
             id: nanoid(),
-            name: "Trà đào cam sả"
+            name: "Trà đào cam sả",
           },
           {
             price: {
-              text: "99,000đ"
+              text: "99,000đ",
             },
             photos: [
               {
-                value: "https://wjhjnr.csb.app/lychee-oolong-tea.jpeg"
-              }
+                value: "https://wjhjnr.csb.app/lychee-oolong-tea.jpeg",
+              },
             ],
             id: nanoid(),
-            name: "Trà vải"
+            name: "Trà vải",
           },
           {
             price: {
-              text: "99,000đ"
+              text: "99,000đ",
             },
             photos: [
               {
-                value: "https://wjhjnr.csb.app/passion-fruit-tea.jpeg"
-              }
+                value: "https://wjhjnr.csb.app/passion-fruit-tea.jpeg",
+              },
             ],
             id: nanoid(),
-            name: "Trà chanh dây"
+            name: "Trà chanh dây",
           },
           {
             price: {
-              text: "99,000đ"
+              text: "99,000đ",
             },
             photos: [
               {
-                value: "https://wjhjnr.csb.app/kumquat-tea.jpeg"
-              }
+                value: "https://wjhjnr.csb.app/kumquat-tea.jpeg",
+              },
             ],
             id: nanoid(),
-            name: "Trà tắc"
+            name: "Trà tắc",
           },
           {
             price: {
-              text: "99,000đ"
+              text: "99,000đ",
             },
             photos: [
               {
-                value: "https://wjhjnr.csb.app/sugar-tea.jpeg"
-              }
+                value: "https://wjhjnr.csb.app/sugar-tea.jpeg",
+              },
             ],
             id: nanoid(),
-            name: "Trà đường"
-          }
-        ]
+            name: "Trà đường",
+          },
+        ],
       },
       {
         dish_type_id: nanoid(),
@@ -117,65 +141,65 @@ export const SAMPLE_DATA = {
         dishes: [
           {
             price: {
-              text: "99,000đ"
+              text: "99,000đ",
             },
             photos: [
               {
-                value: "https://wjhjnr.csb.app/orange-juice.jpeg"
-              }
+                value: "https://wjhjnr.csb.app/orange-juice.jpeg",
+              },
             ],
             id: nanoid(),
-            name: "Cam"
+            name: "Cam",
           },
           {
             price: {
-              text: "99,000đ"
+              text: "99,000đ",
             },
             photos: [
               {
-                value: "https://wjhjnr.csb.app/guava-juice.jpeg"
-              }
+                value: "https://wjhjnr.csb.app/guava-juice.jpeg",
+              },
             ],
             id: nanoid(),
-            name: "Ổi"
+            name: "Ổi",
           },
           {
             price: {
-              text: "99,000đ"
+              text: "99,000đ",
             },
             photos: [
               {
-                value: "https://wjhjnr.csb.app/milk-coffee.jpeg"
-              }
+                value: "https://wjhjnr.csb.app/milk-coffee.jpeg",
+              },
             ],
             id: nanoid(),
-            name: "Cà Cải"
+            name: "Cà Cải",
           },
           {
             price: {
-              text: "99,000đ"
+              text: "99,000đ",
             },
             photos: [
               {
-                value: "https://wjhjnr.csb.app/water-melon.jpeg"
-              }
+                value: "https://wjhjnr.csb.app/water-melon.jpeg",
+              },
             ],
             id: nanoid(),
-            name: "Dưa hấu"
+            name: "Dưa hấu",
           },
           {
             price: {
-              text: "99,000đ"
+              text: "99,000đ",
             },
             photos: [
               {
-                value: "https://wjhjnr.csb.app/wax-gourd.jpeg"
-              }
+                value: "https://wjhjnr.csb.app/wax-gourd.jpeg",
+              },
             ],
             id: nanoid(),
-            name: "Bí đao"
-          }
-        ]
+            name: "Bí đao",
+          },
+        ],
       },
       {
         dish_type_id: nanoid(),
@@ -183,17 +207,17 @@ export const SAMPLE_DATA = {
         dishes: [
           {
             price: {
-              text: "99,000đ"
+              text: "99,000đ",
             },
             photos: [
               {
-                value: "https://wjhjnr.csb.app/sour-milk.jpeg"
-              }
+                value: "https://wjhjnr.csb.app/sour-milk.jpeg",
+              },
             ],
             id: nanoid(),
-            name: "Sour Milk"
-          }
-        ]
+            name: "Sour Milk",
+          },
+        ],
       },
       {
         dish_type_id: nanoid(),
@@ -201,150 +225,150 @@ export const SAMPLE_DATA = {
         dishes: [
           {
             price: {
-              text: "99,000đ"
+              text: "99,000đ",
             },
             photos: [
               {
-                value: "https://wjhjnr.csb.app/coke.jpg"
-              }
+                value: "https://wjhjnr.csb.app/coke.jpg",
+              },
             ],
             id: nanoid(),
-            name: "Coke"
+            name: "Coke",
           },
           {
             price: {
-              text: "99,000đ"
+              text: "99,000đ",
             },
             photos: [
               {
-                value: "https://wjhjnr.csb.app/diet-coke.jpg"
-              }
+                value: "https://wjhjnr.csb.app/diet-coke.jpg",
+              },
             ],
             id: nanoid(),
-            name: "Diet Coke"
+            name: "Diet Coke",
           },
           {
             price: {
-              text: "99,000đ"
+              text: "99,000đ",
             },
             photos: [
               {
-                value: "https://wjhjnr.csb.app/sprite.jpg"
-              }
+                value: "https://wjhjnr.csb.app/sprite.jpg",
+              },
             ],
             id: nanoid(),
-            name: "Sprite"
+            name: "Sprite",
           },
           {
             price: {
-              text: "99,000đ"
+              text: "99,000đ",
             },
             photos: [
               {
-                value: "https://wjhjnr.csb.app/fanta.jpg"
-              }
+                value: "https://wjhjnr.csb.app/fanta.jpg",
+              },
             ],
             id: nanoid(),
-            name: "Fanta"
+            name: "Fanta",
           },
           {
             price: {
-              text: "99,000đ"
+              text: "99,000đ",
             },
             photos: [
               {
-                value: "https://wjhjnr.csb.app/red-bull.jpeg"
-              }
+                value: "https://wjhjnr.csb.app/red-bull.jpeg",
+              },
             ],
             id: nanoid(),
-            name: "Red Bull"
+            name: "Red Bull",
           },
           {
             price: {
-              text: "99,000đ"
+              text: "99,000đ",
             },
             photos: [
               {
-                value: "https://wjhjnr.csb.app/dr-thanh.jpg"
-              }
+                value: "https://wjhjnr.csb.app/dr-thanh.jpg",
+              },
             ],
             id: nanoid(),
-            name: "Dr Thanh"
+            name: "Dr Thanh",
           },
           {
             price: {
-              text: "99,000đ"
+              text: "99,000đ",
             },
             photos: [
               {
-                value: "https://wjhjnr.csb.app/0-degree.jpg"
-              }
+                value: "https://wjhjnr.csb.app/0-degree.jpg",
+              },
             ],
             id: nanoid(),
-            name: "0 degree"
+            name: "0 degree",
           },
           {
             price: {
-              text: "99,000đ"
+              text: "99,000đ",
             },
             photos: [
               {
-                value: "https://wjhjnr.csb.app/c2.jpeg"
-              }
+                value: "https://wjhjnr.csb.app/c2.jpeg",
+              },
             ],
             id: nanoid(),
-            name: "C2"
+            name: "C2",
           },
           {
             price: {
-              text: "99,000đ"
+              text: "99,000đ",
             },
             photos: [
               {
-                value: "https://wjhjnr.csb.app/revive.jpeg"
-              }
+                value: "https://wjhjnr.csb.app/revive.jpeg",
+              },
             ],
             id: nanoid(),
-            name: "Revive"
+            name: "Revive",
           },
           {
             price: {
-              text: "99,000đ"
+              text: "99,000đ",
             },
             photos: [
               {
-                value: "https://wjhjnr.csb.app/tea+-plus.png"
-              }
+                value: "https://wjhjnr.csb.app/tea+-plus.png",
+              },
             ],
             id: nanoid(),
-            name: "TEA+ Plus"
+            name: "TEA+ Plus",
           },
           {
             price: {
-              text: "99,000đ"
+              text: "99,000đ",
             },
             photos: [
               {
-                value: "https://wjhjnr.csb.app/247.jpg"
-              }
+                value: "https://wjhjnr.csb.app/247.jpg",
+              },
             ],
             id: nanoid(),
-            name: "247"
+            name: "247",
           },
           {
             price: {
-              text: "99,000đ"
+              text: "99,000đ",
             },
             photos: [
               {
-                value: "https://wjhjnr.csb.app/number-one.jpg"
-              }
+                value: "https://wjhjnr.csb.app/number-one.jpg",
+              },
             ],
             id: nanoid(),
-            name: "Number One"
-          }
-        ]
-      }
-    ]
-  }
+            name: "Number One",
+          },
+        ],
+      },
+    ],
+  },
 };

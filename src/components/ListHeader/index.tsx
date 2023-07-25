@@ -1,19 +1,17 @@
 import { Button } from "antd-mobile";
-import { useNavigate } from "react-router-dom";
-import { routes } from "../../routes";
 
-const ListHeader = ({ title }: { title: string }) => {
-  const navigate = useNavigate();
+const ListHeader = ({
+  title,
+  onClickNewDish,
+}: {
+  title: string;
+  onClickNewDish: () => void;
+}) => {
   return (
     <div className="flex justify-between">
       {title}
 
-      <Button
-        color="primary"
-        fill="none"
-        size="mini"
-        onClick={() => navigate(routes.newDish)}
-      >
+      <Button color="primary" fill="none" size="mini" onClick={onClickNewDish}>
         NEW DISH
       </Button>
     </div>

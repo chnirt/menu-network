@@ -27,32 +27,31 @@ const Menu = () => {
     if (user === null) return;
     const categoryColRef = getColRef("users", user.uid, "categories");
     const querySnapshot = await getDocs(categoryColRef);
-    querySnapshot.forEach((doc) => {
-      // doc.data() is never undefined for query doc snapshots
-      // console.log(doc.id, " => ", doc.data());
-      const docs = querySnapshot.docs;
-      const data = docs.map((docSnapshot) => {
-        // console.log(docSnapshot)
+    const docs = querySnapshot.docs;
+    const data = await Promise.all(
+      docs.map(async (docSnapshot) => {
+        const dishesDocs = await getDocs(
+          getColRef(docSnapshot.ref.path, "dishes")
+        );
         return {
           // ...docSnapshot,
           id: docSnapshot.id,
           ...docSnapshot.data(),
+          data: dishesDocs.docs.map((dishDoc) => ({
+            id: dishDoc.id,
+            ...dishDoc.data(),
+            name: dishDoc.data().dishName,
+            photo: dishDoc.data().image,
+            price: dishDoc.data().price,
+          })),
         };
-      });
-      setCategories(data);
-    });
+      })
+    );
+    setCategories(data);
   }, []);
   useEffect(() => {
     fetchCategory();
   }, []);
-  console.log(
-    categories?.map((category) => ({
-      ...category,
-      dish_type_id: category.id,
-      dish_type_name: category.categoryName,
-      data: [],
-    }))
-  );
   const data = categories?.map((category) => ({
     ...category,
     id: category.id,
@@ -126,8 +125,10 @@ const Menu = () => {
       </div>
       <SectionList
         data={data}
-        searchText={debouncedSearchText}
-        onClickNewDish={() => navigate(routes.newDish)}
+        onClickNewDish={(categoryId: string) =>
+          navigate(routes.newDish.replace(":categoryId", categoryId))
+        }
+        myKey="title"
       />
       <FloatingBubble
         style={{

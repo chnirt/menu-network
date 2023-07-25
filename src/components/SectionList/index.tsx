@@ -22,29 +22,30 @@ const searchHeight = 32;
 const top = navBarHeight + searchHeight;
 export const tabHeight = tabContainer + tabLine + top;
 
-const key = "title";
-
 const SectionList = ({
   data: tabItems,
+  onClickNewDish,
+  myKey,
 }: {
   data: any[];
-  searchText: string;
-  onClickNewDish: () => void;
+  onClickNewDish: (categoryId: string) => void;
+  myKey: string;
 }) => {
   const scrollRef = useRef<boolean>(true);
   const setTimerRef = useRef<number | null | undefined>(null);
-  const [activeKey, setActiveKey] = useState(tabItems?.[0]?.[key]);
-
+  const [activeKey, setActiveKey] = useState(tabItems?.[0]?.[myKey]);
   const { run: handleScroll } = useThrottleFn(
     () => {
       if (!scrollRef.current) return;
-      let currentKey = tabItems?.[0]?.[key];
+      let currentKey = tabItems?.[0]?.[myKey];
       for (const item of tabItems) {
-        const element = document.getElementById(`anchor-category-${item[key]}`);
+        const element = document.getElementById(
+          `anchor-category-${item[myKey]}`
+        );
         if (!element) continue;
         const rect = element.getBoundingClientRect();
         if (Math.floor(rect.top) <= tabHeight + 5) {
-          currentKey = item[key];
+          currentKey = item[myKey];
         } else {
           break;
         }
@@ -91,6 +92,10 @@ const SectionList = ({
     };
   }, [handleScroll]);
 
+  useEffect(() => {
+    setActiveKey(tabItems?.[0]?.[myKey]);
+  }, [tabItems]);
+
   return (
     <div className="relative">
       <div className={`sticky top-[${top}px] z-[100] bg-white`}>
@@ -122,8 +127,8 @@ const SectionList = ({
             }, 1000);
           }}
         >
-          {tabItems.map((item: any, ii: number) => (
-            <Tabs.Tab title={item.title} key={`${item[key]}-${ii}`} />
+          {tabItems.map((item: any) => (
+            <Tabs.Tab key={`${item[myKey]}`} title={item.title} />
           ))}
         </Tabs>
       </div>
@@ -131,10 +136,19 @@ const SectionList = ({
         {tabItems.map((tabItem: any, ti: number) => {
           return (
             <div
-              key={`${tabItem[key]}-${ti}`}
-              id={`anchor-category-${tabItem[key]}`}
+              key={`${tabItem[myKey]}-${ti}`}
+              id={`anchor-category-${tabItem[myKey]}`}
             >
-              <List header={<ListHeader {...{ title: tabItem.title }} />}>
+              <List
+                header={
+                  <ListHeader
+                    {...{
+                      title: tabItem.title,
+                      onClickNewDish: () => onClickNewDish(tabItem.id),
+                    }}
+                  />
+                }
+              >
                 {tabItem?.data?.length > 0
                   ? tabItem.data.map((dataItem: any, dii: number) => (
                       <div
@@ -148,7 +162,7 @@ const SectionList = ({
                           <List.Item
                             prefix={
                               <Image
-                                src={dataItem.photo}
+                                src={dataItem.photo ?? ""}
                                 style={{ borderRadius: 20 }}
                                 fit="cover"
                                 width={40}
@@ -170,7 +184,7 @@ const SectionList = ({
           );
           // const lengthLessThan3 = tabItem.data.length <= 3;
           // return (
-          //   <div id={`anchor-category-${tabItem[key]}`} key={tabItem[key]}>
+          //   <div id={`anchor-category-${tabItem[myKey]}`} key={tabItem[myKey]}>
           //     <div className="flex justify-between">
           //       <h2 className="py-1 px-4">{tabItem.title}</h2>
           //       <Button
@@ -186,13 +200,11 @@ const SectionList = ({
           //       <VerticalSection
           //         key={`section-item-${ti}`}
           //         {...tabItem}
-          //         searchText={searchText}
           //       />
           //     ) : (
           //       <HorizontalSection
           //         key={`section-item-${ti}`}
           //         {...tabItem}
-          //         searchText={searchText}
           //       />
           //     )}
           //   </div>

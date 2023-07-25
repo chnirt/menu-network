@@ -4,12 +4,15 @@ import { useNavigate } from "react-router-dom";
 // import useAuth from "../../hooks/useAuth";
 import { routes } from "../../routes";
 import { signInWithEmailAndPasswordFirebase } from "../../firebase/service";
+import { MASTER_MOCK_DATA } from "../../mocks";
+
+const initialValues = MASTER_MOCK_DATA.LOGIN;
 
 const Login = () => {
   const navigate = useNavigate();
   // const { login } = useAuth();
 
-  const onFinish = async (values: any) => {
+  const onFinish = async (values: typeof initialValues) => {
     try {
       const { email, password } = values;
       await signInWithEmailAndPasswordFirebase(email, password);
@@ -36,10 +39,7 @@ const Login = () => {
   return (
     <Fragment>
       <Form
-        initialValues={{
-          email: "chnirt@gmail.com",
-          password: "Admin@123",
-        }}
+        initialValues={initialValues}
         layout="horizontal"
         onFinish={onFinish}
         footer={

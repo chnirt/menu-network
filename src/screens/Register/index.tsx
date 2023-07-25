@@ -9,14 +9,9 @@ import {
   fetchSignInMethodsForEmailFirebase,
   getDocRef,
 } from "../../firebase/service";
+import { MASTER_MOCK_DATA } from "../../mocks";
 
-const initialValues = {
-  fullName: "Chnirt Chnirt",
-  email: "chnirt@gmail.com",
-  username: "chnirt",
-  password: "Admin@123",
-  confirmPassword: "Admin@123",
-};
+const initialValues = MASTER_MOCK_DATA.REGISTER;
 
 const Register = () => {
   const navigate = useNavigate();

@@ -1,13 +1,49 @@
-import { Button, Form, Input, NavBar, Stepper } from "antd-mobile";
+import { Button, Form, Input, NavBar, Stepper, Toast } from "antd-mobile";
 import { Fragment } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { routes } from "../../routes";
+import { addDocument, getColRef } from "../../firebase/service";
+import useAuth from "../../hooks/useAuth";
+import { MASTER_MOCK_DATA } from "../../mocks";
+
+const initialValues = MASTER_MOCK_DATA.NEW_DISH;
 
 const NewDish = () => {
+  const { user } = useAuth();
   const navigate = useNavigate();
-  const onFinish = async (values: any) => {
-    navigate(routes.menu);
-    return;
+  let { categoryId } = useParams();
+  const onFinish = async (values: typeof initialValues) => {
+    if (user === null || categoryId === undefined) return;
+    try {
+      const { dishName, price } = values;
+      const uid = user.uid;
+      const dishData = {
+        dishName,
+        price,
+      };
+      const categoryDocRef = getColRef(
+        "users",
+        uid,
+        "categories",
+        categoryId,
+        "dishes"
+      );
+      await addDocument(categoryDocRef, dishData);
+
+      navigate(routes.menu);
+      Toast.show({
+        icon: "success",
+        content: "Dish is created",
+      });
+
+      return;
+    } catch (error: any) {
+      Toast.show({
+        icon: "error",
+        content: error.message,
+      });
+    } finally {
+    }
   };
 
   return (
@@ -19,10 +55,7 @@ const NewDish = () => {
         NEW DISH
       </NavBar>
       <Form
-        initialValues={{
-          dishName: "Phatty’S Nachos",
-          price: 10000
-        }}
+        initialValues={initialValues}
         layout="horizontal"
         onFinish={onFinish}
         footer={
@@ -52,7 +85,7 @@ const NewDish = () => {
               "--height": "36px",
               "--input-width": "70px",
               "--input-background-color": "var(--adm-color-background)",
-              "--active-border": "1px solid #1677ff"
+              "--active-border": "1px solid #1677ff",
             }}
             min={0}
             step={1000}

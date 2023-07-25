@@ -14,8 +14,8 @@ export const routes = {
   qrCode: "/qr-code/:menuId",
   order: "/order",
   me: "/me",
-  newDish: "/new-dish",
-  newCategory: "/new-category"
+  newDish: "/categories/:categoryId/new-dish",
+  newCategory: "/new-category",
 };
 
 export const router = createBrowserRouter([
@@ -39,7 +39,7 @@ export const router = createBrowserRouter([
                   <Loadable
                     {...{ factory: () => import("../screens/Dashboard") }}
                   />
-                )
+                ),
               },
               {
                 path: routes.menu,
@@ -47,20 +47,20 @@ export const router = createBrowserRouter([
                   <Loadable
                     {...{
                       factory: () => import("../screens/Menu"),
-                      fallback: <Skeleton screens="menu" />
+                      fallback: <Skeleton screens="menu" />,
                     }}
                   />
-                )
+                ),
               },
               {
                 path: routes.qrCode,
                 element: (
                   <Loadable
                     {...{
-                      factory: () => import("../screens/QRCode")
+                      factory: () => import("../screens/QRCode"),
                     }}
                   />
-                )
+                ),
               },
               {
                 path: routes.order,
@@ -68,7 +68,7 @@ export const router = createBrowserRouter([
                   <Loadable
                     {...{ factory: () => import("../screens/Order") }}
                   />
-                )
+                ),
               },
               {
                 path: routes.me,
@@ -76,15 +76,15 @@ export const router = createBrowserRouter([
                   <Loadable
                     {...{ factory: () => import("../screens/Profile") }}
                   />
-                )
-              }
-            ]
+                ),
+              },
+            ],
           },
           {
             path: routes.newDish,
             element: (
               <Loadable {...{ factory: () => import("../screens/NewDish") }} />
-            )
+            ),
           },
           {
             path: routes.newCategory,
@@ -92,9 +92,9 @@ export const router = createBrowserRouter([
               <Loadable
                 {...{ factory: () => import("../screens/NewCategory") }}
               />
-            )
-          }
-        ]
+            ),
+          },
+        ],
       },
       {
         element: <PublicRoute />,
@@ -103,16 +103,16 @@ export const router = createBrowserRouter([
             path: routes.login,
             element: (
               <Loadable {...{ factory: () => import("../screens/Login") }} />
-            )
+            ),
           },
           {
             path: routes.register,
             element: (
               <Loadable {...{ factory: () => import("../screens/Register") }} />
-            )
-          }
-        ]
-      }
-    ]
-  }
+            ),
+          },
+        ],
+      },
+    ],
+  },
 ]);
