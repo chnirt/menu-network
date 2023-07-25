@@ -1,7 +1,8 @@
+import { User } from "firebase/auth";
 import { AuthStatus } from ".";
 
 export type AuthContextType = {
-  user: AuthUser | null;
+  user: User | null;
   status: AuthStatus;
   isLoggedIn: boolean;
   login: (
@@ -11,8 +12,4 @@ export type AuthContextType = {
   ) => Promise<boolean>;
   logout: (callback: () => Promise<boolean>) => Promise<boolean>;
   setStatus: (value: React.SetStateAction<AuthStatus>) => void;
-};
-
-export type AuthUser = {
-  username: string;
 };

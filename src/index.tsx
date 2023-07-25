@@ -10,11 +10,6 @@ import "./styles.css";
 const rootElement = document.getElementById("root")!;
 const root = ReactDOM.createRoot(rootElement);
 
-document.documentElement.style.setProperty(
-  "--vh",
-  window.innerHeight * 0.01 + "px"
-);
-
 // const removeWatermark = () => {
 //   const ids = [];
 //   const iframes = document.body.querySelectorAll("iframe");

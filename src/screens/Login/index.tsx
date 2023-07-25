@@ -1,30 +1,49 @@
-import { Form, Input, Button } from "antd-mobile";
+import { Form, Input, Button, Toast } from "antd-mobile";
 import { Fragment } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 import { routes } from "../../routes";
+import { signInWithEmailAndPasswordFirebase } from "../../firebase/service";
 
 const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
+
   const onFinish = async (values: any) => {
-    if (values.username === "chnirt" && values.password === "Admin@123") {
-      const loginFromAPI = async () => {
-        const data: { username: string } = await new Promise((resolve) =>
-          setTimeout(() => resolve({ username: values.username }), 1000)
-        );
-        return data;
-      };
-      return login(loginFromAPI);
+    try {
+      const { email, password } = values;
+      const userCredential = await signInWithEmailAndPasswordFirebase(
+        email,
+        password
+      );
+      console.log(userCredential);
+
+      // logAnalyticsEvent(eventNames.login, { email })
+    } catch (error: any) {
+      // console.log(error.message)
+      Toast.show({
+        icon: "error",
+        content: error.message,
+      });
+    } finally {
     }
+    // if (values.username === "chnirt" && values.password === "Admin@123") {
+    //   const loginFromAPI = async () => {
+    //     const data: { username: string } = await new Promise((resolve) =>
+    //       setTimeout(() => resolve({ username: values.username }), 1000)
+    //     );
+    //     return data;
+    //   };
+    //   return login(loginFromAPI);
+    // }
   };
 
   return (
     <Fragment>
       <Form
         initialValues={{
-          username: "chnirt",
-          password: "Admin@123"
+          email: "chnirt@gmail.com",
+          password: "Admin@123",
         }}
         layout="horizontal"
         onFinish={onFinish}
@@ -36,18 +55,35 @@ const Login = () => {
       >
         <Form.Header>Login</Form.Header>
         <Form.Item
-          name="username"
-          label="Username"
-          rules={[{ required: true, message: "Username is required" }]}
+          name="email"
+          label="Email"
+          rules={[
+            { required: true, message: "Email is required" },
+            { type: "email", message: "Invalid email" },
+          ]}
         >
-          <Input placeholder="chnirt" />
+          <Input type="email" autoComplete="email" placeholder="chnirt" />
         </Form.Item>
         <Form.Item
           name="password"
           label="Password"
-          rules={[{ required: true, message: "Username is required" }]}
+          rules={[
+            { required: true, message: "Password is required" },
+            {
+              min: 4,
+              message: "Password should be at least 4 characters",
+            },
+            {
+              max: 20,
+              message: "Password must have at 20 characters",
+            },
+          ]}
         >
-          <Input type="password" placeholder="******" />
+          <Input
+            type="password"
+            autoComplete="current-password"
+            placeholder="******"
+          />
         </Form.Item>
       </Form>
       <Button

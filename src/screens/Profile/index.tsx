@@ -2,6 +2,7 @@ import { Avatar, Dialog, Footer, List } from "antd-mobile";
 import { useCallback } from "react";
 import { LeftOutline } from "antd-mobile-icons";
 import useAuth from "../../hooks/useAuth";
+import { signOutFirebase } from "../../firebase/service";
 
 const Profile = () => {
   const { logout } = useAuth();
@@ -11,13 +12,14 @@ const Profile = () => {
       cancelText: "Cancel",
       confirmText: "Log out",
       onConfirm: async () => {
-        const logoutFromAPI = async () => {
-          const data: boolean = await new Promise((resolve) =>
-            setTimeout(() => resolve(true), 1000)
-          );
-          return data;
-        };
-        logout(logoutFromAPI);
+        signOutFirebase()
+        // const logoutFromAPI = async () => {
+        //   const data: boolean = await new Promise((resolve) =>
+        //     setTimeout(() => resolve(true), 1000)
+        //   );
+        //   return data;
+        // };
+        // logout(logoutFromAPI);
       }
     });
   }, [logout]);

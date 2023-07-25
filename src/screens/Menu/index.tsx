@@ -25,8 +25,8 @@ const Menu = () => {
       ...dish,
       price: dish.price.text,
       photo: dish.photos[0].value,
-      categoryName: menu_info.dish_type_name
-    }))
+      categoryName: menu_info.dish_type_name,
+    })),
   }));
   const navigate = useNavigate();
   const handleFloatingBubble = useCallback(() => {
@@ -49,7 +49,7 @@ const Menu = () => {
             element.getBoundingClientRect().top +
             window.scrollY -
             tabHeight -
-            16
+            16,
         });
       }
     }
@@ -93,7 +93,7 @@ const Menu = () => {
         style={{
           "--initial-position-bottom": "60px",
           "--initial-position-right": "12px",
-          "--edge-distance": "12px"
+          "--edge-distance": "12px",
         }}
         onClick={handleFloatingBubble}
       >
