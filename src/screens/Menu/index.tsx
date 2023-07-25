@@ -53,6 +53,7 @@ const Menu = () => {
           // ...docSnapshot,
           id: docSnapshot.id,
           ...docSnapshot.data(),
+          ref: docSnapshot.ref,
           title: docSnapshot.data().categoryName,
           data: dishesDocs.docs.map((dishDoc) => ({
             id: dishDoc.id,
@@ -135,13 +136,22 @@ const Menu = () => {
         onClickNewDish={(categoryId: string) =>
           navigate(routes.newDish.replace(":categoryId", categoryId))
         }
-        onDeleteConfirm={async (
+        onUpdateConfirmList={(categoryId: string) =>
+          navigate(routes.updateCategory.replace(":categoryId", categoryId))
+        }
+        onDeleteConfirmList={async (
+          tabItem: QueryDocumentSnapshot<DocumentData, DocumentData>
+        ) => {
+          await deleteDoc(tabItem.ref);
+          await fetchCategory();
+        }}
+        onDeleteConfirmListItem={async (
           dataItem: QueryDocumentSnapshot<DocumentData, DocumentData>
         ) => {
           await deleteDoc(dataItem.ref);
           await fetchCategory();
         }}
-        onUpdateConfirm={(
+        onUpdateConfirmListItem={(
           dataItem: QueryDocumentSnapshot<DocumentData, DocumentData>,
           categoryId: string
         ) =>

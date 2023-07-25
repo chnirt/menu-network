@@ -51,14 +51,14 @@ const NewDish = () => {
           if (dishDocRefState === null) return;
           await updateDocument(dishDocRefState, dishData);
         } else {
-          const categoryColRef = getColRef(
+          const dishColRef = getColRef(
             "users",
             uid,
             "categories",
             categoryId,
             "dishes"
           );
-          await addDocument(categoryColRef, dishData);
+          await addDocument(dishColRef, dishData);
         }
         navigate(routes.menu);
         Toast.show({
@@ -75,13 +75,12 @@ const NewDish = () => {
       } finally {
       }
     },
-    [isEditMode, dishDocRefState]
+    [user, isEditMode, dishDocRefState]
   );
 
   const fetchDishById = useCallback(
     async (dishId: string) => {
-      if (user === null || categoryId === undefined || dishId === undefined)
-        return;
+      if (user === null || categoryId === undefined) return;
       const dishDocRef = getDocRef(
         "users",
         user?.uid,
@@ -99,13 +98,13 @@ const NewDish = () => {
         })),
       });
     },
-    [categoryId, dishId]
+    [user, categoryId, form]
   );
 
   useEffect(() => {
     if (categoryId === undefined || dishId === undefined) return;
     fetchDishById(dishId);
-  }, [user, categoryId, dishId]);
+  }, [categoryId, dishId, fetchDishById]);
 
   return (
     <Fragment>
@@ -126,7 +125,7 @@ const NewDish = () => {
           </Button>
         }
       >
-        <Form.Header>{isEditMode ? "EDIT DISH" : "NEW DISH"}</Form.Header>
+        <Form.Header>{isEditMode ? "Edit Dish" : "New Dish"}</Form.Header>
         <Form.Item
           name="dishFiles"
           label="Dish Files"

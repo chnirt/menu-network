@@ -7,44 +7,87 @@ import {
   Tabs,
   Toast,
 } from "antd-mobile";
-import { Fragment } from "react";
-import { useNavigate } from "react-router-dom";
+import { Fragment, useCallback, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { routes } from "../../routes";
-import { addDocument, getColRef } from "../../firebase/service";
+import {
+  addDocument,
+  getColRef,
+  getDocRef,
+  getDocument,
+  updateDocument,
+} from "../../firebase/service";
 import useAuth from "../../hooks/useAuth";
 import { MASTER_MOCK_DATA } from "../../mocks";
+import { DocumentData, DocumentReference } from "firebase/firestore";
 
 const initialValues = MASTER_MOCK_DATA.NEW_CATEGORY;
 
 const NewCategory = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const onFinish = async (values: typeof initialValues) => {
-    if (user === null) return;
-    try {
-      const { categoryName } = values;
-      const uid = user.uid;
-      const categoryData = {
-        categoryName,
-      };
-      const userDocRef = getColRef("users", uid, "categories");
-      await addDocument(userDocRef, categoryData);
+  const { categoryId } = useParams();
+  const isEditMode = Boolean(categoryId);
+  const [form] = Form.useForm();
+  const [categoryDocRefState, setCategoryDocRefState] =
+    useState<DocumentReference<DocumentData, DocumentData> | null>(null);
 
-      navigate(routes.menu);
-      Toast.show({
-        icon: "success",
-        content: "Category is created",
-      });
+  const onFinish = useCallback(
+    async (values: typeof initialValues) => {
+      if (user === null) return;
+      try {
+        const { categoryName } = values;
+        const uid = user.uid;
+        const categoryData = {
+          categoryName,
+        };
 
-      return;
-    } catch (error: any) {
-      Toast.show({
-        icon: "error",
-        content: error.message,
-      });
-    } finally {
-    }
-  };
+        if (isEditMode) {
+          if (categoryDocRefState === null) return;
+          await updateDocument(categoryDocRefState, categoryData);
+        } else {
+          const categoryDocRef = getColRef("users", uid, "categories");
+          await addDocument(categoryDocRef, categoryData);
+        }
+
+        navigate(routes.menu);
+        Toast.show({
+          icon: "success",
+          content: isEditMode ? "Category is updated" : "Category is created",
+        });
+
+        return;
+      } catch (error: any) {
+        Toast.show({
+          icon: "error",
+          content: error.message,
+        });
+      } finally {
+      }
+    },
+    [user, isEditMode, categoryDocRefState]
+  );
+
+  const fetchCategoryById = useCallback(
+    async (categoryId: string) => {
+      if (user === null) return;
+      const categoryDocRef = getDocRef(
+        "users",
+        user?.uid,
+        "categories",
+        categoryId
+      );
+      setCategoryDocRefState(categoryDocRef);
+      const dishDocData: any = await getDocument(categoryDocRef);
+      form.setFieldsValue(dishDocData);
+    },
+    [user, categoryId]
+  );
+
+  useEffect(() => {
+    if (categoryId === undefined) return;
+    fetchCategoryById(categoryId);
+  }, [categoryId, fetchCategoryById]);
 
   return (
     <Fragment>
@@ -52,21 +95,24 @@ const NewCategory = () => {
         className="sticky top-0 z-[100] bg-white"
         onBack={() => navigate(-1)}
       >
-        NEW CATEGORY
+        {isEditMode ? "EDIT CATEGORY" : "NEW CATEGORY"}
       </NavBar>
       <Tabs>
-        <Tabs.Tab title="New" key="new">
+        <Tabs.Tab title={isEditMode ? "Edit" : "New"} key="new">
           <Form
+            form={form}
             initialValues={initialValues}
             layout="horizontal"
             onFinish={onFinish}
             footer={
               <Button block type="submit" color="primary" size="large">
-                CREATE
+                {isEditMode ? "EDIT" : "CREATE"}
               </Button>
             }
           >
-            <Form.Header>New Category</Form.Header>
+            <Form.Header>
+              {isEditMode ? "Edit Category" : "New Category"}
+            </Form.Header>
             <Form.Item
               name="categoryName"
               label="Category Name"

@@ -26,14 +26,18 @@ const SectionList = ({
   data: tabItems,
   onClickNewDish,
   myKey,
-  onDeleteConfirm,
-  onUpdateConfirm,
+  onDeleteConfirmList,
+  onUpdateConfirmList,
+  onDeleteConfirmListItem,
+  onUpdateConfirmListItem,
 }: {
   data: any[];
   onClickNewDish?: (categoryId: string) => void;
   myKey: string;
-  onDeleteConfirm?: (dataItem: any) => void;
-  onUpdateConfirm?: (dataItem: any, categoryId: string) => void;
+  onDeleteConfirmList?: (tabItem: any) => void;
+  onUpdateConfirmList?: (categoryId: string) => void;
+  onDeleteConfirmListItem?: (dataItem: any) => void;
+  onUpdateConfirmListItem?: (dataItem: any, categoryId: string) => void;
 }) => {
   const scrollRef = useRef<boolean>(true);
   const setTimerRef = useRef<number | null | undefined>(null);
@@ -64,13 +68,14 @@ const SectionList = ({
   );
 
   const swipeActionRef = useRef<SwipeActionRef>(null);
-  const handleOnAction = useCallback(
-    async (action: Action, dataItem: any, categoryId: string) => {
+
+  const handleOnActionList = useCallback(
+    async (action: Action, tabItem: any) => {
       switch (action.key) {
         case "update":
           {
-            typeof onUpdateConfirm === "function"
-              ? onUpdateConfirm(dataItem, categoryId)
+            typeof onUpdateConfirmList === "function"
+              ? onUpdateConfirmList(tabItem.id)
               : undefined;
             swipeActionRef.current?.close();
           }
@@ -78,12 +83,12 @@ const SectionList = ({
         case "delete":
           {
             await Dialog.confirm({
-              content: "Delete?",
+              content: "Are you sure want to delete?",
               cancelText: "Cancel",
               confirmText: "Delete",
               onConfirm:
-                typeof onDeleteConfirm === "function"
-                  ? () => onDeleteConfirm(dataItem)
+                typeof onDeleteConfirmList === "function"
+                  ? () => onDeleteConfirmList(tabItem)
                   : undefined,
             });
             swipeActionRef.current?.close();
@@ -93,7 +98,39 @@ const SectionList = ({
           return;
       }
     },
-    [onDeleteConfirm]
+    [onUpdateConfirmList, onDeleteConfirmList]
+  );
+
+  const handleOnActionListItem = useCallback(
+    async (action: Action, dataItem: any, categoryId: string) => {
+      switch (action.key) {
+        case "update":
+          {
+            typeof onUpdateConfirmListItem === "function"
+              ? onUpdateConfirmListItem(dataItem, categoryId)
+              : undefined;
+            swipeActionRef.current?.close();
+          }
+          return;
+        case "delete":
+          {
+            await Dialog.confirm({
+              content: "Are you sure want to delete?",
+              cancelText: "Cancel",
+              confirmText: "Delete",
+              onConfirm:
+                typeof onDeleteConfirmListItem === "function"
+                  ? () => onDeleteConfirmListItem(dataItem)
+                  : undefined,
+            });
+            swipeActionRef.current?.close();
+          }
+          return;
+        default:
+          return;
+      }
+    },
+    [onUpdateConfirmListItem, onDeleteConfirmListItem]
   );
 
   useEffect(() => {
@@ -168,7 +205,7 @@ const SectionList = ({
                   <SwipeAction
                     ref={swipeActionRef}
                     rightActions={rightActions}
-                    // onAction={(action) => handleOnAction(action, dataItem)}
+                    onAction={(action) => handleOnActionList(action, tabItem)}
                   >
                     <ListHeader
                       {...{
@@ -192,7 +229,7 @@ const SectionList = ({
                           ref={swipeActionRef}
                           rightActions={rightActions}
                           onAction={(action) =>
-                            handleOnAction(action, dataItem, tabItem.id)
+                            handleOnActionListItem(action, dataItem, tabItem.id)
                           }
                         >
                           <List.Item

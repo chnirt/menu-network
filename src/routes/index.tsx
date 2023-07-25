@@ -14,9 +14,10 @@ export const routes = {
   qrCode: "/qr-code/:menuId",
   order: "/order",
   me: "/me",
+  newCategory: "/new-category",
+  updateCategory: "/categories/:categoryId",
   newDish: "/categories/:categoryId/new-dish",
   updateDish: "/categories/:categoryId/dishes/:dishId",
-  newCategory: "/new-category",
 };
 
 export const router = createBrowserRouter([
@@ -95,6 +96,14 @@ export const router = createBrowserRouter([
           },
           {
             path: routes.newCategory,
+            element: (
+              <Loadable
+                {...{ factory: () => import("../screens/NewCategory") }}
+              />
+            ),
+          },
+          {
+            path: routes.updateCategory,
             element: (
               <Loadable
                 {...{ factory: () => import("../screens/NewCategory") }}
