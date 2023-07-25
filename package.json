@@ -7,7 +7,9 @@
   "dependencies": {
     "@types/lodash": "4.14.195",
     "@types/qrcode.react": "1.0.2",
+    "ahooks": "^3.7.8",
     "antd-mobile": "5.32.0",
+    "antd-mobile-icons": "^0.3.0",
     "csbbust": "1.0.1",
     "loader-utils": "3.2.1",
     "localforage": "1.10.0",

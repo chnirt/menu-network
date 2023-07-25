@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useDebounce } from "react-use";
 import { SystemQRcodeOutline } from "antd-mobile-icons";
 import SectionList, { tabHeight } from "../../components/SectionList";
-import { MENU_DATA, PHATTYS_MENU_DATA, SAMPLE_DATA } from "../../mocks";
+import { SAMPLE_DATA } from "../../mocks";
 import { routes } from "../../routes";
 
 const Menu = () => {
@@ -18,21 +18,16 @@ const Menu = () => {
     [searchText]
   );
   let { menuId } = useParams();
-  const data = 1
-    ? SAMPLE_DATA.reply.menu_infos.map((menu_info) => ({
-        ...menu_info,
-        title: menu_info.dish_type_name,
-        data: menu_info.dishes.map((dish) => ({
-          ...dish,
-          price: dish.price.text,
-          photo: dish.photos[0].value,
-          categoryName: menu_info.dish_type_name
-        }))
-      }))
-    : MENU_DATA.data.Menu.map((item) => ({
-        ...item,
-        data: item.Dishes
-      }));
+  const data = SAMPLE_DATA.reply.menu_infos.map((menu_info) => ({
+    ...menu_info,
+    title: menu_info.dish_type_name,
+    data: menu_info.dishes.map((dish) => ({
+      ...dish,
+      price: dish.price.text,
+      photo: dish.photos[0].value,
+      categoryName: menu_info.dish_type_name
+    }))
+  }));
   const navigate = useNavigate();
   const handleFloatingBubble = useCallback(() => {
     if (menuId === undefined) return;
