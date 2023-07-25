@@ -8,8 +8,12 @@ type ILoading = {
 };
 
 export const Loading: ILoading = {
-  loading: null,
+  loading: {
+    show: () => {},
+    hide: () => {},
+  },
   set: (loadingInput: any) => {
+    if (loadingInput === undefined) return;
     Loading.loading = loadingInput;
   },
   get: () => Loading.loading,
