@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   // Button,
   Dialog,
@@ -10,10 +10,10 @@ import {
 } from "antd-mobile";
 import { useThrottleFn } from "ahooks";
 import { EditSOutline, DeleteOutline } from "antd-mobile-icons";
+import { Action } from "antd-mobile/es/components/swipe-action";
 // import HorizontalSection from "../HorizontalSection";
 // import VerticalSection from "../VerticalSection";
 import ListHeader from "../ListHeader";
-import { Action } from "antd-mobile/es/components/swipe-action";
 
 const tabContainer = 42;
 const tabLine = 2;
@@ -26,10 +26,12 @@ const SectionList = ({
   data: tabItems,
   onClickNewDish,
   myKey,
+  onDeleteConfirm,
 }: {
   data: any[];
-  onClickNewDish: (categoryId: string) => void;
+  onClickNewDish?: (categoryId: string) => void;
   myKey: string;
+  onDeleteConfirm?: (dataItem: any) => void;
 }) => {
   const scrollRef = useRef<boolean>(true);
   const setTimerRef = useRef<number | null | undefined>(null);
@@ -60,30 +62,35 @@ const SectionList = ({
   );
 
   const swipeActionRef = useRef<SwipeActionRef>(null);
-  const rightActions: Action[] = [
-    {
-      key: "edit",
-      text: <EditSOutline />,
-      color: "warning",
-      onClick: async () => {
-        await Dialog.confirm({
-          content: "Edit?",
-        });
-        swipeActionRef.current?.close();
-      },
+  const handleOnAction = useCallback(
+    async (action: Action, dataItem: any) => {
+      switch (action.key) {
+        case "edit":
+          {
+            await Dialog.confirm({
+              content: "Edit?",
+            });
+            swipeActionRef.current?.close();
+          }
+          return;
+        case "delete":
+          {
+            await Dialog.confirm({
+              content: "Delete?",
+              onConfirm:
+                typeof onDeleteConfirm === "function"
+                  ? () => onDeleteConfirm(dataItem)
+                  : undefined,
+            });
+            swipeActionRef.current?.close();
+          }
+          return;
+        default:
+          return;
+      }
     },
-    {
-      key: "delete",
-      text: <DeleteOutline />,
-      color: "danger",
-      onClick: async () => {
-        await Dialog.confirm({
-          content: "Delete?",
-        });
-        swipeActionRef.current?.close();
-      },
-    },
-  ];
+    [onDeleteConfirm]
+  );
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
@@ -95,6 +102,19 @@ const SectionList = ({
   useEffect(() => {
     setActiveKey(tabItems?.[0]?.[myKey]);
   }, [tabItems]);
+
+  const rightActions: Action[] = [
+    {
+      key: "edit",
+      text: <EditSOutline />,
+      color: "warning",
+    },
+    {
+      key: "delete",
+      text: <DeleteOutline />,
+      color: "danger",
+    },
+  ];
 
   return (
     <div className="relative">
@@ -144,7 +164,10 @@ const SectionList = ({
                   <ListHeader
                     {...{
                       title: tabItem.title,
-                      onClickNewDish: () => onClickNewDish(tabItem.id),
+                      onClickNewDish:
+                        typeof onClickNewDish === "function"
+                          ? () => onClickNewDish(tabItem.id)
+                          : undefined,
                     }}
                   />
                 }
@@ -158,6 +181,9 @@ const SectionList = ({
                         <SwipeAction
                           ref={swipeActionRef}
                           rightActions={rightActions}
+                          onAction={(action) =>
+                            handleOnAction(action, dataItem)
+                          }
                         >
                           <List.Item
                             prefix={

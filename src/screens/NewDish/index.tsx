@@ -1,10 +1,20 @@
-import { Button, Form, Input, NavBar, Stepper, Toast } from "antd-mobile";
-import { Fragment } from "react";
+import {
+  Button,
+  Form,
+  ImageUploadItem,
+  ImageUploader,
+  Input,
+  NavBar,
+  Stepper,
+  Toast,
+} from "antd-mobile";
+import { Fragment, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { routes } from "../../routes";
 import { addDocument, getColRef } from "../../firebase/service";
 import useAuth from "../../hooks/useAuth";
 import { MASTER_MOCK_DATA } from "../../mocks";
+import { uploadStorageBytesResumable } from "../../firebase/storage";
 
 const initialValues = MASTER_MOCK_DATA.NEW_DISH;
 
@@ -15,9 +25,10 @@ const NewDish = () => {
   const onFinish = async (values: typeof initialValues) => {
     if (user === null || categoryId === undefined) return;
     try {
-      const { dishName, price } = values;
+      const { dishName, price, dishFiles } = values;
       const uid = user.uid;
       const dishData = {
+        dishFiles: dishFiles.map((dishFile: any) => dishFile.url),
         dishName,
         price,
       };
@@ -66,6 +77,41 @@ const NewDish = () => {
       >
         <Form.Header>New Dish</Form.Header>
         <Form.Item
+          name="dishFiles"
+          label="Dish Files"
+          rules={[{ required: true, message: "Dish Files is required" }]}
+        >
+          <ImageUploader
+            upload={function (file: File): Promise<ImageUploadItem> {
+              const isJpgOrPng =
+                file.type === "image/jpeg" || file.type === "image/png";
+              if (!isJpgOrPng) {
+                return Promise.reject(
+                  new Error("You can only upload JPG/PNG file!")
+                );
+              }
+              const isLt2M = file.size / 1024 / 1024 < 2;
+              if (!isLt2M) {
+                return Promise.reject(
+                  new Error("Image must smaller than 2MB!")
+                );
+              }
+
+              return new Promise((resolve, reject) => {
+                uploadStorageBytesResumable(
+                  file,
+                  undefined,
+                  (error) => reject(error),
+                  async ({ downloadURL }) =>
+                    resolve({
+                      url: downloadURL,
+                    })
+                );
+              });
+            }}
+          />
+        </Form.Item>
+        <Form.Item
           name="dishName"
           label="Dish Name"
           rules={[{ required: true, message: "Dish Name is required" }]}
@@ -75,7 +121,14 @@ const NewDish = () => {
         <Form.Item
           name="price"
           label="Price"
-          rules={[{ required: true, message: "Price is required" }]}
+          rules={[
+            { required: true, message: "Price is required" },
+            {
+              type: "number",
+              min: 1,
+              message: "Invalid Price",
+            },
+          ]}
         >
           <Stepper
             style={{

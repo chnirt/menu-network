@@ -20,6 +20,7 @@ export const MASTER_MOCK_DATA = {
   NEW_DISH: {
     dishName: isDevelop ? "Phatty’S Nachos" : "",
     price: isDevelop ? 99000 : 0,
+    dishFiles: []
   },
 };
 

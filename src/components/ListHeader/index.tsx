@@ -5,7 +5,7 @@ const ListHeader = ({
   onClickNewDish,
 }: {
   title: string;
-  onClickNewDish: () => void;
+  onClickNewDish?: () => void;
 }) => {
   return (
     <div className="flex justify-between">
