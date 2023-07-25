@@ -3,7 +3,6 @@
 // https://stackoverflow.com/questions/70571720/firestore-query-snapshot-foreach-seems-to-be-overwriting-products-state
 // https://stackoverflow.com/questions/50807905/are-firestore-updates-charged-the-same-cost-as-writes
 // https://stackoverflow.com/questions/37811684/how-to-create-credential-object-needed-by-firebase-web-user-reauthenticatewith
-import { async } from "@firebase/util";
 import {
   createUserWithEmailAndPassword,
   EmailAuthProvider,

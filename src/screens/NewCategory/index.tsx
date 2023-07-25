@@ -1,13 +1,47 @@
-import { Button, Form, Input, NavBar, Selector, Tabs } from "antd-mobile";
+import {
+  Button,
+  Form,
+  Input,
+  NavBar,
+  Selector,
+  Tabs,
+  Toast,
+} from "antd-mobile";
 import { Fragment } from "react";
 import { useNavigate } from "react-router-dom";
 import { routes } from "../../routes";
+import { addDocument, getColRef } from "../../firebase/service";
+import useAuth from "../../hooks/useAuth";
 
 const NewCategory = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const onFinish = async (values: any) => {
-    navigate(routes.menu);
-    return;
+    if (user === null) return;
+    try {
+      const { categoryName } = values;
+      const uid = user.uid;
+      const categoryData = {
+        categoryName,
+        uid,
+      };
+      const userDocRef = getColRef("users", uid, "categories");
+      await addDocument(userDocRef, categoryData);
+
+      navigate(routes.menu);
+      Toast.show({
+        icon: "success",
+        content: "Category is created",
+      });
+
+      return;
+    } catch (error: any) {
+      Toast.show({
+        icon: "error",
+        content: error.message,
+      });
+    } finally {
+    }
   };
 
   return (
@@ -22,7 +56,7 @@ const NewCategory = () => {
         <Tabs.Tab title="New" key="new">
           <Form
             initialValues={{
-              categoryName: "Cocktail"
+              categoryName: "Cocktail",
             }}
             layout="horizontal"
             onFinish={onFinish}
@@ -38,14 +72,14 @@ const NewCategory = () => {
               label="Category Name"
               rules={[{ required: true, message: "Category Name is required" }]}
             >
-              <Input placeholder="chnirt" />
+              <Input autoComplete="none" placeholder="chnirt" />
             </Form.Item>
           </Form>
         </Tabs.Tab>
         <Tabs.Tab title="Templates" key="templates">
           <Form
             initialValues={{
-              template: ["coffee"]
+              template: ["coffee"],
             }}
             layout="horizontal"
             onFinish={onFinish}
@@ -68,7 +102,7 @@ const NewCategory = () => {
                   { label: "Coffee", value: "coffee" },
                   { label: "Tea", value: "tea" },
                   { label: "Juices", value: "juices" },
-                  { label: "Beer", value: "beer" }
+                  { label: "Beer", value: "beer" },
                 ]}
               />
             </Form.Item>

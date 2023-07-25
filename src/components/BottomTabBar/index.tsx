@@ -4,10 +4,11 @@ import {
   CompassOutline,
   ShopbagOutline,
   UnorderedListOutline,
-  UserOutline
+  UserOutline,
 } from "antd-mobile-icons";
-import { routes } from "../../routes";
 import { TabBar } from "antd-mobile";
+import { routes } from "../../routes";
+import { auth } from "../../firebase";
 
 const BottomTabBar: FC = () => {
   const navigate = useNavigate();
@@ -22,23 +23,23 @@ const BottomTabBar: FC = () => {
     {
       key: routes.dashboard,
       // title: "Dashboard",
-      icon: <CompassOutline />
+      icon: <CompassOutline />,
     },
     {
-      key: routes.menu.replace(":menuId", "123"),
+      key: routes.menu.replace(":menuId", auth.currentUser?.uid ?? ""),
       // title: "Menu",
-      icon: <UnorderedListOutline />
+      icon: <UnorderedListOutline />,
     },
     {
       key: routes.order,
       // title: "Order",
-      icon: <ShopbagOutline />
+      icon: <ShopbagOutline />,
     },
     {
       key: routes.me,
       // title: "Profile",
-      icon: <UserOutline />
-    }
+      icon: <UserOutline />,
+    },
   ];
 
   return (

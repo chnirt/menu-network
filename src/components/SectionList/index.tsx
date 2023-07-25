@@ -6,7 +6,7 @@ import {
   List,
   SwipeAction,
   SwipeActionRef,
-  Tabs
+  Tabs,
 } from "antd-mobile";
 import { useThrottleFn } from "ahooks";
 import { EditSOutline, DeleteOutline } from "antd-mobile-icons";
@@ -25,7 +25,7 @@ export const tabHeight = tabContainer + tabLine + top;
 const key = "title";
 
 const SectionList = ({
-  data: tabItems
+  data: tabItems,
 }: {
   data: any[];
   searchText: string;
@@ -54,7 +54,7 @@ const SectionList = ({
     {
       leading: true,
       trailing: true,
-      wait: 100
+      wait: 100,
     }
   );
 
@@ -66,10 +66,10 @@ const SectionList = ({
       color: "warning",
       onClick: async () => {
         await Dialog.confirm({
-          content: "Edit?"
+          content: "Edit?",
         });
         swipeActionRef.current?.close();
-      }
+      },
     },
     {
       key: "delete",
@@ -77,11 +77,11 @@ const SectionList = ({
       color: "danger",
       onClick: async () => {
         await Dialog.confirm({
-          content: "Delete?"
+          content: "Delete?",
         });
         swipeActionRef.current?.close();
-      }
-    }
+      },
+    },
   ];
 
   useEffect(() => {
@@ -90,6 +90,7 @@ const SectionList = ({
       window.removeEventListener("scroll", handleScroll);
     };
   }, [handleScroll]);
+
   return (
     <div className="relative">
       <div className={`sticky top-[${top}px] z-[100] bg-white`}>
@@ -107,7 +108,9 @@ const SectionList = ({
             if (element === null) return;
             window.scrollTo({
               top:
-                element.getBoundingClientRect().top + window.scrollY - tabHeight
+                element.getBoundingClientRect().top +
+                window.scrollY -
+                tabHeight,
             });
             setActiveKey(key);
 
@@ -119,47 +122,50 @@ const SectionList = ({
             }, 1000);
           }}
         >
-          {tabItems.map((item) => (
-            <Tabs.Tab title={item.title} key={item[key]} />
+          {tabItems.map((item: any, ii: number) => (
+            <Tabs.Tab title={item.title} key={`${item[key]}-${ii}`} />
           ))}
         </Tabs>
       </div>
       <div>
         {tabItems.map((tabItem: any, ti: number) => {
           return (
-            <div key={tabItem[key]} id={`anchor-category-${tabItem[key]}`}>
-              {tabItem.data.length > 0 && (
-                <List header={<ListHeader {...{ title: tabItem.title }} />}>
-                  {tabItem.data.map((dataItem: any, dii: number) => (
-                    <div
-                      key={`data-item-${dii}`}
-                      id={`anchor-dish-${dataItem?.name}`}
-                    >
-                      <SwipeAction
-                        ref={swipeActionRef}
-                        rightActions={rightActions}
+            <div
+              key={`${tabItem[key]}-${ti}`}
+              id={`anchor-category-${tabItem[key]}`}
+            >
+              <List header={<ListHeader {...{ title: tabItem.title }} />}>
+                {tabItem?.data?.length > 0
+                  ? tabItem.data.map((dataItem: any, dii: number) => (
+                      <div
+                        key={`data-item-${dii}`}
+                        id={`anchor-dish-${dataItem?.name}`}
                       >
-                        <List.Item
-                          prefix={
-                            <Image
-                              src={dataItem.photo}
-                              style={{ borderRadius: 20 }}
-                              fit="cover"
-                              width={40}
-                              height={40}
-                            />
-                          }
+                        <SwipeAction
+                          ref={swipeActionRef}
+                          rightActions={rightActions}
                         >
-                          <div className="flex flex-row justify-between items-between">
-                            <div>{dataItem.name}</div>
-                            <div>{dataItem.price}</div>
-                          </div>
-                        </List.Item>
-                      </SwipeAction>
-                    </div>
-                  ))}
-                </List>
-              )}
+                          <List.Item
+                            prefix={
+                              <Image
+                                src={dataItem.photo}
+                                style={{ borderRadius: 20 }}
+                                fit="cover"
+                                width={40}
+                                height={40}
+                              />
+                            }
+                          >
+                            <div className="flex flex-row justify-between items-between">
+                              <div>{dataItem.name}</div>
+                              <div>{dataItem.price}</div>
+                            </div>
+                          </List.Item>
+                        </SwipeAction>
+                      </div>
+                    ))
+                  : null}
+              </List>
             </div>
           );
           // const lengthLessThan3 = tabItem.data.length <= 3;

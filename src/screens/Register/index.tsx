@@ -1,16 +1,14 @@
 import { Form, Input, Button, Toast } from "antd-mobile";
 import { Fragment } from "react";
 import { useNavigate } from "react-router-dom";
-import useAuth from "../../hooks/useAuth";
+// import useAuth from "../../hooks/useAuth";
 import { routes } from "../../routes";
 import {
   addDocument,
   createUserWithEmailAndPasswordFirebase,
   fetchSignInMethodsForEmailFirebase,
-  getColRef,
   getDocRef,
 } from "../../firebase/service";
-import { getDocs, query, where } from "firebase/firestore";
 
 const initialValues = {
   fullName: "Chnirt Chnirt",
@@ -18,16 +16,11 @@ const initialValues = {
   username: "chnirt",
   password: "Admin@123",
   confirmPassword: "Admin@123",
-  // fullName: "",
-  // email: "",
-  // username: "",
-  // password: "",
-  // confirmPassword: "",
 };
 
 const Register = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  // const { login } = useAuth();
   const onFinish = async (values: typeof initialValues) => {
     try {
       // console.log('Success:', values)
@@ -38,20 +31,6 @@ const Register = () => {
         throw Error("Email already exists!");
       }
 
-      // const q = query(getColRef("users"), where("username", "==", username));
-      // const querySnapshot = await getDocs(q);
-      // const docs = querySnapshot.docs;
-      // const data = docs.map((docSnapshot) => {
-      //   return {
-      //     id: docSnapshot.id,
-      //     ...docSnapshot.data(),
-      //   };
-      // });
-      // const foundUser = data[0];
-      // if (foundUser) {
-      //   throw Error("Username already exists!");
-      // }
-
       const userCredential = await createUserWithEmailAndPasswordFirebase(
         email,
         password
@@ -59,7 +38,6 @@ const Register = () => {
 
       if (userCredential) {
         const uid = userCredential.user.uid;
-        // const jwkKeys = await getJwkKeys();
         const userDocRef = getDocRef("users", uid);
         const userData = {
           uid,
@@ -68,19 +46,8 @@ const Register = () => {
           username: String(username).trim(),
           // avatar: avatarPlaceholder,
           // keywords: generateKeywords(email),
-          // jwkKeys,
-          // language: Language.EN,
         };
         await addDocument(userDocRef, userData);
-
-        // const followingData = {
-        //   type: "owner",
-        //   uid,
-        //   avatar: avatarPlaceholder,
-        //   username,
-        // };
-        // const followerDocRef = getDocRef("users", uid, "following", uid);
-        // await addDocument(followerDocRef, followingData);
       }
 
       // logAnalyticsEvent(eventNames.register, {
@@ -179,7 +146,7 @@ const Register = () => {
           <Input type="password" placeholder="******" />
         </Form.Item>
         <Form.Item
-          name="confirm"
+          name="confirmPassword"
           label="Confirm Password"
           dependencies={["password"]}
           hasFeedback

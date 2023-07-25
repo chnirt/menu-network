@@ -8,9 +8,12 @@ import {
   useState,
 } from "react";
 import { useLocalStorage } from "react-use";
-import { AuthContextType } from "./type";
+import { debounce } from "lodash";
 import { User, onAuthStateChanged } from "firebase/auth";
+import { DocumentData, DocumentReference } from "firebase/firestore";
+import { AuthContextType } from "./type";
 import { auth } from "../../firebase";
+import { getDocRef, getDocument } from "../../firebase/service";
 
 export enum AuthStatus {
   loading = "loading",
@@ -31,6 +34,10 @@ export const AuthContext = createContext<AuthContextType>({
 export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [status, setStatus] = useState<AuthStatus>(AuthStatus.loading);
+  const [userDocReference, setUserDocReference] = useState<DocumentReference<
+    DocumentData,
+    DocumentData
+  > | null>(null);
   const [accessToken, setAccessToken, removeAccessToken] =
     useLocalStorage("accessToken");
   const isLoggedIn = useMemo(() => !!user, [user]);
@@ -107,10 +114,44 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
   //   }
   // }, [user, fetchProfile]);
 
+  const fetchUser = useCallback(
+    async (fbUser: User) => {
+      try {
+        const userDocRef = getDocRef("users", fbUser.uid);
+        const userDocData: any = await getDocument(userDocRef);
+        if (userDocReference === null) {
+          setUserDocReference(userDocRef);
+        }
+        // setUser({ ...fbUser, ...userDocData })
+        setUser(userDocData);
+      } catch (error) {
+      } finally {
+        setStatus(AuthStatus.loaded);
+      }
+    },
+    [userDocReference]
+  );
+
+  const debounceFetchUser = debounce(fetchUser, 1000);
+
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setStatus(AuthStatus.loaded);
+    const unsubscribe = onAuthStateChanged(auth, (fbUser) => {
+      if (fbUser) {
+        // User is signed in, see docs for a list of available properties
+        // https://firebase.google.com/docs/reference/js/firebase.User
+        // const uid = user.uid
+        if (user === null) {
+          // console.log(fbUser)
+          debounceFetchUser(fbUser);
+        }
+        // ...
+      } else {
+        // User is signed out
+        // ...
+        setUserDocReference(null);
+        setUser(null);
+        setStatus(AuthStatus.loaded);
+      }
     });
     return unsubscribe;
   }, []);

@@ -1,23 +1,18 @@
 import { Form, Input, Button, Toast } from "antd-mobile";
 import { Fragment } from "react";
 import { useNavigate } from "react-router-dom";
-import useAuth from "../../hooks/useAuth";
+// import useAuth from "../../hooks/useAuth";
 import { routes } from "../../routes";
 import { signInWithEmailAndPasswordFirebase } from "../../firebase/service";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  // const { login } = useAuth();
 
   const onFinish = async (values: any) => {
     try {
       const { email, password } = values;
-      const userCredential = await signInWithEmailAndPasswordFirebase(
-        email,
-        password
-      );
-      console.log(userCredential);
-
+      await signInWithEmailAndPasswordFirebase(email, password);
       // logAnalyticsEvent(eventNames.login, { email })
     } catch (error: any) {
       // console.log(error.message)

@@ -5,14 +5,14 @@ import useAuth from "../../hooks/useAuth";
 import { signOutFirebase } from "../../firebase/service";
 
 const Profile = () => {
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const handleLogout = useCallback(() => {
     Dialog.confirm({
       content: "Are you sure want to log out?",
       cancelText: "Cancel",
       confirmText: "Log out",
       onConfirm: async () => {
-        signOutFirebase()
+        signOutFirebase();
         // const logoutFromAPI = async () => {
         //   const data: boolean = await new Promise((resolve) =>
         //     setTimeout(() => resolve(true), 1000)
@@ -20,7 +20,7 @@ const Profile = () => {
         //   return data;
         // };
         // logout(logoutFromAPI);
-      }
+      },
     });
   }, [logout]);
 
@@ -35,9 +35,9 @@ const Profile = () => {
               }
             />
           }
-          description="Deserunt dolor ea eaque eos"
+          description={user?.email}
         >
-          Anonymous
+          {user?.email}
         </List.Item>
         <List.Item prefix={<LeftOutline />} onClick={handleLogout}>
           Log out
