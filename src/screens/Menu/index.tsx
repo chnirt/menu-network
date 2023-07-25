@@ -131,6 +131,7 @@ const Menu = () => {
       <SectionList
         // data={data}
         data={categories}
+        myKey="title"
         onClickNewDish={(categoryId: string) =>
           navigate(routes.newDish.replace(":categoryId", categoryId))
         }
@@ -140,7 +141,16 @@ const Menu = () => {
           await deleteDoc(dataItem.ref);
           await fetchCategory();
         }}
-        myKey="title"
+        onUpdateConfirm={(
+          dataItem: QueryDocumentSnapshot<DocumentData, DocumentData>,
+          categoryId: string
+        ) =>
+          navigate(
+            routes.updateDish
+              .replace(":categoryId", categoryId)
+              .replace(":dishId", dataItem.id)
+          )
+        }
       />
       <FloatingBubble
         style={{

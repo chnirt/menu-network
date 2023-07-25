@@ -15,6 +15,7 @@ export const routes = {
   order: "/order",
   me: "/me",
   newDish: "/categories/:categoryId/new-dish",
+  updateDish: "/categories/:categoryId/dishes/:dishId",
   newCategory: "/new-category",
 };
 
@@ -82,6 +83,12 @@ export const router = createBrowserRouter([
           },
           {
             path: routes.newDish,
+            element: (
+              <Loadable {...{ factory: () => import("../screens/NewDish") }} />
+            ),
+          },
+          {
+            path: routes.updateDish,
             element: (
               <Loadable {...{ factory: () => import("../screens/NewDish") }} />
             ),

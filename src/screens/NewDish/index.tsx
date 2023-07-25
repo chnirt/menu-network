@@ -8,10 +8,17 @@ import {
   Stepper,
   Toast,
 } from "antd-mobile";
-import { Fragment, useCallback } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { DocumentData, DocumentReference } from "firebase/firestore";
 import { routes } from "../../routes";
-import { addDocument, getColRef } from "../../firebase/service";
+import {
+  addDocument,
+  getColRef,
+  getDocRef,
+  getDocument,
+  updateDocument,
+} from "../../firebase/service";
 import useAuth from "../../hooks/useAuth";
 import { MASTER_MOCK_DATA } from "../../mocks";
 import { uploadStorageBytesResumable } from "../../firebase/storage";
@@ -21,41 +28,84 @@ const initialValues = MASTER_MOCK_DATA.NEW_DISH;
 const NewDish = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  let { categoryId } = useParams();
-  const onFinish = async (values: typeof initialValues) => {
-    if (user === null || categoryId === undefined) return;
-    try {
-      const { dishName, price, dishFiles } = values;
-      const uid = user.uid;
-      const dishData = {
-        dishFiles: dishFiles.map((dishFile: any) => dishFile.url),
-        dishName,
-        price,
-      };
-      const categoryDocRef = getColRef(
+  let { categoryId, dishId } = useParams();
+  const isEditMode = Boolean(dishId);
+  const [form] = Form.useForm();
+  const [dishDocRefState, setDishDocRefState] = useState<DocumentReference<
+    DocumentData,
+    DocumentData
+  > | null>(null);
+  const onFinish = useCallback(
+    async (values: typeof initialValues) => {
+      if (user === null || categoryId === undefined) return;
+      try {
+        const { dishName, price, dishFiles } = values;
+        const uid = user.uid;
+        const dishData = {
+          dishFiles: dishFiles.map((dishFile: any) => dishFile.url),
+          dishName,
+          price,
+        };
+
+        if (isEditMode) {
+          if (dishDocRefState === null) return;
+          await updateDocument(dishDocRefState, dishData);
+        } else {
+          const categoryColRef = getColRef(
+            "users",
+            uid,
+            "categories",
+            categoryId,
+            "dishes"
+          );
+          await addDocument(categoryColRef, dishData);
+        }
+        navigate(routes.menu);
+        Toast.show({
+          icon: "success",
+          content: isEditMode ? "Dish is updated" : "Dish is created",
+        });
+
+        return;
+      } catch (error: any) {
+        Toast.show({
+          icon: "error",
+          content: error.message,
+        });
+      } finally {
+      }
+    },
+    [isEditMode, dishDocRefState]
+  );
+
+  const fetchDishById = useCallback(
+    async (dishId: string) => {
+      if (user === null || categoryId === undefined || dishId === undefined)
+        return;
+      const dishDocRef = getDocRef(
         "users",
-        uid,
+        user?.uid,
         "categories",
         categoryId,
-        "dishes"
+        "dishes",
+        dishId
       );
-      await addDocument(categoryDocRef, dishData);
-
-      navigate(routes.menu);
-      Toast.show({
-        icon: "success",
-        content: "Dish is created",
+      setDishDocRefState(dishDocRef);
+      const dishDocData: any = await getDocument(dishDocRef);
+      form.setFieldsValue({
+        ...dishDocData,
+        dishFiles: dishDocData.dishFiles.map((dishFile: string) => ({
+          url: dishFile,
+        })),
       });
+    },
+    [categoryId, dishId]
+  );
 
-      return;
-    } catch (error: any) {
-      Toast.show({
-        icon: "error",
-        content: error.message,
-      });
-    } finally {
-    }
-  };
+  useEffect(() => {
+    if (categoryId === undefined || dishId === undefined) return;
+    fetchDishById(dishId);
+  }, [user, categoryId, dishId]);
 
   return (
     <Fragment>
@@ -63,19 +113,20 @@ const NewDish = () => {
         className="sticky top-0 z-[100] bg-white"
         onBack={() => navigate(-1)}
       >
-        NEW DISH
+        {isEditMode ? "EDIT DISH" : "NEW DISH"}
       </NavBar>
       <Form
+        form={form}
         initialValues={initialValues}
         layout="horizontal"
         onFinish={onFinish}
         footer={
           <Button block type="submit" color="primary" size="large">
-            CREATE
+            {isEditMode ? "EDIT" : "CREATE"}
           </Button>
         }
       >
-        <Form.Header>New Dish</Form.Header>
+        <Form.Header>{isEditMode ? "EDIT DISH" : "NEW DISH"}</Form.Header>
         <Form.Item
           name="dishFiles"
           label="Dish Files"
@@ -109,6 +160,8 @@ const NewDish = () => {
                 );
               });
             }}
+            multiple
+            maxCount={3}
           />
         </Form.Item>
         <Form.Item
@@ -142,8 +195,8 @@ const NewDish = () => {
             }}
             min={0}
             step={1000}
-            formatter={(value) => `VND ${value}`}
-            parser={(text) => parseFloat(text.replace("VND", ""))}
+            // formatter={(value) => `VND ${value}`}
+            // parser={(text) => parseFloat(text.replace("VND", ""))}
           />
         </Form.Item>
       </Form>

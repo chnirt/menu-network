@@ -27,11 +27,13 @@ const SectionList = ({
   onClickNewDish,
   myKey,
   onDeleteConfirm,
+  onUpdateConfirm,
 }: {
   data: any[];
   onClickNewDish?: (categoryId: string) => void;
   myKey: string;
   onDeleteConfirm?: (dataItem: any) => void;
+  onUpdateConfirm?: (dataItem: any, categoryId: string) => void;
 }) => {
   const scrollRef = useRef<boolean>(true);
   const setTimerRef = useRef<number | null | undefined>(null);
@@ -63,13 +65,13 @@ const SectionList = ({
 
   const swipeActionRef = useRef<SwipeActionRef>(null);
   const handleOnAction = useCallback(
-    async (action: Action, dataItem: any) => {
+    async (action: Action, dataItem: any, categoryId: string) => {
       switch (action.key) {
-        case "edit":
+        case "update":
           {
-            await Dialog.confirm({
-              content: "Edit?",
-            });
+            typeof onUpdateConfirm === "function"
+              ? onUpdateConfirm(dataItem, categoryId)
+              : undefined;
             swipeActionRef.current?.close();
           }
           return;
@@ -77,6 +79,8 @@ const SectionList = ({
           {
             await Dialog.confirm({
               content: "Delete?",
+              cancelText: "Cancel",
+              confirmText: "Delete",
               onConfirm:
                 typeof onDeleteConfirm === "function"
                   ? () => onDeleteConfirm(dataItem)
@@ -105,7 +109,7 @@ const SectionList = ({
 
   const rightActions: Action[] = [
     {
-      key: "edit",
+      key: "update",
       text: <EditSOutline />,
       color: "warning",
     },
@@ -161,15 +165,21 @@ const SectionList = ({
             >
               <List
                 header={
-                  <ListHeader
-                    {...{
-                      title: tabItem.title,
-                      onClickNewDish:
-                        typeof onClickNewDish === "function"
-                          ? () => onClickNewDish(tabItem.id)
-                          : undefined,
-                    }}
-                  />
+                  <SwipeAction
+                    ref={swipeActionRef}
+                    rightActions={rightActions}
+                    // onAction={(action) => handleOnAction(action, dataItem)}
+                  >
+                    <ListHeader
+                      {...{
+                        title: tabItem.title,
+                        onClickNewDish:
+                          typeof onClickNewDish === "function"
+                            ? () => onClickNewDish(tabItem.id)
+                            : undefined,
+                      }}
+                    />
+                  </SwipeAction>
                 }
               >
                 {tabItem?.data?.length > 0
@@ -182,14 +192,14 @@ const SectionList = ({
                           ref={swipeActionRef}
                           rightActions={rightActions}
                           onAction={(action) =>
-                            handleOnAction(action, dataItem)
+                            handleOnAction(action, dataItem, tabItem.id)
                           }
                         >
                           <List.Item
                             prefix={
                               <Image
+                                className="rounded-3xl"
                                 src={dataItem.photo ?? ""}
-                                style={{ borderRadius: 20 }}
                                 fit="cover"
                                 width={40}
                                 height={40}
