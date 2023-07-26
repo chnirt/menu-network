@@ -108,7 +108,7 @@ export const router = createBrowserRouter([
         ],
       },
       {
-        element: <Common />,
+        element: <App />,
         children: [
           {
             path: routes.menu,
