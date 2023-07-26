@@ -32,6 +32,7 @@ const SectionList = ({
   onUpdateConfirmListItem,
   loadingComponent,
   readOnly,
+  emptyComponent,
 }: {
   data?: any[];
   onClickNewDish?: (categoryId: string) => void;
@@ -42,6 +43,7 @@ const SectionList = ({
   onUpdateConfirmListItem?: (dataItem: any, categoryId: string) => void;
   loadingComponent?: JSX.Element;
   readOnly?: boolean;
+  emptyComponent?: JSX.Element;
 }) => {
   const scrollRef = useRef<boolean>(true);
   const setTimerRef = useRef<number | null | undefined>(null);
@@ -163,6 +165,11 @@ const SectionList = ({
 
   if (tabItems === undefined) {
     if (loadingComponent) return loadingComponent;
+    return null;
+  }
+
+  if (tabItems.length === 0) {
+    if (emptyComponent) return emptyComponent;
     return null;
   }
 

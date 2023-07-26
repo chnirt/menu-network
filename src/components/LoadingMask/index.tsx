@@ -1,7 +1,8 @@
 import { forwardRef, useCallback, useImperativeHandle, useState } from "react";
 import { DotLoading, Mask } from "antd-mobile";
 
-const LoadingMask = forwardRef((props, ref) => {
+// eslint-disable-next-line react/display-name
+const LoadingMask = forwardRef((_props, ref) => {
   const [visible, setVisible] = useState<boolean>(false);
   const init = useCallback(
     () => ({

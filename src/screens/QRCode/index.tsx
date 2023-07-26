@@ -4,7 +4,7 @@ import RQRCode from "qrcode.react";
 
 const QRCode = () => {
   const navigate = useNavigate();
-  let { menuId } = useParams();
+  const { menuId } = useParams();
   return (
     <div>
       <NavBar

@@ -1,5 +1,6 @@
 import {
   Button,
+  Empty,
   FloatingBubble,
   NavBar,
   SearchBar,
@@ -38,7 +39,7 @@ import { IS_SAMPLE_QUERY } from "../../constants";
 
 const Menu = () => {
   const { user } = useAuth();
-  let { menuId } = useParams();
+  const { menuId } = useParams();
   const readOnly = user?.uid !== menuId;
   const [searchText, setSearchText] = useState("");
   const [debouncedSearchText, setDebouncedSearchText] = useState("");
@@ -225,6 +226,13 @@ const Menu = () => {
           )
         }
         readOnly={readOnly}
+        emptyComponent={
+          <Empty
+            style={{ padding: "64px 0" }}
+            imageStyle={{ width: 128 }}
+            description="暂无数据"
+          />
+        }
       />
       <FloatingBubble
         style={{

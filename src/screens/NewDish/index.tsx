@@ -28,7 +28,7 @@ const initialValues = MASTER_MOCK_DATA.NEW_DISH;
 const NewDish = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  let { categoryId, dishId } = useParams();
+  const { categoryId, dishId } = useParams();
   const isEditMode = Boolean(dishId);
   const [form] = Form.useForm();
   const [dishDocRefState, setDishDocRefState] = useState<DocumentReference<

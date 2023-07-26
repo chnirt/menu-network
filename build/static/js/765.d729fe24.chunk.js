@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkmenu_network=self.webpackChunkmenu_network||[]).push([[765],{2765:function(e,t,n){n.r(t);var i=n(2119),s=n(9651);t.default=function(){return(0,s.jsxs)("div",{children:[(0,s.jsx)(i.l2,{className:"sticky top-0 z-[100] bg-white",back:null,children:"DASHBOARD"}),(0,s.jsx)(i.iE,{className:"flex flex-col justify-center items-center",fullPage:!0,title:"Best Coming Soon",description:"We're working on something amazing, and we can't wait to share it with you. Stay tuned!"})]})}}}]);
+//# sourceMappingURL=765.d729fe24.chunk.js.map
