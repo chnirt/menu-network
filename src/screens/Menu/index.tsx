@@ -14,12 +14,16 @@ import {
   QueryDocumentSnapshot,
   deleteDoc,
   getDocs,
+  orderBy,
+  query,
+  where,
 } from "firebase/firestore";
 import SectionList, { tabHeight } from "../../components/SectionList";
 // import { SAMPLE_DATA } from "../../mocks";
 import { routes } from "../../routes";
-import { getColRef } from "../../firebase/service";
+import { getColGroupRef, getColRef } from "../../firebase/service";
 import useAuth from "../../hooks/useAuth";
+import { IS_SAMPLE_QUERY } from "../../constants";
 
 // const data = SAMPLE_DATA.reply.menu_infos.map((menu_info) => ({
 //   ...menu_info,
@@ -34,6 +38,7 @@ import useAuth from "../../hooks/useAuth";
 
 const Menu = () => {
   const { user } = useAuth();
+  const readOnly = !Boolean(user);
   const [searchText, setSearchText] = useState("");
   const [debouncedSearchText, setDebouncedSearchText] = useState("");
   const [categories, setCategories] = useState<any[] | undefined>();
@@ -46,9 +51,18 @@ const Menu = () => {
   );
   let { menuId } = useParams();
   const fetchCategory = useCallback(async () => {
-    if (user === null) return;
-    const categoryColRef = getColRef("users", user.uid, "categories");
-    const querySnapshot = await getDocs(categoryColRef);
+    let querySnapshot;
+    // NOTE: sample query
+    if (IS_SAMPLE_QUERY) {
+      if (user === null) return;
+      const categoryColRef = getColRef("users", user.uid, "categories");
+      const q = query(categoryColRef, orderBy("createdAt", "desc"));
+      querySnapshot = await getDocs(q);
+    } else {
+      const categoryColGroupRef = getColGroupRef("categories");
+      const q = query(categoryColGroupRef, where("uid", "==", menuId));
+      querySnapshot = await getDocs(q);
+    }
     const docs = querySnapshot.docs;
     const data = await Promise.all(
       docs.map(async (docSnapshot) => {
@@ -121,7 +135,7 @@ const Menu = () => {
       <NavBar
         className="sticky top-0 z-[100] bg-white"
         back={null}
-        right={right}
+        right={!readOnly ? right : null}
       >
         MENU
       </NavBar>
@@ -143,23 +157,27 @@ const Menu = () => {
             <div className="flex">
               {Array(3)
                 .fill(null)
-                .map(() => (
-                  <Skeleton.Title className="mx-3 !w-1/3" animated />
+                .map((_, i) => (
+                  <Skeleton.Title
+                    key={`sk-menu-tab-${i}`}
+                    className="mx-3 !w-1/3"
+                    animated
+                  />
                 ))}
             </div>
             <div>
               {Array(2)
                 .fill(null)
-                .map(() => (
-                  <div>
+                .map((_, ii) => (
+                  <div key={`sk-tab-content-${ii}`}>
                     <div className="flex justify-between">
                       <Skeleton.Title className="!w-1/4" animated />
                       <Skeleton.Title className="!w-1/4" animated />
                     </div>
                     {Array(3)
                       .fill(null)
-                      .map(() => (
-                        <div className="flex">
+                      .map((_, iii) => (
+                        <div key={`sk-tab-content-sub-${iii}`} className="flex">
                           <div className="flex w-full">
                             <div className="pr-3">
                               <Skeleton.Title
@@ -205,6 +223,7 @@ const Menu = () => {
               .replace(":dishId", dataItem.id)
           )
         }
+        readOnly={readOnly}
       />
       <FloatingBubble
         style={{

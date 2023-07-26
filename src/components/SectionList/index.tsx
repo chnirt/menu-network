@@ -31,6 +31,7 @@ const SectionList = ({
   onDeleteConfirmListItem,
   onUpdateConfirmListItem,
   loadingComponent,
+  readOnly,
 }: {
   data?: any[];
   onClickNewDish?: (categoryId: string) => void;
@@ -40,6 +41,7 @@ const SectionList = ({
   onDeleteConfirmListItem?: (dataItem: any) => void;
   onUpdateConfirmListItem?: (dataItem: any, categoryId: string) => void;
   loadingComponent?: JSX.Element;
+  readOnly?: boolean;
 }) => {
   const scrollRef = useRef<boolean>(true);
   const setTimerRef = useRef<number | null | undefined>(null);
@@ -211,7 +213,7 @@ const SectionList = ({
                 header={
                   <SwipeAction
                     ref={swipeActionRef}
-                    rightActions={rightActions}
+                    rightActions={!readOnly ? rightActions : undefined}
                     onAction={(action) => handleOnActionList(action, tabItem)}
                   >
                     <ListHeader
@@ -221,6 +223,7 @@ const SectionList = ({
                           typeof onClickNewDish === "function"
                             ? () => onClickNewDish(tabItem.id)
                             : undefined,
+                        readOnly,
                       }}
                     />
                   </SwipeAction>
@@ -234,7 +237,7 @@ const SectionList = ({
                       >
                         <SwipeAction
                           ref={swipeActionRef}
-                          rightActions={rightActions}
+                          rightActions={!readOnly ? rightActions : undefined}
                           onAction={(action) =>
                             handleOnActionListItem(action, dataItem, tabItem.id)
                           }

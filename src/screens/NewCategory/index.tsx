@@ -20,6 +20,7 @@ import {
 import useAuth from "../../hooks/useAuth";
 import { MASTER_MOCK_DATA } from "../../mocks";
 import { DocumentData, DocumentReference } from "firebase/firestore";
+import { Loading } from "../../global";
 
 const initialValues = MASTER_MOCK_DATA.NEW_CATEGORY;
 
@@ -36,6 +37,7 @@ const NewCategory = () => {
     async (values: typeof initialValues) => {
       if (user === null) return;
       try {
+        Loading.get().show();
         const { categoryName } = values;
         const uid = user.uid;
         const categoryData = {
@@ -50,7 +52,7 @@ const NewCategory = () => {
           await addDocument(categoryDocRef, categoryData);
         }
 
-        navigate(routes.menu);
+        navigate(-1);
         Toast.show({
           icon: "success",
           content: isEditMode ? "Category is updated" : "Category is created",
@@ -63,6 +65,7 @@ const NewCategory = () => {
           content: error.message,
         });
       } finally {
+        Loading.get().hide();
       }
     },
     [user, isEditMode, categoryDocRefState]
@@ -122,7 +125,7 @@ const NewCategory = () => {
             </Form.Item>
           </Form>
         </Tabs.Tab>
-        <Tabs.Tab title="Templates" key="templates">
+        {/* <Tabs.Tab title="Templates" key="templates">
           <Form
             initialValues={{
               template: ["coffee"],
@@ -153,7 +156,7 @@ const NewCategory = () => {
               />
             </Form.Item>
           </Form>
-        </Tabs.Tab>
+        </Tabs.Tab> */}
       </Tabs>
     </Fragment>
   );

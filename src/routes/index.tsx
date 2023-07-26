@@ -43,26 +43,6 @@ export const router = createBrowserRouter([
                 ),
               },
               {
-                path: routes.menu,
-                element: (
-                  <Loadable
-                    {...{
-                      factory: () => import("../screens/Menu"),
-                    }}
-                  />
-                ),
-              },
-              {
-                path: routes.qrCode,
-                element: (
-                  <Loadable
-                    {...{
-                      factory: () => import("../screens/QRCode"),
-                    }}
-                  />
-                ),
-              },
-              {
                 path: routes.order,
                 element: (
                   <Loadable
@@ -129,19 +109,28 @@ export const router = createBrowserRouter([
       },
       {
         element: <Common />,
-        // children: [
-        //   {
-        //     path: routes.menu,
-        //     element: (
-        //       <Loadable
-        //         {...{
-        //           factory: () => import("../screens/Menu"),
-        //           fallback: <Skeleton screens="menu" />,
-        //         }}
-        //       />
-        //     ),
-        //   },
-        // ],
+        children: [
+          {
+            path: routes.menu,
+            element: (
+              <Loadable
+                {...{
+                  factory: () => import("../screens/Menu"),
+                }}
+              />
+            ),
+          },
+          {
+            path: routes.qrCode,
+            element: (
+              <Loadable
+                {...{
+                  factory: () => import("../screens/QRCode"),
+                }}
+              />
+            ),
+          },
+        ],
       },
     ],
   },

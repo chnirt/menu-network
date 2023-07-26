@@ -22,6 +22,7 @@ import {
 import useAuth from "../../hooks/useAuth";
 import { MASTER_MOCK_DATA } from "../../mocks";
 import { uploadStorageBytesResumable } from "../../firebase/storage";
+import { Loading } from "../../global";
 
 const initialValues = MASTER_MOCK_DATA.NEW_DISH;
 
@@ -39,6 +40,7 @@ const NewDish = () => {
     async (values: typeof initialValues) => {
       if (user === null || categoryId === undefined) return;
       try {
+        Loading.get().show();
         const { dishName, price, dishFiles } = values;
         const uid = user.uid;
         const dishData = {
@@ -60,7 +62,7 @@ const NewDish = () => {
           );
           await addDocument(dishColRef, dishData);
         }
-        navigate(routes.menu);
+        navigate(-1);
         Toast.show({
           icon: "success",
           content: isEditMode ? "Dish is updated" : "Dish is created",
@@ -73,6 +75,7 @@ const NewDish = () => {
           content: error.message,
         });
       } finally {
+        Loading.get().hide();
       }
     },
     [user, isEditMode, dishDocRefState]

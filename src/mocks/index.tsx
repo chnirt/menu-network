@@ -1,25 +1,24 @@
 import { nanoid } from "nanoid";
-
-const isDevelop = !true;
+import { IS_DEVELOP } from "../constants";
 
 export const MASTER_MOCK_DATA = {
   LOGIN: {
-    email: isDevelop ? "chnirt@gmail.com" : "",
-    password: isDevelop ? "Admin@123" : "",
+    email: IS_DEVELOP ? "chnirt@gmail.com" : "",
+    password: IS_DEVELOP ? "Admin@123" : "",
   },
   REGISTER: {
-    fullName: isDevelop ? "Chnirt Chnirt" : "",
-    email: isDevelop ? "chnirt@gmail.com" : "",
-    username: isDevelop ? "chnirt" : "",
-    password: isDevelop ? "Admin@123" : "",
-    confirmPassword: isDevelop ? "Admin@123" : "",
+    fullName: IS_DEVELOP ? "Chnirt Chnirt" : "",
+    email: IS_DEVELOP ? "chnirt@gmail.com" : "",
+    username: IS_DEVELOP ? "chnirt" : "",
+    password: IS_DEVELOP ? "Admin@123" : "",
+    confirmPassword: IS_DEVELOP ? "Admin@123" : "",
   },
   NEW_CATEGORY: {
-    categoryName: isDevelop ? "Cocktail" : "",
+    categoryName: IS_DEVELOP ? "Cocktail" : "",
   },
   NEW_DISH: {
-    dishName: isDevelop ? "Phatty’S Nachos" : "",
-    price: isDevelop ? 99000 : 0,
+    dishName: IS_DEVELOP ? "Phatty’S Nachos" : "",
+    price: IS_DEVELOP ? 99000 : 0,
     dishFiles: []
   },
 };
