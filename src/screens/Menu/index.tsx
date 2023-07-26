@@ -86,7 +86,7 @@ const Menu = () => {
         };
       })
     );
-    console.log(data)
+    // console.log(data)
     setCategories(data);
   }, []);
   useEffect(() => {
