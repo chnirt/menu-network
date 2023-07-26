@@ -25,7 +25,6 @@ const Profile = () => {
       },
     });
   }, [logout]);
-
   return (
     <div>
       <List mode="card">
@@ -33,7 +32,7 @@ const Profile = () => {
           prefix={<Avatar src={user?.photoURL ?? ""} />}
           description={user?.email}
         >
-          {user?.email}
+          {user?.fullName}
         </List.Item>
         <List.Item prefix={<LeftOutline />} onClick={handleLogout}>
           Log out

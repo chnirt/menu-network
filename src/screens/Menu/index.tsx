@@ -38,7 +38,8 @@ import { IS_SAMPLE_QUERY } from "../../constants";
 
 const Menu = () => {
   const { user } = useAuth();
-  const readOnly = !Boolean(user);
+  let { menuId } = useParams();
+  const readOnly = user?.uid !== menuId;
   const [searchText, setSearchText] = useState("");
   const [debouncedSearchText, setDebouncedSearchText] = useState("");
   const [categories, setCategories] = useState<any[] | undefined>();
@@ -49,7 +50,6 @@ const Menu = () => {
     1000,
     [searchText]
   );
-  let { menuId } = useParams();
   const fetchCategory = useCallback(async () => {
     let querySnapshot;
     // NOTE: sample query
@@ -86,6 +86,7 @@ const Menu = () => {
         };
       })
     );
+    console.log(data)
     setCategories(data);
   }, []);
   useEffect(() => {

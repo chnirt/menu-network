@@ -42,6 +42,7 @@ const NewCategory = () => {
         const uid = user.uid;
         const categoryData = {
           categoryName,
+          uid,
         };
 
         if (isEditMode) {

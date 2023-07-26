@@ -2,7 +2,7 @@ import { User } from "firebase/auth";
 import { AuthStatus } from ".";
 
 export type AuthContextType = {
-  user: User | null;
+  user: (User & { fullName?: string }) | null;
   status: AuthStatus;
   isLoggedIn: boolean;
   login: (

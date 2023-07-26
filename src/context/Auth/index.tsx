@@ -33,7 +33,7 @@ export const AuthContext = createContext<AuthContextType>({
 });
 
 export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<(User & { fullName?: string }) | null>(null);
   const [status, setStatus] = useState<AuthStatus>(AuthStatus.loading);
   const [userDocReference, setUserDocReference] = useState<DocumentReference<
     DocumentData,
