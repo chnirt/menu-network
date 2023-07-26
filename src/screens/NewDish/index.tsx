@@ -11,7 +11,6 @@ import {
 import { Fragment, useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { DocumentData, DocumentReference } from "firebase/firestore";
-import { routes } from "../../routes";
 import {
   addDocument,
   getColRef,
@@ -122,11 +121,11 @@ const NewDish = () => {
         initialValues={initialValues}
         layout="horizontal"
         onFinish={onFinish}
-        footer={
-          <Button block type="submit" color="primary" size="large">
-            {isEditMode ? "EDIT" : "CREATE"}
-          </Button>
-        }
+        // footer={
+        //   <Button block type="submit" color="primary" size="large">
+        //     {isEditMode ? "EDIT" : "CREATE"}
+        //   </Button>
+        // }
       >
         <Form.Header>{isEditMode ? "Edit Dish" : "New Dish"}</Form.Header>
         <Form.Item
@@ -200,6 +199,23 @@ const NewDish = () => {
             // formatter={(value) => `VND ${value}`}
             // parser={(text) => parseFloat(text.replace("VND", ""))}
           />
+        </Form.Item>
+        <Form.Item shouldUpdate className="submit">
+          {() => (
+            <Button
+              block
+              type="submit"
+              color="primary"
+              size="large"
+              disabled={
+                !form.isFieldsTouched(true) ||
+                form.getFieldsError().filter(({ errors }) => errors.length)
+                  .length > 0
+              }
+            >
+              {isEditMode ? "EDIT" : "CREATE"}
+            </Button>
+          )}
         </Form.Item>
       </Form>
     </Fragment>

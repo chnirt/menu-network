@@ -9,7 +9,6 @@ import {
 } from "antd-mobile";
 import { Fragment, useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { routes } from "../../routes";
 import {
   addDocument,
   getColRef,
@@ -108,11 +107,21 @@ const NewCategory = () => {
             initialValues={initialValues}
             layout="horizontal"
             onFinish={onFinish}
-            footer={
-              <Button block type="submit" color="primary" size="large">
-                {isEditMode ? "EDIT" : "CREATE"}
-              </Button>
-            }
+            // footer={
+            //   <Button
+            //     block
+            //     type="submit"
+            //     color="primary"
+            //     size="large"
+            //     disabled={
+            //       !form.isFieldsTouched(true) ||
+            //       form.getFieldsError().filter(({ errors }) => errors.length)
+            //         .length > 0
+            //     }
+            //   >
+            //     {isEditMode ? "EDIT" : "CREATE"}
+            //   </Button>
+            // }
           >
             <Form.Header>
               {isEditMode ? "Edit Category" : "New Category"}
@@ -121,8 +130,27 @@ const NewCategory = () => {
               name="categoryName"
               label="Category Name"
               rules={[{ required: true, message: "Category Name is required" }]}
+              shouldUpdate
             >
               <Input autoComplete="none" placeholder="chnirt" />
+            </Form.Item>
+
+            <Form.Item shouldUpdate className="submit">
+              {() => (
+                <Button
+                  block
+                  type="submit"
+                  color="primary"
+                  size="large"
+                  disabled={
+                    !form.isFieldsTouched(true) ||
+                    form.getFieldsError().filter(({ errors }) => errors.length)
+                      .length > 0
+                  }
+                >
+                  {isEditMode ? "EDIT" : "CREATE"}
+                </Button>
+              )}
             </Form.Item>
           </Form>
         </Tabs.Tab>
