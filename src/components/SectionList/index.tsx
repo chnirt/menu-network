@@ -30,21 +30,23 @@ const SectionList = ({
   onUpdateConfirmList,
   onDeleteConfirmListItem,
   onUpdateConfirmListItem,
+  loadingComponent,
 }: {
-  data: any[];
+  data?: any[];
   onClickNewDish?: (categoryId: string) => void;
   myKey: string;
   onDeleteConfirmList?: (tabItem: any) => void;
   onUpdateConfirmList?: (categoryId: string) => void;
   onDeleteConfirmListItem?: (dataItem: any) => void;
   onUpdateConfirmListItem?: (dataItem: any, categoryId: string) => void;
+  loadingComponent?: JSX.Element;
 }) => {
   const scrollRef = useRef<boolean>(true);
   const setTimerRef = useRef<number | null | undefined>(null);
   const [activeKey, setActiveKey] = useState(tabItems?.[0]?.[myKey]);
   const { run: handleScroll } = useThrottleFn(
     () => {
-      if (!scrollRef.current) return;
+      if (!scrollRef.current || tabItems === undefined) return;
       let currentKey = tabItems?.[0]?.[myKey];
       for (const item of tabItems) {
         const element = document.getElementById(
@@ -156,6 +158,11 @@ const SectionList = ({
       color: "danger",
     },
   ];
+
+  if (tabItems === undefined) {
+    if (loadingComponent) return loadingComponent;
+    return null;
+  }
 
   return (
     <div className="relative">

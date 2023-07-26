@@ -2,7 +2,6 @@ import { createBrowserRouter } from "react-router-dom";
 import { Common, Loadable, PrivateRoute, PublicRoute } from "./utils";
 import Home from "../screens/Home";
 import App from "../screens/App";
-import Skeleton from "../components/Skeleton";
 
 export const routes = {
   login: "/login",
@@ -49,7 +48,6 @@ export const router = createBrowserRouter([
                   <Loadable
                     {...{
                       factory: () => import("../screens/Menu"),
-                      fallback: <Skeleton screens="menu" />,
                     }}
                   />
                 ),

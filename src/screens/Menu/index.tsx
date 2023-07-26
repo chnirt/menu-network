@@ -1,4 +1,10 @@
-import { Button, FloatingBubble, NavBar, SearchBar } from "antd-mobile";
+import {
+  Button,
+  FloatingBubble,
+  NavBar,
+  SearchBar,
+  Skeleton,
+} from "antd-mobile";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDebounce } from "react-use";
@@ -30,7 +36,7 @@ const Menu = () => {
   const { user } = useAuth();
   const [searchText, setSearchText] = useState("");
   const [debouncedSearchText, setDebouncedSearchText] = useState("");
-  const [categories, setCategories] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[] | undefined>();
   useDebounce(
     () => {
       setDebouncedSearchText(searchText);
@@ -78,7 +84,7 @@ const Menu = () => {
     navigate(routes.qrCode.replace(":menuId", menuId));
   }, [navigate, menuId]);
   useEffect(() => {
-    if (debouncedSearchText.length > 0) {
+    if (debouncedSearchText.length > 0 && Array.isArray(categories)) {
       const dishName = categories
         .map((dishes) => dishes.data)
         .flat()
@@ -132,6 +138,45 @@ const Menu = () => {
         // data={data}
         data={categories}
         myKey="title"
+        loadingComponent={
+          <div>
+            <div className="flex">
+              {Array(3)
+                .fill(null)
+                .map(() => (
+                  <Skeleton.Title className="mx-3 !w-1/3" animated />
+                ))}
+            </div>
+            <div>
+              {Array(2)
+                .fill(null)
+                .map(() => (
+                  <div>
+                    <div className="flex justify-between">
+                      <Skeleton.Title className="!w-1/4" animated />
+                      <Skeleton.Title className="!w-1/4" animated />
+                    </div>
+                    {Array(3)
+                      .fill(null)
+                      .map(() => (
+                        <div className="flex">
+                          <div className="flex w-full">
+                            <div className="pr-3">
+                              <Skeleton.Title
+                                className="!w-8 !h-8 !rounded-full"
+                                animated
+                              />
+                            </div>
+                            <Skeleton.Title className="!w-1/4" animated />
+                          </div>
+                          <Skeleton.Title className="!w-1/4" animated />
+                        </div>
+                      ))}
+                  </div>
+                ))}
+            </div>
+          </div>
+        }
         onClickNewDish={(categoryId: string) =>
           navigate(routes.newDish.replace(":categoryId", categoryId))
         }
