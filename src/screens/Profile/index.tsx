@@ -1,6 +1,5 @@
 import { Avatar, Dialog, Footer, List } from 'antd-mobile'
 import { useCallback } from 'react'
-import { LeftOutline } from 'antd-mobile-icons'
 import useAuth from '../../hooks/useAuth'
 import { signOutFirebase } from '../../firebase/service'
 import { Loading } from '../../global'
@@ -34,9 +33,7 @@ const Profile = () => {
                 >
                     {user?.fullName}
                 </List.Item>
-                <List.Item prefix={<LeftOutline />} onClick={handleLogout}>
-                    Log out
-                </List.Item>
+                <List.Item onClick={handleLogout}>Log out</List.Item>
                 <Footer content="@ 2004-2023 https://github.com/chnirt All rights reserved"></Footer>
             </List>
         </div>
