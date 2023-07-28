@@ -11,6 +11,7 @@ import {
 } from '../../firebase/service'
 import { MASTER_MOCK_DATA } from '../../mocks'
 import { Loading } from '../../global'
+import PasswordInput from '../../components/PasswordInput'
 
 const initialValues = MASTER_MOCK_DATA.REGISTER
 
@@ -141,7 +142,7 @@ const Register = () => {
                         },
                     ]}
                 >
-                    <Input type="password" placeholder="******" />
+                    <PasswordInput type="password" placeholder="******" />
                 </Form.Item>
                 <Form.Item
                     name="confirmPassword"
@@ -168,7 +169,7 @@ const Register = () => {
                         }),
                     ]}
                 >
-                    <Input
+                    <PasswordInput
                         type="password"
                         autoComplete="new-password"
                         placeholder="******"
