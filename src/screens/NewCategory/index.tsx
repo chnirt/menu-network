@@ -2,11 +2,11 @@ import { Button, Form, Input, NavBar, Tabs, Toast } from 'antd-mobile'
 import { Fragment, useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
-    addDocument,
-    getColRef,
-    getDocRef,
-    getDocument,
-    updateDocument,
+  addDocument,
+  getColRef,
+  getDocRef,
+  getDocument,
+  updateDocument,
 } from '../../firebase/service'
 import useAuth from '../../hooks/useAuth'
 import { MASTER_MOCK_DATA } from '../../mocks'
@@ -16,147 +16,142 @@ import { Loading } from '../../global'
 const initialValues = MASTER_MOCK_DATA.NEW_CATEGORY
 
 const NewCategory = () => {
-    const navigate = useNavigate()
-    const { user } = useAuth()
-    const { categoryId } = useParams()
-    const isEditMode = Boolean(categoryId)
-    const [form] = Form.useForm()
-    const [categoryDocRefState, setCategoryDocRefState] =
-        useState<DocumentReference<DocumentData, DocumentData> | null>(null)
+  const navigate = useNavigate()
+  const { user } = useAuth()
+  const { categoryId } = useParams()
+  const isEditMode = Boolean(categoryId)
+  const [form] = Form.useForm()
+  const [categoryDocRefState, setCategoryDocRefState] =
+    useState<DocumentReference<DocumentData, DocumentData> | null>(null)
 
-    const onFinish = useCallback(
-        async (values: typeof initialValues) => {
-            if (user === null) return
-            try {
-                Loading.get().show()
-                const { categoryName } = values
-                const uid = user.uid
-                const categoryData = {
-                    categoryName,
-                    uid,
-                }
+  const onFinish = useCallback(
+    async (values: typeof initialValues) => {
+      if (user === null) return
+      try {
+        Loading.get().show()
+        const { categoryName } = values
+        const uid = user.uid
+        const categoryData = {
+          categoryName,
+          uid,
+        }
 
-                if (isEditMode) {
-                    if (categoryDocRefState === null) return
-                    await updateDocument(categoryDocRefState, categoryData)
-                } else {
-                    const categoryDocRef = getColRef('users', uid, 'categories')
-                    await addDocument(categoryDocRef, categoryData)
-                }
+        if (isEditMode) {
+          if (categoryDocRefState === null) return
+          await updateDocument(categoryDocRefState, categoryData)
+        } else {
+          const categoryDocRef = getColRef('users', uid, 'categories')
+          await addDocument(categoryDocRef, categoryData)
+        }
 
-                navigate(-1)
-                Toast.show({
-                    icon: 'success',
-                    content: isEditMode
-                        ? 'Category is updated'
-                        : 'Category is created',
-                })
+        navigate(-1)
+        Toast.show({
+          icon: 'success',
+          content: isEditMode ? 'Category is updated' : 'Category is created',
+        })
 
-                return
-            } catch (error: any) {
-                Toast.show({
-                    icon: 'error',
-                    content: error.message,
-                })
-            } finally {
-                Loading.get().hide()
-            }
-        },
-        [user, isEditMode, categoryDocRefState]
-    )
+        return
+      } catch (error: any) {
+        Toast.show({
+          icon: 'error',
+          content: error.message,
+        })
+      } finally {
+        Loading.get().hide()
+      }
+    },
+    [user, isEditMode, categoryDocRefState]
+  )
 
-    const fetchCategoryById = useCallback(
-        async (categoryId: string) => {
-            if (user === null) return
-            const categoryDocRef = getDocRef(
-                'users',
-                user?.uid,
-                'categories',
-                categoryId
-            )
-            setCategoryDocRefState(categoryDocRef)
-            const dishDocData: any = await getDocument(categoryDocRef)
-            form.setFieldsValue(dishDocData)
-        },
-        [user, categoryId]
-    )
+  const fetchCategoryById = useCallback(
+    async (categoryId: string) => {
+      if (user === null) return
+      const categoryDocRef = getDocRef(
+        'users',
+        user?.uid,
+        'categories',
+        categoryId
+      )
+      setCategoryDocRefState(categoryDocRef)
+      const dishDocData: any = await getDocument(categoryDocRef)
+      form.setFieldsValue(dishDocData)
+    },
+    [user, categoryId]
+  )
 
-    useEffect(() => {
-        if (categoryId === undefined) return
-        fetchCategoryById(categoryId)
-    }, [categoryId, fetchCategoryById])
+  useEffect(() => {
+    if (categoryId === undefined) return
+    fetchCategoryById(categoryId)
+  }, [categoryId, fetchCategoryById])
 
-    return (
-        <Fragment>
-            <NavBar
-                className="sticky top-0 z-[100] bg-white"
-                onBack={() => navigate(-1)}
+  return (
+    <Fragment>
+      <NavBar
+        className="sticky top-0 z-[100] bg-white"
+        onBack={() => navigate(-1)}
+      >
+        {isEditMode ? 'EDIT CATEGORY' : 'NEW CATEGORY'}
+      </NavBar>
+      <Tabs>
+        <Tabs.Tab title={isEditMode ? 'Edit' : 'New'} key="new">
+          <Form
+            form={form}
+            initialValues={initialValues}
+            layout="horizontal"
+            onFinish={onFinish}
+            // footer={
+            //   <Button
+            //     block
+            //     type="submit"
+            //     color="primary"
+            //     size="large"
+            //     disabled={
+            //       !form.isFieldsTouched(true) ||
+            //       form.getFieldsError().filter(({ errors }) => errors.length)
+            //         .length > 0
+            //     }
+            //   >
+            //     {isEditMode ? "EDIT" : "CREATE"}
+            //   </Button>
+            // }
+          >
+            <Form.Header>
+              {isEditMode ? 'Edit Category' : 'New Category'}
+            </Form.Header>
+            <Form.Item
+              name="categoryName"
+              label="Category Name"
+              rules={[
+                {
+                  required: true,
+                  message: 'Category Name is required',
+                },
+              ]}
+              shouldUpdate
             >
-                {isEditMode ? 'EDIT CATEGORY' : 'NEW CATEGORY'}
-            </NavBar>
-            <Tabs>
-                <Tabs.Tab title={isEditMode ? 'Edit' : 'New'} key="new">
-                    <Form
-                        form={form}
-                        initialValues={initialValues}
-                        layout="horizontal"
-                        onFinish={onFinish}
-                        // footer={
-                        //   <Button
-                        //     block
-                        //     type="submit"
-                        //     color="primary"
-                        //     size="large"
-                        //     disabled={
-                        //       !form.isFieldsTouched(true) ||
-                        //       form.getFieldsError().filter(({ errors }) => errors.length)
-                        //         .length > 0
-                        //     }
-                        //   >
-                        //     {isEditMode ? "EDIT" : "CREATE"}
-                        //   </Button>
-                        // }
-                    >
-                        <Form.Header>
-                            {isEditMode ? 'Edit Category' : 'New Category'}
-                        </Form.Header>
-                        <Form.Item
-                            name="categoryName"
-                            label="Category Name"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: 'Category Name is required',
-                                },
-                            ]}
-                            shouldUpdate
-                        >
-                            <Input autoComplete="none" placeholder="chnirt" />
-                        </Form.Item>
+              <Input autoComplete="none" placeholder="chnirt" />
+            </Form.Item>
 
-                        <Form.Item shouldUpdate className="submit">
-                            {() => (
-                                <Button
-                                    block
-                                    type="submit"
-                                    color="primary"
-                                    size="large"
-                                    disabled={
-                                        !form.isFieldsTouched(true) ||
-                                        form
-                                            .getFieldsError()
-                                            .filter(
-                                                ({ errors }) => errors.length
-                                            ).length > 0
-                                    }
-                                >
-                                    {isEditMode ? 'EDIT' : 'CREATE'}
-                                </Button>
-                            )}
-                        </Form.Item>
-                    </Form>
-                </Tabs.Tab>
-                {/* <Tabs.Tab title="Templates" key="templates">
+            <Form.Item shouldUpdate className="submit">
+              {() => (
+                <Button
+                  block
+                  type="submit"
+                  color="primary"
+                  size="large"
+                  disabled={
+                    !form.isFieldsTouched(true) ||
+                    form.getFieldsError().filter(({ errors }) => errors.length)
+                      .length > 0
+                  }
+                >
+                  {isEditMode ? 'EDIT' : 'CREATE'}
+                </Button>
+              )}
+            </Form.Item>
+          </Form>
+        </Tabs.Tab>
+        {/* <Tabs.Tab title="Templates" key="templates">
           <Form
             initialValues={{
               template: ["coffee"],
@@ -188,9 +183,9 @@ const NewCategory = () => {
             </Form.Item>
           </Form>
         </Tabs.Tab> */}
-            </Tabs>
-        </Fragment>
-    )
+      </Tabs>
+    </Fragment>
+  )
 }
 
 export default NewCategory

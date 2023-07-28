@@ -6,6 +6,7 @@ import { routes } from '../../routes'
 import { signInWithEmailAndPasswordFirebase } from '../../firebase/service'
 import { MASTER_MOCK_DATA } from '../../mocks'
 import { Loading } from '../../global'
+import PasswordInput from '../../components/PasswordInput'
 
 const initialValues = MASTER_MOCK_DATA.LOGIN
 
@@ -80,8 +81,7 @@ const Login = () => {
                         },
                     ]}
                 >
-                    <Input
-                        type="password"
+                    <PasswordInput
                         autoComplete="current-password"
                         placeholder="******"
                     />

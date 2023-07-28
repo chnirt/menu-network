@@ -5,11 +5,12 @@ import {
   NavBar,
   SearchBar,
   Skeleton,
-} from "antd-mobile";
-import { useCallback, useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useDebounce } from "react-use";
-import { SystemQRcodeOutline } from "antd-mobile-icons";
+  Toast,
+} from 'antd-mobile'
+import { useCallback, useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useDebounce } from 'react-use'
+import { SystemQRcodeOutline } from 'antd-mobile-icons'
 import {
   DocumentData,
   QueryDocumentSnapshot,
@@ -18,13 +19,15 @@ import {
   orderBy,
   query,
   where,
-} from "firebase/firestore";
-import SectionList, { tabHeight } from "../../components/SectionList";
+} from 'firebase/firestore'
+import { Wifi } from 'lucide-react'
+import { CopyToClipboard } from 'react-copy-to-clipboard'
+import SectionList, { tabHeight } from '../../components/SectionList'
 // import { SAMPLE_DATA } from "../../mocks";
-import { routes } from "../../routes";
-import { getColGroupRef, getColRef } from "../../firebase/service";
-import useAuth from "../../hooks/useAuth";
-import { IS_SAMPLE_QUERY } from "../../constants";
+import { routes } from '../../routes'
+import { getColGroupRef, getColRef } from '../../firebase/service'
+import useAuth from '../../hooks/useAuth'
+import { IS_SAMPLE_QUERY } from '../../constants'
 
 // const data = SAMPLE_DATA.reply.menu_infos.map((menu_info) => ({
 //   ...menu_info,
@@ -38,38 +41,38 @@ import { IS_SAMPLE_QUERY } from "../../constants";
 // }));
 
 const Menu = () => {
-  const { user } = useAuth();
-  const { menuId } = useParams();
-  const readOnly = user?.uid !== menuId;
-  const [searchText, setSearchText] = useState("");
-  const [debouncedSearchText, setDebouncedSearchText] = useState("");
-  const [categories, setCategories] = useState<any[] | undefined>();
+  const { user } = useAuth()
+  const { menuId } = useParams()
+  const readOnly = user?.uid !== menuId
+  const [searchText, setSearchText] = useState('')
+  const [debouncedSearchText, setDebouncedSearchText] = useState('')
+  const [categories, setCategories] = useState<any[] | undefined>()
   useDebounce(
     () => {
-      setDebouncedSearchText(searchText);
+      setDebouncedSearchText(searchText)
     },
     1000,
     [searchText]
-  );
+  )
   const fetchCategory = useCallback(async () => {
-    let querySnapshot;
+    let querySnapshot
     // NOTE: sample query
     if (IS_SAMPLE_QUERY) {
-      if (user === null) return;
-      const categoryColRef = getColRef("users", user.uid, "categories");
-      const q = query(categoryColRef, orderBy("createdAt", "desc"));
-      querySnapshot = await getDocs(q);
+      if (user === null) return
+      const categoryColRef = getColRef('users', user.uid, 'categories')
+      const q = query(categoryColRef, orderBy('createdAt', 'desc'))
+      querySnapshot = await getDocs(q)
     } else {
-      const categoryColGroupRef = getColGroupRef("categories");
-      const q = query(categoryColGroupRef, where("uid", "==", menuId));
-      querySnapshot = await getDocs(q);
+      const categoryColGroupRef = getColGroupRef('categories')
+      const q = query(categoryColGroupRef, where('uid', '==', menuId))
+      querySnapshot = await getDocs(q)
     }
-    const docs = querySnapshot.docs;
+    const docs = querySnapshot.docs
     const data = await Promise.all(
       docs.map(async (docSnapshot) => {
         const dishesDocs = await getDocs(
-          getColRef(docSnapshot.ref.path, "dishes")
-        );
+          getColRef(docSnapshot.ref.path, 'dishes')
+        )
         return {
           // ...docSnapshot,
           id: docSnapshot.id,
@@ -84,42 +87,51 @@ const Menu = () => {
             photo: dishDoc.data().dishFiles?.[0],
             price: dishDoc.data().price,
           })),
-        };
+        }
       })
-    );
+    )
     // console.log(data)
-    setCategories(data);
-  }, []);
-  useEffect(() => {
-    fetchCategory();
-  }, []);
+    setCategories(data)
+  }, [])
 
-  const navigate = useNavigate();
-  const handleFloatingBubble = useCallback(() => {
-    if (menuId === undefined) return;
-    navigate(routes.qrCode.replace(":menuId", menuId));
-  }, [navigate, menuId]);
+  const handleShareQRCode = menuId
+    ? () => navigate(routes.qrCode.replace(':menuId', menuId))
+    : undefined
+  const wifi = user?.wifi
+  const handleCopyWifi = useCallback(() => {
+    console.log(wifi)
+    Toast.show({
+      icon: 'success',
+      content: 'Copied',
+    })
+  }, [wifi])
+
+  useEffect(() => {
+    fetchCategory()
+  }, [])
+
+  const navigate = useNavigate()
   useEffect(() => {
     if (debouncedSearchText.length > 0 && Array.isArray(categories)) {
       const dishName = categories
         .map((dishes) => dishes.data)
         .flat()
-        .find((dish) => dish.name.includes(debouncedSearchText))?.name;
+        .find((dish) => dish.name.includes(debouncedSearchText))?.name
       // console.log(dishName);
       if (dishName) {
-        const id = `anchor-dish-${dishName}`;
-        const element = document.getElementById(id);
-        if (element === null) return;
+        const id = `anchor-dish-${dishName}`
+        const element = document.getElementById(id)
+        if (element === null) return
         window.scrollTo({
           top:
             element.getBoundingClientRect().top +
             window.scrollY -
             tabHeight -
             16,
-        });
+        })
       }
     }
-  }, [debouncedSearchText, categories]);
+  }, [debouncedSearchText, categories])
 
   const right = (
     <Button
@@ -130,10 +142,10 @@ const Menu = () => {
     >
       NEW CATEGORY
     </Button>
-  );
+  )
 
   return (
-    <div>
+    <div className="pb-[132px]">
       <NavBar
         className="sticky top-0 z-[100] bg-white"
         back={null}
@@ -198,22 +210,22 @@ const Menu = () => {
           </div>
         }
         onClickNewDish={(categoryId: string) =>
-          navigate(routes.newDish.replace(":categoryId", categoryId))
+          navigate(routes.newDish.replace(':categoryId', categoryId))
         }
         onUpdateConfirmList={(categoryId: string) =>
-          navigate(routes.updateCategory.replace(":categoryId", categoryId))
+          navigate(routes.updateCategory.replace(':categoryId', categoryId))
         }
         onDeleteConfirmList={async (
           tabItem: QueryDocumentSnapshot<DocumentData, DocumentData>
         ) => {
-          await deleteDoc(tabItem.ref);
-          await fetchCategory();
+          await deleteDoc(tabItem.ref)
+          await fetchCategory()
         }}
         onDeleteConfirmListItem={async (
           dataItem: QueryDocumentSnapshot<DocumentData, DocumentData>
         ) => {
-          await deleteDoc(dataItem.ref);
-          await fetchCategory();
+          await deleteDoc(dataItem.ref)
+          await fetchCategory()
         }}
         onUpdateConfirmListItem={(
           dataItem: QueryDocumentSnapshot<DocumentData, DocumentData>,
@@ -221,14 +233,14 @@ const Menu = () => {
         ) =>
           navigate(
             routes.updateDish
-              .replace(":categoryId", categoryId)
-              .replace(":dishId", dataItem.id)
+              .replace(':categoryId', categoryId)
+              .replace(':dishId', dataItem.id)
           )
         }
         readOnly={readOnly}
         emptyComponent={
           <Empty
-            style={{ padding: "64px 0" }}
+            style={{ padding: '64px 0' }}
             imageStyle={{ width: 128 }}
             description="暂无数据"
           />
@@ -236,16 +248,34 @@ const Menu = () => {
       />
       <FloatingBubble
         style={{
-          "--initial-position-bottom": "60px",
-          "--initial-position-right": "12px",
-          "--edge-distance": "12px",
+          '--initial-position-bottom': '60px',
+          '--initial-position-right': '12px',
+          '--edge-distance': '12px',
         }}
-        onClick={handleFloatingBubble}
+        onClick={handleShareQRCode}
       >
         <SystemQRcodeOutline fontSize={16} />
       </FloatingBubble>
-    </div>
-  );
-};
 
-export default Menu;
+      {wifi ? (
+        <FloatingBubble
+          style={{
+            '--initial-position-bottom': '120px',
+            '--initial-position-right': '12px',
+            '--edge-distance': '12px',
+          }}
+        >
+          {wifi ? (
+            <CopyToClipboard text={wifi} onCopy={handleCopyWifi}>
+              <Wifi fontSize={16} />
+            </CopyToClipboard>
+          ) : (
+            <Wifi fontSize={16} />
+          )}
+        </FloatingBubble>
+      ) : null}
+    </div>
+  )
+}
+
+export default Menu
