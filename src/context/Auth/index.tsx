@@ -10,6 +10,7 @@ import {
 import { debounce } from 'lodash'
 import { User, onAuthStateChanged } from 'firebase/auth'
 import { DocumentData, DocumentReference } from 'firebase/firestore'
+import { Toast } from 'antd-mobile'
 import { AuthContextType } from './type'
 import { auth } from '../../firebase'
 import { getDocRef, getDocument } from '../../firebase/service'
@@ -48,11 +49,14 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
         if (userDocReference === null) {
           setUserDocReference(userDocRef)
         }
-        // setUser({ ...fbUser, ...userDocData })
-        console.log(userDocData)
-        setUser(userDocData)
-      } catch (error) {
-        console.log(error)
+        // console.log(userDocData)
+        setUser({ ...fbUser, ...userDocData })
+      } catch (error: any) {
+        // console.log(error)
+        Toast.show({
+          icon: 'error',
+          content: error.message,
+        })
       } finally {
         setStatus(AuthStatus.loaded)
         Loading.get().hide()

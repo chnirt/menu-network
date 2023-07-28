@@ -25,7 +25,12 @@ import { CopyToClipboard } from 'react-copy-to-clipboard'
 import SectionList, { tabHeight } from '../../components/SectionList'
 // import { SAMPLE_DATA } from "../../mocks";
 import { routes } from '../../routes'
-import { getColGroupRef, getColRef } from '../../firebase/service'
+import {
+  getColGroupRef,
+  getColRef,
+  getDocRef,
+  getDocument,
+} from '../../firebase/service'
 import useAuth from '../../hooks/useAuth'
 import { IS_SAMPLE_QUERY } from '../../constants'
 
@@ -47,6 +52,7 @@ const Menu = () => {
   const [searchText, setSearchText] = useState('')
   const [debouncedSearchText, setDebouncedSearchText] = useState('')
   const [categories, setCategories] = useState<any[] | undefined>()
+  const [wifi, setWifi] = useState<string | null>(null)
   useDebounce(
     () => {
       setDebouncedSearchText(searchText)
@@ -93,21 +99,26 @@ const Menu = () => {
     // console.log(data)
     setCategories(data)
   }, [])
+  const fetchMenu = useCallback(async () => {
+    if (menuId === undefined) return
+    const menuDocRef = getDocRef('users', menuId)
+    const menuDocData: any = await getDocument(menuDocRef)
+    setWifi(menuDocData.wifi)
+  }, [menuId])
 
   const handleShareQRCode = menuId
     ? () => navigate(routes.qrCode.replace(':menuId', menuId))
     : undefined
-  const wifi = user?.wifi
   const handleCopyWifi = useCallback(() => {
-    console.log(wifi)
     Toast.show({
       icon: 'success',
       content: 'Copied',
     })
-  }, [wifi])
+  }, [])
 
   useEffect(() => {
     fetchCategory()
+    fetchMenu()
   }, [])
 
   const navigate = useNavigate()

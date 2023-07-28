@@ -1,13 +1,79 @@
-import { Avatar, Dialog, Footer, List } from 'antd-mobile'
-import { useCallback } from 'react'
+import {
+  Avatar,
+  Dialog,
+  Footer,
+  ImageUploadItem,
+  ImageUploader,
+  List,
+} from 'antd-mobile'
+import { useCallback, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { PictureOutline } from 'antd-mobile-icons'
 import useAuth from '../../hooks/useAuth'
-import { signOutFirebase } from '../../firebase/service'
+import { signOutFirebase, updateProfileFirebase } from '../../firebase/service'
 import { Loading } from '../../global'
 import { routes } from '../../routes'
-import { useNavigate } from 'react-router-dom'
+import { uploadStorageBytesResumable } from '../../firebase/storage'
+
+const AvatarUploader = ({
+  photoURL = "",
+  onUpload,
+}: {
+  photoURL: string
+  onUpload: (downloadURL: string) => void
+}) => {
+  console.log(photoURL)
+  const handleUpload = useCallback(() => {}, [])
+  if (photoURL) {
+    return <Avatar src={photoURL} />
+  }
+  return (
+    <ImageUploader
+      upload={function (file: File): Promise<ImageUploadItem> {
+        const isJpgOrPng =
+          file.type === 'image/jpeg' || file.type === 'image/png'
+        if (!isJpgOrPng) {
+          return Promise.reject(new Error('You can only upload JPG/PNG file!'))
+        }
+        const isLt2M = file.size / 1024 / 1024 < 2
+        if (!isLt2M) {
+          return Promise.reject(new Error('Image must smaller than 2MB!'))
+        }
+
+        return new Promise((resolve, reject) => {
+          uploadStorageBytesResumable(
+            file,
+            undefined,
+            (error) => reject(error),
+            async ({ downloadURL }) => {
+              typeof onUpload === 'function' ? onUpload(downloadURL) : undefined
+              resolve({
+                url: downloadURL,
+              })
+            }
+          )
+        })
+      }}
+      maxCount={1}
+      style={{ '--cell-size': '44px' }}
+      preview={false}
+      deletable={false}
+    >
+      <span
+        className="adm-image-uploader-cell adm-image-uploader-upload-button"
+        onClick={handleUpload}
+      >
+        <span className="adm-image-uploader-upload-button-icon">
+          <PictureOutline style={{ fontSize: 32 }} />
+        </span>
+      </span>
+    </ImageUploader>
+  )
+}
 
 const Profile = () => {
   const { user } = useAuth()
+  const [photoURL, setPhotoURL] = useState(user?.photoURL ?? '')
   const navigate = useNavigate()
   const handleLogout = useCallback(() => {
     Dialog.confirm({
@@ -27,11 +93,22 @@ const Profile = () => {
       },
     })
   }, [])
+  const handleOnUpload = useCallback(async (downloadURL: string) => {
+    const result: any = await updateProfileFirebase({
+      photoURL: downloadURL,
+    })
+    if (result) {
+      setPhotoURL(downloadURL)
+    }
+  }, [])
   return (
     <div>
       <List mode="card">
         <List.Item
-          prefix={<Avatar src={user?.photoURL ?? ''} />}
+          // prefix={<Avatar src={user?.photoURL ?? ''} />}
+          prefix={
+            <AvatarUploader photoURL={photoURL} onUpload={handleOnUpload} />
+          }
           description={user?.email}
         >
           {user?.fullName}
