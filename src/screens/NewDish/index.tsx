@@ -7,106 +7,106 @@ import {
   NavBar,
   Stepper,
   Toast,
-} from "antd-mobile";
-import { Fragment, useCallback, useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { DocumentData, DocumentReference } from "firebase/firestore";
+} from 'antd-mobile'
+import { Fragment, useCallback, useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { DocumentData, DocumentReference } from 'firebase/firestore'
 import {
   addDocument,
   getColRef,
   getDocRef,
   getDocument,
   updateDocument,
-} from "../../firebase/service";
-import useAuth from "../../hooks/useAuth";
-import { MASTER_MOCK_DATA } from "../../mocks";
-import { uploadStorageBytesResumable } from "../../firebase/storage";
-import { Loading } from "../../global";
+} from '../../firebase/service'
+import useAuth from '../../hooks/useAuth'
+import { MASTER_MOCK_DATA } from '../../mocks'
+import { uploadStorageBytesResumable } from '../../firebase/storage'
+import { Loading } from '../../global'
 
-const initialValues = MASTER_MOCK_DATA.NEW_DISH;
+const initialValues = MASTER_MOCK_DATA.NEW_DISH
 
 const NewDish = () => {
-  const { user } = useAuth();
-  const navigate = useNavigate();
-  const { categoryId, dishId } = useParams();
-  const isEditMode = Boolean(dishId);
-  const [form] = Form.useForm();
+  const { user } = useAuth()
+  const navigate = useNavigate()
+  const { categoryId, dishId } = useParams()
+  const isEditMode = Boolean(dishId)
+  const [form] = Form.useForm()
   const [dishDocRefState, setDishDocRefState] = useState<DocumentReference<
     DocumentData,
     DocumentData
-  > | null>(null);
+  > | null>(null)
   const onFinish = useCallback(
     async (values: typeof initialValues) => {
-      if (user === null || categoryId === undefined) return;
+      if (user === null || categoryId === undefined) return
       try {
-        Loading.get().show();
-        const { dishName, price, dishFiles } = values;
-        const uid = user.uid;
+        Loading.get().show()
+        const { dishName, price, dishFiles } = values
+        const uid = user.uid
         const dishData = {
           dishFiles: dishFiles.map((dishFile: any) => dishFile.url),
           dishName,
           price,
-        };
+        }
 
         if (isEditMode) {
-          if (dishDocRefState === null) return;
-          await updateDocument(dishDocRefState, dishData);
+          if (dishDocRefState === null) return
+          await updateDocument(dishDocRefState, dishData)
         } else {
           const dishColRef = getColRef(
-            "users",
+            'users',
             uid,
-            "categories",
+            'categories',
             categoryId,
-            "dishes"
-          );
-          await addDocument(dishColRef, dishData);
+            'dishes'
+          )
+          await addDocument(dishColRef, dishData)
         }
-        navigate(-1);
+        navigate(-1)
         Toast.show({
-          icon: "success",
-          content: isEditMode ? "Dish is updated" : "Dish is created",
-        });
+          icon: 'success',
+          content: isEditMode ? 'Dish is updated' : 'Dish is created',
+        })
 
-        return;
+        return
       } catch (error: any) {
         Toast.show({
-          icon: "error",
+          icon: 'error',
           content: error.message,
-        });
+        })
       } finally {
-        Loading.get().hide();
+        Loading.get().hide()
       }
     },
     [user, isEditMode, dishDocRefState]
-  );
+  )
 
   const fetchDishById = useCallback(
     async (dishId: string) => {
-      if (user === null || categoryId === undefined) return;
+      if (user === null || categoryId === undefined) return
       const dishDocRef = getDocRef(
-        "users",
+        'users',
         user?.uid,
-        "categories",
+        'categories',
         categoryId,
-        "dishes",
+        'dishes',
         dishId
-      );
-      setDishDocRefState(dishDocRef);
-      const dishDocData: any = await getDocument(dishDocRef);
+      )
+      setDishDocRefState(dishDocRef)
+      const dishDocData: any = await getDocument(dishDocRef)
       form.setFieldsValue({
         ...dishDocData,
         dishFiles: dishDocData.dishFiles.map((dishFile: string) => ({
           url: dishFile,
         })),
-      });
+      })
     },
     [user, categoryId, form]
-  );
+  )
 
   useEffect(() => {
-    if (categoryId === undefined || dishId === undefined) return;
-    fetchDishById(dishId);
-  }, [categoryId, dishId, fetchDishById]);
+    if (categoryId === undefined || dishId === undefined) return
+    fetchDishById(dishId)
+  }, [categoryId, dishId, fetchDishById])
 
   return (
     <Fragment>
@@ -114,7 +114,7 @@ const NewDish = () => {
         className="sticky top-0 z-[100] bg-white"
         onBack={() => navigate(-1)}
       >
-        {isEditMode ? "EDIT DISH" : "NEW DISH"}
+        {isEditMode ? 'EDIT DISH' : 'NEW DISH'}
       </NavBar>
       <Form
         form={form}
@@ -127,26 +127,24 @@ const NewDish = () => {
         //   </Button>
         // }
       >
-        <Form.Header>{isEditMode ? "Edit Dish" : "New Dish"}</Form.Header>
+        <Form.Header>{isEditMode ? 'Edit Dish' : 'New Dish'}</Form.Header>
         <Form.Item
           name="dishFiles"
           label="Dish Files"
-          rules={[{ required: true, message: "Dish Files is required" }]}
+          rules={[{ required: true, message: 'Dish Files is required' }]}
         >
           <ImageUploader
             upload={function (file: File): Promise<ImageUploadItem> {
               const isJpgOrPng =
-                file.type === "image/jpeg" || file.type === "image/png";
+                file.type === 'image/jpeg' || file.type === 'image/png'
               if (!isJpgOrPng) {
                 return Promise.reject(
-                  new Error("You can only upload JPG/PNG file!")
-                );
+                  new Error('You can only upload JPG/PNG file!')
+                )
               }
-              const isLt2M = file.size / 1024 / 1024 < 2;
+              const isLt2M = file.size / 1024 / 1024 < 2
               if (!isLt2M) {
-                return Promise.reject(
-                  new Error("Image must smaller than 2MB!")
-                );
+                return Promise.reject(new Error('Image must smaller than 2MB!'))
               }
 
               return new Promise((resolve, reject) => {
@@ -158,8 +156,8 @@ const NewDish = () => {
                     resolve({
                       url: downloadURL,
                     })
-                );
-              });
+                )
+              })
             }}
             multiple
             maxCount={3}
@@ -168,7 +166,7 @@ const NewDish = () => {
         <Form.Item
           name="dishName"
           label="Dish Name"
-          rules={[{ required: true, message: "Dish Name is required" }]}
+          rules={[{ required: true, message: 'Dish Name is required' }]}
         >
           <Input placeholder="Phatty’S Nachos" />
         </Form.Item>
@@ -176,23 +174,23 @@ const NewDish = () => {
           name="price"
           label="Price"
           rules={[
-            { required: true, message: "Price is required" },
+            { required: true, message: 'Price is required' },
             {
-              type: "number",
+              type: 'number',
               min: 1,
-              message: "Invalid Price",
+              message: 'Invalid Price',
             },
           ]}
         >
           <Stepper
             style={{
-              width: "100%",
-              "--border": "1px solid #f5f5f5",
-              "--border-inner": "none",
-              "--height": "36px",
-              "--input-width": "70px",
-              "--input-background-color": "var(--adm-color-background)",
-              "--active-border": "1px solid #1677ff",
+              width: '100%',
+              '--border': '1px solid #f5f5f5',
+              '--border-inner': 'none',
+              '--height': '36px',
+              '--input-width': '70px',
+              '--input-background-color': 'var(--adm-color-background)',
+              '--active-border': '1px solid #1677ff',
             }}
             min={0}
             step={1000}
@@ -213,16 +211,16 @@ const NewDish = () => {
                   .length > 0
               }
             >
-              {isEditMode ? "EDIT" : "CREATE"}
+              {isEditMode ? 'EDIT' : 'CREATE'}
             </Button>
           )}
         </Form.Item>
       </Form>
     </Fragment>
-  );
-};
+  )
+}
 
-export default NewDish;
+export default NewDish
 
 // import {
 //   Button,
