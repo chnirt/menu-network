@@ -2,8 +2,8 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { RouterProvider } from 'react-router-dom'
 import {
-    ConfigProvider,
-    // WaterMark
+  ConfigProvider,
+  // WaterMark
 } from 'antd-mobile'
 import enUS from 'antd-mobile/es/locales/en-US'
 import { router } from './routes'
@@ -33,17 +33,17 @@ const root = ReactDOM.createRoot(rootElement)
 // setTimeout(removeWatermark, 1000);
 
 root.render(
-    <React.StrictMode>
-        <AuthProvider>
-            <ConfigProvider locale={enUS}>
-                <RouterProvider router={router} />
-            </ConfigProvider>
-        </AuthProvider>
-        {/* <WaterMark
+  <React.StrictMode>
+    <AuthProvider>
+      <ConfigProvider locale={enUS}>
+        <RouterProvider router={router} />
+      </ConfigProvider>
+    </AuthProvider>
+    {/* <WaterMark
       {...{
         content: "Chnirt",
       }}
     /> */}
-        <LoadingMask ref={Loading.set} />
-    </React.StrictMode>
+    <LoadingMask ref={Loading.set} />
+  </React.StrictMode>
 )

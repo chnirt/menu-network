@@ -258,8 +258,11 @@ const Menu = () => {
         }
       />
       <FloatingBubble
+        axis="x"
+        magnetic="x"
         style={{
-          '--initial-position-bottom': '60px',
+          '--initial-position-bottom':
+            'calc(60px + env(safe-area-inset-bottom))',
           '--initial-position-right': '12px',
           '--edge-distance': '12px',
         }}
@@ -270,8 +273,11 @@ const Menu = () => {
 
       {wifi ? (
         <FloatingBubble
+          axis="x"
+          magnetic="x"
           style={{
-            '--initial-position-bottom': '120px',
+            '--initial-position-bottom':
+              'calc(120px + env(safe-area-inset-bottom))',
             '--initial-position-right': '12px',
             '--edge-distance': '12px',
           }}

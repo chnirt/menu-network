@@ -1,16 +1,16 @@
-import { useEffect } from "react";
-import { Outlet } from "react-router-dom";
-import useAuth from "../../hooks/useAuth";
+import { useEffect } from 'react'
+import { Outlet } from 'react-router-dom'
+import useAuth from '../../hooks/useAuth'
 
 const Home = () => {
-  const auth = useAuth();
+  const auth = useAuth()
   useEffect(() => {
     document.documentElement.style.setProperty(
-      "--vh",
-      window.innerHeight * 0.01 + "px"
-    );
-  }, []);
-  return <Outlet context={auth} />;
-};
+      '--vh',
+      window.innerHeight * 0.01 + 'px'
+    )
+  }, [])
+  return <Outlet context={auth} />
+}
 
-export default Home;
+export default Home

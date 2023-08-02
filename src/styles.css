@@ -1,3 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    height: -webkit-fill-available;
+  }
+
+  body {
+    min-height: -webkit-fill-available;
+  }
+
+  /* If using React, set height on the root div as well */
+  #root {
+    height: -webkit-fill-available;
+  }
+}
+
 .App {
   font-family: sans-serif;
   text-align: center;
@@ -22,4 +41,16 @@
 .h-screen {
   height: 100vh; /* Fallback for browsers that do not support Custom Properties */
   height: calc(var(--vh, 1vh) * 100);
+}
+
+*,
+::before,
+::after {
+  border-width: 0;
+  border-style: solid;
+  border-color: theme('borderColor.DEFAULT', currentColor);
+}
+
+.google-map * {
+  border-style: none;
 }

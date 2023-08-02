@@ -44,7 +44,7 @@ const BottomTabBar: FC = () => {
 
   return (
     <TabBar
-      className="bg-white"
+      className="bg-white pb-safe"
       activeKey={pathname}
       onChange={(value) => {
         setRouteActive(value);
