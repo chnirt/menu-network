@@ -11,7 +11,7 @@ import { debounce } from 'lodash'
 import { User, onAuthStateChanged } from 'firebase/auth'
 import { DocumentData, DocumentReference } from 'firebase/firestore'
 import { Toast } from 'antd-mobile'
-import { AuthContextType } from './type'
+import { AuthContextType, IUser } from './type'
 import { auth } from '../../firebase'
 import { getDocRef, getDocument } from '../../firebase/service'
 import { Loading } from '../../global'
@@ -28,12 +28,13 @@ export const AuthContext = createContext<AuthContextType>({
   setStatus: () => {
     return
   },
+  fetchUser: async () => {
+    return
+  },
 })
 
 export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
-  const [user, setUser] = useState<
-    (User & { fullName?: string; wifi?: string }) | null
-  >(null)
+  const [user, setUser] = useState<IUser | null>(null)
   const [status, setStatus] = useState<AuthStatus>(AuthStatus.loading)
   const [userDocReference, setUserDocReference] = useState<DocumentReference<
     DocumentData,
@@ -97,6 +98,7 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
         status,
         isLoggedIn,
         setStatus,
+        fetchUser,
       }}
     >
       {children}

@@ -1,12 +1,11 @@
-import { ILoading } from './type'
+import { ILoading, ILoadingInput } from './type'
 
 export const Loading: ILoading = {
   get: {
     show: () => {},
     hide: () => {},
   },
-  set: (loadingInput: unknown) => {
-    if (loadingInput === undefined) return
+  set: (loadingInput: ILoadingInput) => {
     Loading.get = loadingInput
   },
 }

@@ -24,6 +24,7 @@ export const MASTER_MOCK_DATA = {
   },
   SETTINGS: {
     wifi: IS_DEVELOP ? '12345678' : '',
+    currency: IS_DEVELOP ? 'vnd' : '',
   },
 }
 

@@ -1,4 +1,4 @@
-import { Button, Form, Input, NavBar, Toast } from 'antd-mobile'
+import { Button, Form, Input, NavBar, Radio, Space, Toast } from 'antd-mobile'
 import { useNavigate } from 'react-router-dom'
 import { MASTER_MOCK_DATA } from '../../mocks'
 import { Loading } from '../../global'
@@ -10,7 +10,7 @@ const initialValues = MASTER_MOCK_DATA.SETTINGS
 
 const Settings = () => {
   const navigate = useNavigate()
-  const { user } = useAuth()
+  const { user, fetchUser } = useAuth()
   const [form] = Form.useForm()
 
   const onFinish = useCallback(
@@ -18,14 +18,15 @@ const Settings = () => {
       if (user === null) return
       try {
         Loading.get.show()
-        const { wifi } = values
+        const { wifi, currency } = values
         const uid = user.uid
         const settingsData = {
           wifi,
+          currency,
         }
         const settingsDocRef = getDocRef('users', uid)
         await updateDocument(settingsDocRef, settingsData)
-
+        await fetchUser(user)
         navigate(-1)
         Toast.show({
           icon: 'success',
@@ -46,7 +47,7 @@ const Settings = () => {
   )
 
   useEffect(() => {
-    form.setFieldsValue({ wifi: user?.wifi })
+    form.setFieldsValue({ wifi: user?.wifi, currency: user?.currency })
   }, [user])
 
   return (
@@ -93,6 +94,24 @@ const Settings = () => {
           <Input autoComplete="none" placeholder="xxxxxxxx" />
         </Form.Item>
 
+        <Form.Item
+          name="currency"
+          label="Currency"
+          rules={[
+            {
+              required: true,
+              message: 'Currency is required',
+            },
+          ]}
+        >
+          <Radio.Group>
+            <Space>
+              <Radio value="vnd">VND</Radio>
+              <Radio value="usd">USD</Radio>
+            </Space>
+          </Radio.Group>
+        </Form.Item>
+
         <Form.Item shouldUpdate className="submit" noStyle>
           {() => (
             <Button
@@ -101,8 +120,12 @@ const Settings = () => {
               color="primary"
               size="large"
               shape="rounded"
+              // disabled={
+              //   !form.isFieldsTouched(true) ||
+              //   form.getFieldsError().filter(({ errors }) => errors.length)
+              //     .length > 0
+              // }
               disabled={
-                !form.isFieldsTouched(true) ||
                 form.getFieldsError().filter(({ errors }) => errors.length)
                   .length > 0
               }

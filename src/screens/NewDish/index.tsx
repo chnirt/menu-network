@@ -13,6 +13,7 @@ import {
 import { Fragment, useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { DocumentData, DocumentReference } from 'firebase/firestore'
+import { AddCircleOutline } from 'antd-mobile-icons'
 import {
   addDocument,
   getColRef,
@@ -24,8 +25,6 @@ import useAuth from '../../hooks/useAuth'
 import { MASTER_MOCK_DATA } from '../../mocks'
 import { uploadStorageBytesResumable } from '../../firebase/storage'
 import { Loading } from '../../global'
-import { AddCircleOutline } from 'antd-mobile-icons'
-import { routes } from '../../routes'
 
 const initialValues = MASTER_MOCK_DATA.NEW_DISH
 
@@ -235,16 +234,6 @@ const NewDish = () => {
               message: 'Invalid Price',
             },
           ]}
-          extra={
-            <Button
-              color="primary"
-              fill="none"
-              shape="rounded"
-              onClick={() => navigate(routes.me)}
-            >
-              Currency
-            </Button>
-          }
         >
           <Stepper
             style={{
@@ -254,7 +243,7 @@ const NewDish = () => {
               '--height': '36px',
               '--input-width': '70px',
               '--input-background-color': 'var(--adm-color-background)',
-              '--active-border': '1px solid #1677ff',
+              '--active-border': '1px solid var(--adm-color-primary)',
             }}
             min={0}
             step={1000}

@@ -32,10 +32,30 @@ const Menu = () => {
   const { categories, fetchCategory, refetchCategory } = useMenu()
   const [searchText, setSearchText] = useState('')
   const [debouncedSearchText, setDebouncedSearchText] = useState('')
+  const [wifi, setWifi] = useState<string | null>(null)
+  const [currency, setCurrency] = useState<string | null>(null)
+  const formatCategories = categories?.map((category) => ({
+    ...category,
+    data: category.data.map((item: any) => ({
+      ...item,
+      price:
+        currency === 'vnd'
+          ? Number(item.price).toLocaleString('vi-VN', {
+              style: 'currency',
+              currency: 'VND',
+            })
+          : currency === 'usd'
+          ? Number(item.price).toLocaleString('en-US', {
+              style: 'currency',
+              currency: 'USD',
+            })
+          : item.price,
+    })),
+  }))
   const filterCategories = useMemo(() => {
-    if (categories === undefined) return undefined
-    if (debouncedSearchText.length === 0) return categories
-    const foundDish = categories
+    if (formatCategories === undefined) return undefined
+    if (debouncedSearchText.length === 0) return formatCategories
+    const foundDish = formatCategories
       .map((dishes) => dishes.data)
       .flat()
       .find((dish) =>
@@ -44,7 +64,7 @@ const Menu = () => {
           .includes(String(debouncedSearchText).toLowerCase())
       )
     if (foundDish) {
-      const foundCategory = categories.find(
+      const foundCategory = formatCategories.find(
         (category) => category.id === foundDish.parentId
       )
       const filter = [{ ...foundCategory, data: [foundDish] }]
@@ -52,8 +72,8 @@ const Menu = () => {
     } else {
       return []
     }
-  }, [categories, debouncedSearchText])
-  const [wifi, setWifi] = useState<string | null>(null)
+  }, [formatCategories, debouncedSearchText])
+
   useDebounce(
     () => {
       setDebouncedSearchText(searchText)
@@ -67,6 +87,7 @@ const Menu = () => {
     const menuDocRef = getDocRef('users', menuId)
     const menuDocData: any = await getDocument(menuDocRef)
     setWifi(menuDocData.wifi)
+    setCurrency(menuDocData.currency)
   }, [])
 
   const handleShareQRCode = menuId
