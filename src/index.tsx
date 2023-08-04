@@ -11,6 +11,7 @@ import { AuthProvider } from './context/Auth'
 import './styles.css'
 import LoadingMask from './components/LoadingMask'
 import { Loading } from './global'
+import { MenuProvider } from './context/Menu'
 
 const rootElement = document.getElementById('root')!
 const root = ReactDOM.createRoot(rootElement)
@@ -35,9 +36,11 @@ const root = ReactDOM.createRoot(rootElement)
 root.render(
   <React.StrictMode>
     <AuthProvider>
-      <ConfigProvider locale={enUS}>
-        <RouterProvider router={router} />
-      </ConfigProvider>
+      <MenuProvider>
+        <ConfigProvider locale={enUS}>
+          <RouterProvider router={router} />
+        </ConfigProvider>
+      </MenuProvider>
     </AuthProvider>
     {/* <WaterMark
       {...{

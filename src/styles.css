@@ -1,4 +1,4 @@
-@tailwind base;
+/* @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -11,11 +11,10 @@
     min-height: -webkit-fill-available;
   }
 
-  /* If using React, set height on the root div as well */
   #root {
     height: -webkit-fill-available;
   }
-}
+} */
 
 .App {
   font-family: sans-serif;

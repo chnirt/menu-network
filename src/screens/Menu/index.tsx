@@ -7,7 +7,7 @@ import {
   Skeleton,
   Toast,
 } from 'antd-mobile'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useDebounce } from 'react-use'
 import { SystemQRcodeOutline } from 'antd-mobile-icons'
@@ -15,24 +15,15 @@ import {
   DocumentData,
   QueryDocumentSnapshot,
   deleteDoc,
-  getDocs,
-  orderBy,
-  query,
-  where,
 } from 'firebase/firestore'
 import { Wifi } from 'lucide-react'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import SectionList, { tabHeight } from '../../components/SectionList'
 // import { SAMPLE_DATA } from "../../mocks";
 import { routes } from '../../routes'
-import {
-  getColGroupRef,
-  getColRef,
-  getDocRef,
-  getDocument,
-} from '../../firebase/service'
+import { getDocRef, getDocument } from '../../firebase/service'
 import useAuth from '../../hooks/useAuth'
-import { IS_SAMPLE_QUERY } from '../../constants'
+import useMenu from '../../hooks/useMenu'
 
 // const data = SAMPLE_DATA.reply.menu_infos.map((menu_info) => ({
 //   ...menu_info,
@@ -49,62 +40,41 @@ const Menu = () => {
   const { user } = useAuth()
   const { menuId } = useParams()
   const readOnly = user?.uid !== menuId
+  const { categories, fetchCategory } = useMenu()
   const [searchText, setSearchText] = useState('')
   const [debouncedSearchText, setDebouncedSearchText] = useState('')
-  const [categories, setCategories] = useState<any[] | undefined>()
+  const filterCategories = useMemo(() => {
+    if (categories === undefined) return []
+    if (debouncedSearchText.length === 0) return categories
+    const foundDish = categories
+      .map((dishes) => dishes.data)
+      .flat()
+      .find((dish) => dish.name.includes(debouncedSearchText))
+    if (foundDish) {
+      const foundCategory = categories.find(
+        (category) => category.id === foundDish.parentId
+      )
+      const filter = [{ ...foundCategory, data: [foundDish] }]
+      return filter
+    } else {
+      return []
+    }
+  }, [categories, debouncedSearchText])
   const [wifi, setWifi] = useState<string | null>(null)
   useDebounce(
     () => {
       setDebouncedSearchText(searchText)
     },
-    1000,
+    500,
     [searchText]
   )
-  const fetchCategory = useCallback(async () => {
-    let querySnapshot
-    // NOTE: sample query
-    if (IS_SAMPLE_QUERY) {
-      if (user === null) return
-      const categoryColRef = getColRef('users', user.uid, 'categories')
-      const q = query(categoryColRef, orderBy('createdAt', 'desc'))
-      querySnapshot = await getDocs(q)
-    } else {
-      const categoryColGroupRef = getColGroupRef('categories')
-      const q = query(categoryColGroupRef, where('uid', '==', menuId))
-      querySnapshot = await getDocs(q)
-    }
-    const docs = querySnapshot.docs
-    const data = await Promise.all(
-      docs.map(async (docSnapshot) => {
-        const dishesDocs = await getDocs(
-          getColRef(docSnapshot.ref.path, 'dishes')
-        )
-        return {
-          // ...docSnapshot,
-          id: docSnapshot.id,
-          ...docSnapshot.data(),
-          ref: docSnapshot.ref,
-          title: docSnapshot.data().categoryName,
-          data: dishesDocs.docs.map((dishDoc) => ({
-            id: dishDoc.id,
-            ...dishDoc.data(),
-            ref: dishDoc.ref,
-            name: dishDoc.data().dishName,
-            photo: dishDoc.data().dishFiles?.[0],
-            price: dishDoc.data().price,
-          })),
-        }
-      })
-    )
-    // console.log(data)
-    setCategories(data)
-  }, [])
-  const fetchMenu = useCallback(async () => {
+
+  const fetchMenu = useCallback(async (menuId: string) => {
     if (menuId === undefined) return
     const menuDocRef = getDocRef('users', menuId)
     const menuDocData: any = await getDocument(menuDocRef)
     setWifi(menuDocData.wifi)
-  }, [menuId])
+  }, [])
 
   const handleShareQRCode = menuId
     ? () => navigate(routes.qrCode.replace(':menuId', menuId))
@@ -117,29 +87,36 @@ const Menu = () => {
   }, [])
 
   useEffect(() => {
-    fetchCategory()
-    fetchMenu()
-  }, [])
+    if (menuId && typeof fetchCategory === 'function') {
+      fetchCategory(menuId)
+    }
+    if (menuId) {
+      fetchMenu(menuId)
+    }
+  }, [menuId])
 
   const navigate = useNavigate()
   useEffect(() => {
     if (debouncedSearchText.length > 0 && Array.isArray(categories)) {
-      const dishName = categories
-        .map((dishes) => dishes.data)
-        .flat()
-        .find((dish) => dish.name.includes(debouncedSearchText))?.name
-      // console.log(dishName);
-      if (dishName) {
-        const id = `anchor-dish-${dishName}`
-        const element = document.getElementById(id)
-        if (element === null) return
-        window.scrollTo({
-          top:
-            element.getBoundingClientRect().top +
-            window.scrollY -
-            tabHeight -
-            16,
-        })
+      const isScroll = !true
+      if (isScroll) {
+        const dishName = categories
+          .map((dishes) => dishes.data)
+          .flat()
+          .find((dish) => dish.name.includes(debouncedSearchText))?.name
+        // console.log(dishName);
+        if (dishName) {
+          const id = `anchor-dish-${dishName}`
+          const element = document.getElementById(id)
+          if (element === null) return
+          window.scrollTo({
+            top:
+              element.getBoundingClientRect().top +
+              window.scrollY -
+              tabHeight -
+              16,
+          })
+        }
       }
     }
   }, [debouncedSearchText, categories])
@@ -175,7 +152,7 @@ const Menu = () => {
       </div>
       <SectionList
         // data={data}
-        data={categories}
+        data={filterCategories}
         myKey="title"
         loadingComponent={
           <div>
@@ -230,13 +207,17 @@ const Menu = () => {
           tabItem: QueryDocumentSnapshot<DocumentData, DocumentData>
         ) => {
           await deleteDoc(tabItem.ref)
-          await fetchCategory()
+          if (menuId && typeof fetchCategory === 'function') {
+            fetchCategory(menuId)
+          }
         }}
         onDeleteConfirmListItem={async (
           dataItem: QueryDocumentSnapshot<DocumentData, DocumentData>
         ) => {
           await deleteDoc(dataItem.ref)
-          await fetchCategory()
+          if (menuId && typeof fetchCategory === 'function') {
+            fetchCategory(menuId)
+          }
         }}
         onUpdateConfirmListItem={(
           dataItem: QueryDocumentSnapshot<DocumentData, DocumentData>,

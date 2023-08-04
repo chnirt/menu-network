@@ -49,6 +49,22 @@
     <meta name="msapplication-TileColor" content="#da532c" />
     <meta name="theme-color" content="#ffffff" />
 
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              clifford: '#da373d',
+            },
+          },
+        },
+        corePlugins: {
+          preflight: false,
+        },
+        plugins: [require('tailwindcss-safe-area')],
+      }
+    </script>
     <title>Menu Network App</title>
   </head>
 
