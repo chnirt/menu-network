@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   // Button,
   Dialog,
@@ -7,20 +7,20 @@ import {
   SwipeAction,
   SwipeActionRef,
   Tabs,
-} from "antd-mobile";
-import { useThrottleFn } from "ahooks";
-import { EditSOutline, DeleteOutline } from "antd-mobile-icons";
-import { Action } from "antd-mobile/es/components/swipe-action";
+} from 'antd-mobile'
+import { useThrottleFn } from 'ahooks'
+import { EditSOutline, DeleteOutline } from 'antd-mobile-icons'
+import { Action } from 'antd-mobile/es/components/swipe-action'
 // import HorizontalSection from "../HorizontalSection";
 // import VerticalSection from "../VerticalSection";
-import ListHeader from "../ListHeader";
+import ListHeader from '../ListHeader'
 
-const tabContainer = 42;
-const tabLine = 2;
-const navBarHeight = 45;
-const searchHeight = 32;
-const top = navBarHeight + searchHeight;
-export const tabHeight = tabContainer + tabLine + top;
+const tabContainer = 42
+const tabLine = 2
+const navBarHeight = 45
+const searchHeight = 32
+const top = navBarHeight + searchHeight
+export const tabHeight = tabContainer + tabLine + top
 
 const SectionList = ({
   data: tabItems,
@@ -34,174 +34,179 @@ const SectionList = ({
   readOnly,
   emptyComponent,
 }: {
-  data?: any[];
-  onClickNewDish?: (categoryId: string) => void;
-  myKey: string;
-  onDeleteConfirmList?: (tabItem: any) => void;
-  onUpdateConfirmList?: (categoryId: string) => void;
-  onDeleteConfirmListItem?: (dataItem: any) => void;
-  onUpdateConfirmListItem?: (dataItem: any, categoryId: string) => void;
-  loadingComponent?: JSX.Element;
-  readOnly?: boolean;
-  emptyComponent?: JSX.Element;
+  data?: any[]
+  onClickNewDish?: (categoryId: string) => void
+  myKey: string
+  onDeleteConfirmList?: (tabItem: any) => void
+  onUpdateConfirmList?: (categoryId: string) => void
+  onDeleteConfirmListItem?: (dataItem: any) => void
+  onUpdateConfirmListItem?: (dataItem: any, categoryId: string) => void
+  loadingComponent?: JSX.Element
+  readOnly?: boolean
+  emptyComponent?: JSX.Element
 }) => {
-  const scrollRef = useRef<boolean>(true);
-  const setTimerRef = useRef<number | null | undefined>(null);
-  const [activeKey, setActiveKey] = useState(tabItems?.[0]?.[myKey]);
+  const scrollRef = useRef<boolean>(true)
+  const setTimerRef = useRef<number | null | undefined>(null)
+  const [activeKey, setActiveKey] = useState(tabItems?.[0]?.[myKey])
   const { run: handleScroll } = useThrottleFn(
     () => {
-      if (!scrollRef.current || tabItems === undefined) return;
-      let currentKey = tabItems?.[0]?.[myKey];
+      if (!scrollRef.current || tabItems === undefined) return
+      let currentKey = tabItems?.[0]?.[myKey]
       for (const item of tabItems) {
         const element = document.getElementById(
           `anchor-category-${item[myKey]}`
-        );
-        if (!element) continue;
-        const rect = element.getBoundingClientRect();
+        )
+        if (!element) continue
+        const rect = element.getBoundingClientRect()
         if (Math.floor(rect.top) <= tabHeight + 5) {
-          currentKey = item[myKey];
+          currentKey = item[myKey]
         } else {
-          break;
+          break
         }
       }
-      setActiveKey(currentKey);
+      setActiveKey(currentKey)
     },
     {
       leading: true,
       trailing: true,
       wait: 100,
     }
-  );
+  )
 
-  const swipeActionRef = useRef<SwipeActionRef>(null);
+  const swipeActionRef = useRef<SwipeActionRef>(null)
 
   const handleOnActionList = useCallback(
     async (action: Action, tabItem: any) => {
       switch (action.key) {
-        case "update":
+        case 'update':
           {
-            typeof onUpdateConfirmList === "function"
+            typeof onUpdateConfirmList === 'function'
               ? onUpdateConfirmList(tabItem.id)
-              : undefined;
-            swipeActionRef.current?.close();
+              : undefined
+            swipeActionRef.current?.close()
           }
-          return;
-        case "delete":
+          return
+        case 'delete':
           {
             await Dialog.confirm({
-              content: "Are you sure want to delete?",
-              cancelText: "Cancel",
-              confirmText: "Delete",
+              content: 'Are you sure want to delete?',
+              cancelText: 'Cancel',
+              confirmText: 'Delete',
               onConfirm:
-                typeof onDeleteConfirmList === "function"
+                typeof onDeleteConfirmList === 'function'
                   ? () => onDeleteConfirmList(tabItem)
                   : undefined,
-            });
-            swipeActionRef.current?.close();
+            })
+            swipeActionRef.current?.close()
           }
-          return;
+          return
         default:
-          return;
+          return
       }
     },
     [onUpdateConfirmList, onDeleteConfirmList]
-  );
+  )
 
   const handleOnActionListItem = useCallback(
     async (action: Action, dataItem: any, categoryId: string) => {
       switch (action.key) {
-        case "update":
+        case 'update':
           {
-            typeof onUpdateConfirmListItem === "function"
+            typeof onUpdateConfirmListItem === 'function'
               ? onUpdateConfirmListItem(dataItem, categoryId)
-              : undefined;
-            swipeActionRef.current?.close();
+              : undefined
+            swipeActionRef.current?.close()
           }
-          return;
-        case "delete":
+          return
+        case 'delete':
           {
             await Dialog.confirm({
-              content: "Are you sure want to delete?",
-              cancelText: "Cancel",
-              confirmText: "Delete",
+              content: 'Are you sure want to delete?',
+              cancelText: 'Cancel',
+              confirmText: 'Delete',
               onConfirm:
-                typeof onDeleteConfirmListItem === "function"
+                typeof onDeleteConfirmListItem === 'function'
                   ? () => onDeleteConfirmListItem(dataItem)
                   : undefined,
-            });
-            swipeActionRef.current?.close();
+            })
+            swipeActionRef.current?.close()
           }
-          return;
+          return
         default:
-          return;
+          return
       }
     },
     [onUpdateConfirmListItem, onDeleteConfirmListItem]
-  );
+  )
 
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener('scroll', handleScroll)
     return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [handleScroll]);
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [handleScroll])
 
   useEffect(() => {
-    setActiveKey(tabItems?.[0]?.[myKey]);
-  }, [tabItems]);
+    setActiveKey(tabItems?.[0]?.[myKey])
+  }, [tabItems])
 
   const rightActions: Action[] = [
     {
-      key: "update",
+      key: 'update',
       text: <EditSOutline />,
-      color: "warning",
+      color: 'warning',
     },
     {
-      key: "delete",
+      key: 'delete',
       text: <DeleteOutline />,
-      color: "danger",
+      color: 'danger',
     },
-  ];
+  ]
 
   if (tabItems === undefined) {
-    if (loadingComponent) return loadingComponent;
-    return null;
+    if (loadingComponent) return loadingComponent
+    return null
   }
 
   if (tabItems.length === 0) {
-    if (emptyComponent) return emptyComponent;
-    return null;
+    if (emptyComponent) return emptyComponent
+    return null
   }
 
   return (
     <div className="relative">
-      <div className={`sticky top-[${top}px] z-[100] bg-white`}>
+      <div
+        className={`sticky z-[100] bg-white`}
+        style={{
+          top: top,
+        }}
+      >
         <Tabs
           activeKey={activeKey}
           onChange={(key) => {
-            scrollRef.current = false;
+            scrollRef.current = false
             if (setTimerRef.current) {
-              clearTimeout(setTimerRef.current);
-              setTimerRef.current = null;
+              clearTimeout(setTimerRef.current)
+              setTimerRef.current = null
             }
 
-            const id = `anchor-category-${key}`;
-            const element = document.getElementById(id);
-            if (element === null) return;
+            const id = `anchor-category-${key}`
+            const element = document.getElementById(id)
+            if (element === null) return
             window.scrollTo({
               top:
                 element.getBoundingClientRect().top +
                 window.scrollY -
                 tabHeight,
-            });
-            setActiveKey(key);
+            })
+            setActiveKey(key)
 
             setTimerRef.current = window.setTimeout(() => {
-              scrollRef.current = true;
-              if (setTimerRef.current === null) return;
-              clearTimeout(setTimerRef.current);
-              setTimerRef.current = null;
-            }, 1000);
+              scrollRef.current = true
+              if (setTimerRef.current === null) return
+              clearTimeout(setTimerRef.current)
+              setTimerRef.current = null
+            }, 1000)
           }}
         >
           {tabItems.map((item: any) => (
@@ -227,7 +232,7 @@ const SectionList = ({
                       {...{
                         title: tabItem.title,
                         onClickNewDish:
-                          typeof onClickNewDish === "function"
+                          typeof onClickNewDish === 'function'
                             ? () => onClickNewDish(tabItem.id)
                             : undefined,
                         readOnly,
@@ -253,7 +258,7 @@ const SectionList = ({
                             prefix={
                               <Image
                                 className="rounded-3xl"
-                                src={dataItem.photo ?? ""}
+                                src={dataItem.photo ?? ''}
                                 fit="cover"
                                 width={40}
                                 height={40}
@@ -271,7 +276,7 @@ const SectionList = ({
                   : null}
               </List>
             </div>
-          );
+          )
           // const lengthLessThan3 = tabItem.data.length <= 3;
           // return (
           //   <div id={`anchor-category-${tabItem[myKey]}`} key={tabItem[myKey]}>
@@ -302,7 +307,7 @@ const SectionList = ({
         })}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default SectionList;
+export default SectionList

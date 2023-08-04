@@ -44,12 +44,16 @@ const Menu = () => {
   const [searchText, setSearchText] = useState('')
   const [debouncedSearchText, setDebouncedSearchText] = useState('')
   const filterCategories = useMemo(() => {
-    if (categories === undefined) return []
+    if (categories === undefined) return undefined
     if (debouncedSearchText.length === 0) return categories
     const foundDish = categories
       .map((dishes) => dishes.data)
       .flat()
-      .find((dish) => dish.name.includes(debouncedSearchText))
+      .find((dish) =>
+        String(dish.name)
+          .toLowerCase()
+          .includes(String(debouncedSearchText).toLowerCase())
+      )
     if (foundDish) {
       const foundCategory = categories.find(
         (category) => category.id === foundDish.parentId
@@ -234,7 +238,7 @@ const Menu = () => {
           <Empty
             style={{ padding: '64px 0' }}
             imageStyle={{ width: 128 }}
-            description="暂无数据"
+            description="No data"
           />
         }
       />
