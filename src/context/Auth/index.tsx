@@ -59,7 +59,7 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
         })
       } finally {
         setStatus(AuthStatus.loaded)
-        Loading.get().hide()
+        Loading.get.hide()
       }
     },
     [userDocReference]
@@ -84,7 +84,7 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
         setUserDocReference(null)
         setUser(null)
         setStatus(AuthStatus.loaded)
-        Loading.get().hide()
+        Loading.get.hide()
       }
     })
     return unsubscribe

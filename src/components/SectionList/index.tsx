@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   // Button,
   Dialog,
-  Image,
   List,
   SwipeAction,
   SwipeActionRef,
@@ -11,6 +10,7 @@ import {
 import { useThrottleFn } from 'ahooks'
 import { EditSOutline, DeleteOutline } from 'antd-mobile-icons'
 import { Action } from 'antd-mobile/es/components/swipe-action'
+import { LazyLoadImage } from 'react-lazy-load-image-component'
 // import HorizontalSection from "../HorizontalSection";
 // import VerticalSection from "../VerticalSection";
 import ListHeader from '../ListHeader'
@@ -255,13 +255,22 @@ const SectionList = ({
                           }
                         >
                           <List.Item
+                            // prefix={
+                            //   <Image
+                            //     className="rounded-3xl"
+                            //     src={dataItem.photo ?? ''}
+                            //     fit="cover"
+                            //     width={40}
+                            //     height={40}
+                            //   />
+                            // }
                             prefix={
-                              <Image
+                              <LazyLoadImage
                                 className="rounded-3xl"
-                                src={dataItem.photo ?? ''}
-                                fit="cover"
-                                width={40}
+                                alt={`dish-${dii}`}
                                 height={40}
+                                src={dataItem.photo ?? ''}
+                                width={40}
                               />
                             }
                           >

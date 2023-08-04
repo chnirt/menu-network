@@ -22,7 +22,7 @@ const Register = () => {
   // const { login } = useAuth();
   const onFinish = async (values: typeof initialValues) => {
     try {
-      Loading.get().show()
+      Loading.get.show()
       // console.log('Success:', values)
       const { fullName, email, username, password } = values
       const providers = await fetchSignInMethodsForEmailFirebase(email)
@@ -60,7 +60,7 @@ const Register = () => {
         icon: 'error',
         content: error.message,
       })
-      Loading.get().hide()
+      Loading.get.hide()
     }
     // if (values.username === "chnirt" && values.password === "Admin@123") {
     //   const loginFromAPI = async () => {
@@ -178,6 +178,7 @@ const Register = () => {
       <Button
         color="primary"
         fill="none"
+        shape="rounded"
         onClick={() => navigate(routes.login)}
       >
         LOGIN

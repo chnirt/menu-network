@@ -18,7 +18,7 @@ const Login = () => {
 
   const onFinish = async (values: typeof initialValues) => {
     try {
-      Loading.get().show()
+      Loading.get.show()
       const { email, password } = values
       await signInWithEmailAndPasswordFirebase(email, password)
 
@@ -30,7 +30,7 @@ const Login = () => {
         icon: 'error',
         content: error.message,
       })
-      Loading.get().hide()
+      Loading.get.hide()
     }
     // if (values.username === "chnirt" && values.password === "Admin@123") {
     //   const loginFromAPI = async () => {
@@ -87,6 +87,7 @@ const Login = () => {
       <Button
         color="primary"
         fill="none"
+        shape="rounded"
         onClick={() => navigate(routes.register)}
       >
         CREATE ACCOUNT

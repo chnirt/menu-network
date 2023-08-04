@@ -28,7 +28,7 @@ const NewCategory = () => {
     async (values: typeof initialValues) => {
       if (user === null) return
       try {
-        Loading.get().show()
+        Loading.get.show()
         const { categoryName } = values
         const uid = user.uid
         const categoryData = {
@@ -57,7 +57,7 @@ const NewCategory = () => {
           content: error.message,
         })
       } finally {
-        Loading.get().hide()
+        Loading.get.hide()
       }
     },
     [user, isEditMode, categoryDocRefState]
@@ -132,13 +132,14 @@ const NewCategory = () => {
               <Input autoComplete="none" placeholder="chnirt" />
             </Form.Item>
 
-            <Form.Item shouldUpdate className="submit">
+            <Form.Item shouldUpdate className="submit" noStyle>
               {() => (
                 <Button
                   block
                   type="submit"
                   color="primary"
                   size="large"
+                  shape="rounded"
                   disabled={
                     !form.isFieldsTouched(true) ||
                     form.getFieldsError().filter(({ errors }) => errors.length)

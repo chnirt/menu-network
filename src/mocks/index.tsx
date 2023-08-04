@@ -17,6 +17,7 @@ export const MASTER_MOCK_DATA = {
     categoryName: IS_DEVELOP ? 'Cocktail' : '',
   },
   NEW_DISH: {
+    uploadMethod: IS_DEVELOP ? 'link' : 'file',
     dishName: IS_DEVELOP ? 'Phatty’S Nachos' : '',
     price: IS_DEVELOP ? 99000 : 0,
     dishFiles: [],
@@ -86,7 +87,7 @@ export const SAMPLE_DATA = {
               },
             ],
             id: nanoid(),
-            name: 'Trà đào cam sả',
+            name: 'Peach orange lemongrass tea',
           },
           {
             price: {
@@ -98,7 +99,7 @@ export const SAMPLE_DATA = {
               },
             ],
             id: nanoid(),
-            name: 'Trà vải',
+            name: 'Lychee tea',
           },
           {
             price: {
@@ -110,7 +111,7 @@ export const SAMPLE_DATA = {
               },
             ],
             id: nanoid(),
-            name: 'Trà chanh dây',
+            name: 'Passion fruit tea',
           },
           {
             price: {
@@ -122,7 +123,7 @@ export const SAMPLE_DATA = {
               },
             ],
             id: nanoid(),
-            name: 'Trà tắc',
+            name: 'Kumquat tea',
           },
           {
             price: {
@@ -134,7 +135,7 @@ export const SAMPLE_DATA = {
               },
             ],
             id: nanoid(),
-            name: 'Trà đường',
+            name: 'Sugar tea',
           },
         ],
       },
@@ -152,7 +153,7 @@ export const SAMPLE_DATA = {
               },
             ],
             id: nanoid(),
-            name: 'Cam',
+            name: 'Orange',
           },
           {
             price: {
@@ -164,19 +165,7 @@ export const SAMPLE_DATA = {
               },
             ],
             id: nanoid(),
-            name: 'Ổi',
-          },
-          {
-            price: {
-              text: '99,000đ',
-            },
-            photos: [
-              {
-                value: 'https://wjhjnr.csb.app/milk-coffee.jpeg',
-              },
-            ],
-            id: nanoid(),
-            name: 'Cà Cải',
+            name: 'Guava',
           },
           {
             price: {
@@ -188,7 +177,7 @@ export const SAMPLE_DATA = {
               },
             ],
             id: nanoid(),
-            name: 'Dưa hấu',
+            name: 'Water melon',
           },
           {
             price: {
@@ -200,7 +189,7 @@ export const SAMPLE_DATA = {
               },
             ],
             id: nanoid(),
-            name: 'Bí đao',
+            name: 'Wax gourd',
           },
         ],
       },

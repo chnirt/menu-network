@@ -3,6 +3,7 @@ import {
   Empty,
   FloatingBubble,
   NavBar,
+  PullToRefresh,
   SearchBar,
   Skeleton,
   Toast,
@@ -19,28 +20,16 @@ import {
 import { Wifi } from 'lucide-react'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import SectionList, { tabHeight } from '../../components/SectionList'
-// import { SAMPLE_DATA } from "../../mocks";
 import { routes } from '../../routes'
 import { getDocRef, getDocument } from '../../firebase/service'
 import useAuth from '../../hooks/useAuth'
 import useMenu from '../../hooks/useMenu'
 
-// const data = SAMPLE_DATA.reply.menu_infos.map((menu_info) => ({
-//   ...menu_info,
-//   title: menu_info.dish_type_name,
-//   data: menu_info.dishes.map((dish) => ({
-//     ...dish,
-//     price: dish.price.text,
-//     photo: dish.photos[0].value,
-//     categoryName: menu_info.dish_type_name,
-//   })),
-// }));
-
 const Menu = () => {
   const { user } = useAuth()
   const { menuId } = useParams()
   const readOnly = user?.uid !== menuId
-  const { categories, fetchCategory } = useMenu()
+  const { categories, fetchCategory, refetchCategory } = useMenu()
   const [searchText, setSearchText] = useState('')
   const [debouncedSearchText, setDebouncedSearchText] = useState('')
   const filterCategories = useMemo(() => {
@@ -125,15 +114,18 @@ const Menu = () => {
     }
   }, [debouncedSearchText, categories])
 
-  const right = (
-    <Button
-      color="primary"
-      fill="none"
-      size="mini"
-      onClick={() => navigate(routes.newCategory)}
-    >
-      NEW CATEGORY
-    </Button>
+  const right = useMemo(
+    () => (
+      <Button
+        color="primary"
+        fill="none"
+        size="mini"
+        onClick={() => navigate(routes.newCategory)}
+      >
+        NEW CATEGORY
+      </Button>
+    ),
+    []
   )
 
   return (
@@ -148,115 +140,132 @@ const Menu = () => {
       <div className="sticky top-[45px] z-[100] bg-white">
         <SearchBar
           placeholder="Search"
-          showCancelButton
-          cancelText="Cancel"
+          // showCancelButton
+          // cancelText="Cancel"
           value={searchText}
           onChange={setSearchText}
         />
       </div>
-      <SectionList
-        // data={data}
-        data={filterCategories}
-        myKey="title"
-        loadingComponent={
-          <div>
-            <div className="flex">
-              {Array(3)
-                .fill(null)
-                .map((_, i) => (
-                  <Skeleton.Title
-                    key={`sk-menu-tab-${i}`}
-                    className="mx-3 !w-1/3"
-                    animated
-                  />
-                ))}
-            </div>
+      <PullToRefresh
+        onRefresh={async () => {
+          if (menuId && typeof refetchCategory === 'function') {
+            refetchCategory(menuId)
+          }
+          if (menuId) {
+            fetchMenu(menuId)
+          }
+        }}
+      >
+        <SectionList
+          // data={data}
+          data={filterCategories}
+          myKey="title"
+          loadingComponent={
             <div>
-              {Array(2)
-                .fill(null)
-                .map((_, ii) => (
-                  <div key={`sk-tab-content-${ii}`}>
-                    <div className="flex justify-between">
-                      <Skeleton.Title className="!w-1/4" animated />
-                      <Skeleton.Title className="!w-1/4" animated />
-                    </div>
-                    {Array(3)
-                      .fill(null)
-                      .map((_, iii) => (
-                        <div key={`sk-tab-content-sub-${iii}`} className="flex">
-                          <div className="flex w-full">
-                            <div className="pr-3">
-                              <Skeleton.Title
-                                className="!w-8 !h-8 !rounded-full"
-                                animated
-                              />
+              <div className="flex">
+                {Array(3)
+                  .fill(null)
+                  .map((_, i) => (
+                    <Skeleton.Title
+                      key={`sk-menu-tab-${i}`}
+                      className="mx-3 !w-1/3"
+                      animated
+                    />
+                  ))}
+              </div>
+              <div>
+                {Array(2)
+                  .fill(null)
+                  .map((_, ii) => (
+                    <div key={`sk-tab-content-${ii}`}>
+                      <div className="flex justify-between">
+                        <Skeleton.Title className="!w-1/4" animated />
+                        <Skeleton.Title className="!w-1/4" animated />
+                      </div>
+                      {Array(3)
+                        .fill(null)
+                        .map((_, iii) => (
+                          <div
+                            key={`sk-tab-content-sub-${iii}`}
+                            className="flex"
+                          >
+                            <div className="flex w-full">
+                              <div className="pr-3">
+                                <Skeleton.Title
+                                  className="!w-8 !h-8 !rounded-full"
+                                  animated
+                                />
+                              </div>
+                              <Skeleton.Title className="!w-1/4" animated />
                             </div>
                             <Skeleton.Title className="!w-1/4" animated />
                           </div>
-                          <Skeleton.Title className="!w-1/4" animated />
-                        </div>
-                      ))}
-                  </div>
-                ))}
+                        ))}
+                    </div>
+                  ))}
+              </div>
             </div>
-          </div>
-        }
-        onClickNewDish={(categoryId: string) =>
-          navigate(routes.newDish.replace(':categoryId', categoryId))
-        }
-        onUpdateConfirmList={(categoryId: string) =>
-          navigate(routes.updateCategory.replace(':categoryId', categoryId))
-        }
-        onDeleteConfirmList={async (
-          tabItem: QueryDocumentSnapshot<DocumentData, DocumentData>
-        ) => {
-          await deleteDoc(tabItem.ref)
-          if (menuId && typeof fetchCategory === 'function') {
-            fetchCategory(menuId)
           }
-        }}
-        onDeleteConfirmListItem={async (
-          dataItem: QueryDocumentSnapshot<DocumentData, DocumentData>
-        ) => {
-          await deleteDoc(dataItem.ref)
-          if (menuId && typeof fetchCategory === 'function') {
-            fetchCategory(menuId)
+          onClickNewDish={(categoryId: string) =>
+            navigate(routes.newDish.replace(':categoryId', categoryId))
           }
-        }}
-        onUpdateConfirmListItem={(
-          dataItem: QueryDocumentSnapshot<DocumentData, DocumentData>,
-          categoryId: string
-        ) =>
-          navigate(
-            routes.updateDish
-              .replace(':categoryId', categoryId)
-              .replace(':dishId', dataItem.id)
-          )
-        }
-        readOnly={readOnly}
-        emptyComponent={
-          <Empty
-            style={{ padding: '64px 0' }}
-            imageStyle={{ width: 128 }}
-            description="No data"
-          />
-        }
-      />
-      <FloatingBubble
-        axis="x"
-        magnetic="x"
-        style={{
-          '--initial-position-bottom':
-            'calc(60px + env(safe-area-inset-bottom))',
-          '--initial-position-right': '12px',
-          '--edge-distance': '12px',
-        }}
-        onClick={handleShareQRCode}
-      >
-        <SystemQRcodeOutline fontSize={16} />
-      </FloatingBubble>
+          onUpdateConfirmList={(categoryId: string) =>
+            navigate(routes.updateCategory.replace(':categoryId', categoryId))
+          }
+          onDeleteConfirmList={async (
+            tabItem: QueryDocumentSnapshot<DocumentData, DocumentData>
+          ) => {
+            await deleteDoc(tabItem.ref)
+            if (menuId && typeof fetchCategory === 'function') {
+              fetchCategory(menuId)
+            }
+          }}
+          onDeleteConfirmListItem={async (
+            dataItem: QueryDocumentSnapshot<DocumentData, DocumentData>
+          ) => {
+            await deleteDoc(dataItem.ref)
+            if (menuId && typeof fetchCategory === 'function') {
+              fetchCategory(menuId)
+            }
+          }}
+          onUpdateConfirmListItem={(
+            dataItem: QueryDocumentSnapshot<DocumentData, DocumentData>,
+            categoryId: string
+          ) =>
+            navigate(
+              routes.updateDish
+                .replace(':categoryId', categoryId)
+                .replace(':dishId', dataItem.id)
+            )
+          }
+          readOnly={readOnly}
+          emptyComponent={
+            <Empty
+              style={{ padding: '64px 0' }}
+              imageStyle={{ width: 128 }}
+              description="No data"
+            />
+          }
+        />
+      </PullToRefresh>
 
-      {wifi ? (
+      {filterCategories !== undefined && (
+        <FloatingBubble
+          axis="x"
+          magnetic="x"
+          style={{
+            '--initial-position-bottom':
+              'calc(60px + env(safe-area-inset-bottom))',
+            '--initial-position-right': '12px',
+            '--edge-distance': '12px',
+          }}
+          onClick={handleShareQRCode}
+        >
+          <SystemQRcodeOutline fontSize={16} />
+        </FloatingBubble>
+      )}
+
+      {filterCategories !== undefined && wifi ? (
         <FloatingBubble
           axis="x"
           magnetic="x"

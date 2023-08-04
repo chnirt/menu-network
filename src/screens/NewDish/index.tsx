@@ -5,6 +5,8 @@ import {
   ImageUploader,
   Input,
   NavBar,
+  Radio,
+  Space,
   Stepper,
   Toast,
 } from 'antd-mobile'
@@ -22,6 +24,8 @@ import useAuth from '../../hooks/useAuth'
 import { MASTER_MOCK_DATA } from '../../mocks'
 import { uploadStorageBytesResumable } from '../../firebase/storage'
 import { Loading } from '../../global'
+import { AddCircleOutline } from 'antd-mobile-icons'
+import { routes } from '../../routes'
 
 const initialValues = MASTER_MOCK_DATA.NEW_DISH
 
@@ -31,6 +35,7 @@ const NewDish = () => {
   const { categoryId, dishId } = useParams()
   const isEditMode = Boolean(dishId)
   const [form] = Form.useForm()
+  const uploadMethod = Form.useWatch('uploadMethod', form)
   const [dishDocRefState, setDishDocRefState] = useState<DocumentReference<
     DocumentData,
     DocumentData
@@ -39,7 +44,7 @@ const NewDish = () => {
     async (values: typeof initialValues) => {
       if (user === null || categoryId === undefined) return
       try {
-        Loading.get().show()
+        Loading.get.show()
         const { dishName, price, dishFiles } = values
         const uid = user.uid
         const dishData = {
@@ -74,7 +79,7 @@ const NewDish = () => {
           content: error.message,
         })
       } finally {
-        Loading.get().hide()
+        Loading.get.hide()
       }
     },
     [user, isEditMode, dishDocRefState]
@@ -128,41 +133,90 @@ const NewDish = () => {
         // }
       >
         <Form.Header>{isEditMode ? 'Edit Dish' : 'New Dish'}</Form.Header>
-        <Form.Item
-          name="dishFiles"
-          label="Dish Files"
-          rules={[{ required: true, message: 'Dish Files is required' }]}
-        >
-          <ImageUploader
-            upload={function (file: File): Promise<ImageUploadItem> {
-              const isJpgOrPng =
-                file.type === 'image/jpeg' || file.type === 'image/png'
-              if (!isJpgOrPng) {
-                return Promise.reject(
-                  new Error('You can only upload JPG/PNG file!')
-                )
-              }
-              const isLt2M = file.size / 1024 / 1024 < 2
-              if (!isLt2M) {
-                return Promise.reject(new Error('Image must smaller than 2MB!'))
-              }
-
-              return new Promise((resolve, reject) => {
-                uploadStorageBytesResumable(
-                  file,
-                  undefined,
-                  (error) => reject(error),
-                  async ({ downloadURL }) =>
-                    resolve({
-                      url: downloadURL,
-                    })
-                )
-              })
-            }}
-            multiple
-            maxCount={3}
-          />
+        <Form.Item name="uploadMethod" label="Upload Method">
+          <Radio.Group>
+            <Space>
+              <Radio value="file">File</Radio>
+              <Radio value="link">Link</Radio>
+            </Space>
+          </Radio.Group>
         </Form.Item>
+        {uploadMethod === 'file' && (
+          <Form.Item
+            name="dishFiles"
+            label="Dish Photos"
+            rules={[{ required: true, message: 'Dish Files is required' }]}
+          >
+            <ImageUploader
+              upload={function (file: File): Promise<ImageUploadItem> {
+                const isJpgOrPng =
+                  file.type === 'image/jpeg' || file.type === 'image/png'
+                if (!isJpgOrPng) {
+                  return Promise.reject(
+                    new Error('You can only upload JPG/PNG file!')
+                  )
+                }
+                const isLt2M = file.size / 1024 / 1024 < 2
+                if (!isLt2M) {
+                  return Promise.reject(
+                    new Error('Image must smaller than 2MB!')
+                  )
+                }
+
+                return new Promise((resolve, reject) => {
+                  uploadStorageBytesResumable(
+                    file,
+                    undefined,
+                    (error) => reject(error),
+                    async ({ downloadURL }) =>
+                      resolve({
+                        url: downloadURL,
+                      })
+                  )
+                })
+              }}
+              multiple
+              maxCount={3}
+            />
+          </Form.Item>
+        )}
+        {uploadMethod === 'link' && (
+          <Form.Array
+            name="dishFiles"
+            renderAdd={() => (
+              <Button color="primary" fill="none">
+                <AddCircleOutline /> Add
+              </Button>
+            )}
+            renderHeader={({ index }, { remove }) => (
+              <>
+                <span>Link {index + 1}</span>
+                <Button
+                  onClick={() => remove(index)}
+                  style={{ float: 'right' }}
+                  color="primary"
+                  fill="none"
+                >
+                  Delete
+                </Button>
+              </>
+            )}
+          >
+            {(fields) =>
+              fields.map(({ index }) => (
+                <>
+                  <Form.Item
+                    name={[index, 'url']}
+                    label="Link"
+                    rules={[{ required: true, message: 'Link is required' }]}
+                  >
+                    <Input placeholder="https://example.com" />
+                  </Form.Item>
+                </>
+              ))
+            }
+          </Form.Array>
+        )}
         <Form.Item
           name="dishName"
           label="Dish Name"
@@ -181,6 +235,16 @@ const NewDish = () => {
               message: 'Invalid Price',
             },
           ]}
+          extra={
+            <Button
+              color="primary"
+              fill="none"
+              shape="rounded"
+              onClick={() => navigate(routes.me)}
+            >
+              Currency
+            </Button>
+          }
         >
           <Stepper
             style={{
@@ -198,18 +262,19 @@ const NewDish = () => {
             // parser={(text) => parseFloat(text.replace("VND", ""))}
           />
         </Form.Item>
-        <Form.Item shouldUpdate className="submit">
+        <Form.Item shouldUpdate className="submit" noStyle>
           {() => (
             <Button
               block
               type="submit"
               color="primary"
               size="large"
-              disabled={
-                !form.isFieldsTouched(true) ||
-                form.getFieldsError().filter(({ errors }) => errors.length)
-                  .length > 0
-              }
+              shape="rounded"
+              // disabled={
+              //   !form.isFieldsTouched(true) ||
+              //   form.getFieldsError().filter(({ errors }) => errors.length)
+              //     .length > 0
+              // }
             >
               {isEditMode ? 'EDIT' : 'CREATE'}
             </Button>

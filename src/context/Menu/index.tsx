@@ -11,6 +11,7 @@ import { getDocs, query, where } from 'firebase/firestore'
 type MenuContextType = {
   categories?: any[]
   fetchCategory?: (menuId: string) => void
+  refetchCategory?: (menuId: string) => void
 }
 
 export const MenuContext = createContext<MenuContextType>({
@@ -56,8 +57,16 @@ export const MenuProvider: FC<PropsWithChildren> = ({ children }) => {
     return
   }, [])
 
+  const refetchCategory = useCallback(async (menuId: string) => {
+    setCategories(undefined)
+    fetchCategory(menuId)
+    return
+  }, [])
+
   return (
-    <MenuContext.Provider value={{ categories, fetchCategory }}>
+    <MenuContext.Provider
+      value={{ categories, fetchCategory, refetchCategory }}
+    >
       {children}
     </MenuContext.Provider>
   )

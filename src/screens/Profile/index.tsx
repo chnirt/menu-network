@@ -67,7 +67,7 @@ const Profile = () => {
       cancelText: 'Cancel',
       confirmText: 'Log out',
       onConfirm: async () => {
-        Loading.get().show()
+        Loading.get.show()
         signOutFirebase()
         // const logoutFromAPI = async () => {
         //   const data: boolean = await new Promise((resolve) =>

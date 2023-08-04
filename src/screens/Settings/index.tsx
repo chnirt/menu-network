@@ -17,7 +17,7 @@ const Settings = () => {
     async (values: typeof initialValues) => {
       if (user === null) return
       try {
-        Loading.get().show()
+        Loading.get.show()
         const { wifi } = values
         const uid = user.uid
         const settingsData = {
@@ -39,7 +39,7 @@ const Settings = () => {
           content: error.message,
         })
       } finally {
-        Loading.get().hide()
+        Loading.get.hide()
       }
     },
     [user]
@@ -93,13 +93,14 @@ const Settings = () => {
           <Input autoComplete="none" placeholder="xxxxxxxx" />
         </Form.Item>
 
-        <Form.Item shouldUpdate className="submit">
+        <Form.Item shouldUpdate className="submit" noStyle>
           {() => (
             <Button
               block
               type="submit"
               color="primary"
               size="large"
+              shape="rounded"
               disabled={
                 !form.isFieldsTouched(true) ||
                 form.getFieldsError().filter(({ errors }) => errors.length)
