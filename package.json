@@ -12,6 +12,7 @@
         "antd-mobile-icons": "^0.3.0",
         "csbbust": "1.0.1",
         "firebase": "^10.1.0",
+        "framer-motion": "^10.15.0",
         "loader-utils": "3.2.1",
         "localforage": "1.10.0",
         "lodash": "4.17.21",
