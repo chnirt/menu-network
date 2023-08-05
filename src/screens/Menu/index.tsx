@@ -11,13 +11,12 @@ import {
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, generatePath, useNavigate, useParams } from 'react-router-dom'
 import { useDebounce } from 'react-use'
-import { SystemQRcodeOutline } from 'antd-mobile-icons'
 import {
   DocumentData,
   QueryDocumentSnapshot,
   deleteDoc,
 } from 'firebase/firestore'
-import { Wifi } from 'lucide-react'
+import { QrCode, Wifi } from 'lucide-react'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import SectionList, { tabHeight } from '../../components/SectionList'
 import { routes } from '../../routes'
@@ -291,7 +290,7 @@ const Menu = () => {
           }}
           onClick={handleShareQRCode}
         >
-          <SystemQRcodeOutline fontSize={16} />
+          <QrCode fontSize={16} />
         </FloatingBubble>
       )}
 
