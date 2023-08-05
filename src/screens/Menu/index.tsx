@@ -23,6 +23,7 @@ import { routes } from '../../routes'
 import { getDocRef, getDocument } from '../../firebase/service'
 import useAuth from '../../hooks/useAuth'
 import useMenu from '../../hooks/useMenu'
+import { pick } from 'lodash'
 
 type IMenu = {
   wifi?: string
@@ -267,7 +268,14 @@ const Menu = () => {
               })
             )
           }
-          readOnly={readOnly}
+          onClickDish={(dataItem) => {
+            // console.log(dataItem)
+            navigate(generatePath(routes.dish, { dishId: dataItem?.id }), {
+              state: {
+                dish: pick(dataItem, ['id', 'dishFiles', 'dishName', 'price']),
+              },
+            })
+          }}
           emptyComponent={
             <Empty
               style={{ padding: '64px 0' }}
@@ -275,6 +283,7 @@ const Menu = () => {
               description="No data"
             />
           }
+          readOnly={readOnly}
         />
       </PullToRefresh>
 

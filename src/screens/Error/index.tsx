@@ -1,15 +1,10 @@
 import { Button, ErrorBlock } from 'antd-mobile'
-import { Link, useRouteError } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { routes } from '../../routes'
 
 const Error = () => {
-  const error: any = useRouteError()
-
   return (
     <div>
-      <p>
-        <i>{error?.statusText || error?.message}</i>
-      </p>
       <ErrorBlock
         className="flex flex-col justify-center items-center"
         fullPage

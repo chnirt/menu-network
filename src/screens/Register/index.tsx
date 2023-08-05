@@ -78,7 +78,13 @@ const Register = () => {
         layout="horizontal"
         onFinish={onFinish}
         footer={
-          <Button block type="submit" color="primary" size="large">
+          <Button
+            block
+            type="submit"
+            color="primary"
+            size="large"
+            shape="rounded"
+          >
             Register
           </Button>
         }
@@ -175,7 +181,7 @@ const Register = () => {
         </Form.Item>
       </Form>
       <Link to={routes.login}>
-        <Button color="primary" fill="none" shape="rounded">
+        <Button color="primary" fill="none">
           LOGIN
         </Button>
       </Link>

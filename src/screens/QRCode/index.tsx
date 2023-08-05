@@ -7,6 +7,7 @@ const QRCode = () => {
   const navigate = useNavigate()
   const { menuId } = useParams()
   const location = useLocation()
+  console.log(location.state)
   return (
     <div>
       <NavBar

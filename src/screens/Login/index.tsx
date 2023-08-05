@@ -49,7 +49,7 @@ const Login = () => {
         layout="horizontal"
         onFinish={onFinish}
         footer={
-          <Button block type="submit" color="primary" size="large">
+          <Button block type="submit" color="primary" size="large" shape="rounded">
             Login
           </Button>
         }
@@ -84,7 +84,7 @@ const Login = () => {
         </Form.Item>
       </Form>
       <Link to={routes.register}>
-        <Button color="primary" fill="none" shape="rounded">
+        <Button color="primary" fill="none">
           CREATE ACCOUNT
         </Button>
       </Link>

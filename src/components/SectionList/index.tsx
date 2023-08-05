@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   // Button,
   Dialog,
+  Image,
   List,
   SwipeAction,
   SwipeActionRef,
@@ -10,7 +11,7 @@ import {
 import { useThrottleFn } from 'ahooks'
 import { EditSOutline, DeleteOutline } from 'antd-mobile-icons'
 import { Action } from 'antd-mobile/es/components/swipe-action'
-import { LazyLoadImage } from 'react-lazy-load-image-component'
+// import { LazyLoadImage } from 'react-lazy-load-image-component'
 // import HorizontalSection from "../HorizontalSection";
 // import VerticalSection from "../VerticalSection";
 import ListHeader from '../ListHeader'
@@ -30,6 +31,7 @@ const SectionList = ({
   onUpdateConfirmList,
   onDeleteConfirmListItem,
   onUpdateConfirmListItem,
+  onClickDish,
   loadingComponent,
   readOnly,
   emptyComponent,
@@ -41,6 +43,7 @@ const SectionList = ({
   onUpdateConfirmList?: (categoryId: string) => void
   onDeleteConfirmListItem?: (dataItem: any) => void
   onUpdateConfirmListItem?: (dataItem: any, categoryId: string) => void
+  onClickDish?: (dataItem: any) => void
   loadingComponent?: JSX.Element
   readOnly?: boolean
   emptyComponent?: JSX.Element
@@ -255,23 +258,28 @@ const SectionList = ({
                           }
                         >
                           <List.Item
+                            prefix={
+                              <Image
+                                className="rounded-3xl"
+                                src={dataItem.photo ?? ''}
+                                fit="cover"
+                                width={40}
+                                height={40}
+                              />
+                            }
                             // prefix={
-                            //   <Image
+                            //   <LazyLoadImage
                             //     className="rounded-3xl"
-                            //     src={dataItem.photo ?? ''}
-                            //     fit="cover"
-                            //     width={40}
+                            //     alt={`dish-${dii}`}
                             //     height={40}
+                            //     src={dataItem.photo ?? ''}
+                            //     width={40}
                             //   />
                             // }
-                            prefix={
-                              <LazyLoadImage
-                                className="rounded-3xl"
-                                alt={`dish-${dii}`}
-                                height={40}
-                                src={dataItem.photo ?? ''}
-                                width={40}
-                              />
+                            onClick={
+                              typeof onClickDish === 'function'
+                                ? () => onClickDish(dataItem)
+                                : undefined
                             }
                           >
                             <div className="flex flex-row justify-between items-between">

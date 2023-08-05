@@ -19,6 +19,7 @@ export const routes = {
   newDish: '/categories/:categoryId/new-dish',
   updateDish: '/categories/:categoryId/dishes/:dishId',
   settings: '/settings',
+  dish: '/dish/:dishId',
 
   error: '/error',
 }
@@ -171,11 +172,27 @@ export const router = createBrowserRouter([
               />
             ),
           },
+          {
+            path: routes.dish,
+            element: (
+              <Loadable
+                {...{
+                  factory: () => import('../screens/Dish'),
+                }}
+              />
+            ),
+          },
         ],
       },
       {
-        element: <Error />,
         path: routes.error,
+        element: (
+          <Loadable
+            {...{
+              factory: () => import('../screens/Error'),
+            }}
+          />
+        ),
       },
     ],
   },
