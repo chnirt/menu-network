@@ -1,10 +1,11 @@
-import { Card, NavBar } from "antd-mobile";
-import { useNavigate, useParams } from "react-router-dom";
-import RQRCode from "qrcode.react";
+import { Card, NavBar } from 'antd-mobile'
+import { useNavigate, useParams } from 'react-router-dom'
+import RQRCode from 'qrcode.react'
+import { ORIGIN } from '../../constants'
 
 const QRCode = () => {
-  const navigate = useNavigate();
-  const { menuId } = useParams();
+  const navigate = useNavigate()
+  const { menuId } = useParams()
   return (
     <div>
       <NavBar
@@ -13,17 +14,24 @@ const QRCode = () => {
       >
         QR CODE
       </NavBar>
-      <Card className="flex justify-center">
-        <div className="[&_svg]:block [&_svg]:w-full [&_svg]:h-auto">
+      <Card className="flex justify-center items-center aspect-square border p-0">
+        <div className="[&_svg]:block [&_svg]:w-64 [&_svg]:h-auto">
           <RQRCode
             renderAs="svg"
-            level="H"
-            value={`${window.location.origin}/menu/${menuId}`}
+            value={`${ORIGIN}/menu/${menuId}`}
+            imageSettings={{
+              src: `${ORIGIN}/favicon.png`,
+              x: undefined,
+              y: undefined,
+              height: 24,
+              width: 24,
+              excavate: true,
+            }}
           />
         </div>
       </Card>
     </div>
-  );
-};
+  )
+}
 
-export default QRCode;
+export default QRCode

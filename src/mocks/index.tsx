@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid'
-import { IS_DEVELOP } from '../constants'
+import { IS_DEVELOP, ORIGIN } from '../constants'
 
 export const MASTER_MOCK_DATA = {
   LOGIN: {
@@ -41,7 +41,7 @@ export const SAMPLE_DATA = {
             },
             photos: [
               {
-                value: 'https://wjhjnr.csb.app/milk-coffee.jpeg',
+                value: `${ORIGIN}/milk-coffee.jpeg`,
               },
             ],
             id: nanoid(),
@@ -53,7 +53,7 @@ export const SAMPLE_DATA = {
             },
             photos: [
               {
-                value: 'https://wjhjnr.csb.app/black-coffee.jpeg',
+                value: `${ORIGIN}/black-coffee.jpeg`,
               },
             ],
             id: nanoid(),
@@ -65,7 +65,7 @@ export const SAMPLE_DATA = {
             },
             photos: [
               {
-                value: 'https://wjhjnr.csb.app/latte.jpeg',
+                value: `${ORIGIN}/latte.jpeg`,
               },
             ],
             id: nanoid(),
@@ -84,7 +84,7 @@ export const SAMPLE_DATA = {
             photos: [
               {
                 value:
-                  'https://wjhjnr.csb.app/peach-orange-lemongrass-tea.jpeg',
+                  `${ORIGIN}/peach-orange-lemongrass-tea.jpeg`,
               },
             ],
             id: nanoid(),
@@ -96,7 +96,7 @@ export const SAMPLE_DATA = {
             },
             photos: [
               {
-                value: 'https://wjhjnr.csb.app/lychee-oolong-tea.jpeg',
+                value: `${ORIGIN}/lychee-oolong-tea.jpeg`,
               },
             ],
             id: nanoid(),
@@ -108,7 +108,7 @@ export const SAMPLE_DATA = {
             },
             photos: [
               {
-                value: 'https://wjhjnr.csb.app/passion-fruit-tea.jpeg',
+                value: `${ORIGIN}/passion-fruit-tea.jpeg`,
               },
             ],
             id: nanoid(),
@@ -120,7 +120,7 @@ export const SAMPLE_DATA = {
             },
             photos: [
               {
-                value: 'https://wjhjnr.csb.app/kumquat-tea.jpeg',
+                value: `${ORIGIN}/kumquat-tea.jpeg`,
               },
             ],
             id: nanoid(),
@@ -132,7 +132,7 @@ export const SAMPLE_DATA = {
             },
             photos: [
               {
-                value: 'https://wjhjnr.csb.app/sugar-tea.jpeg',
+                value: `${ORIGIN}/sugar-tea.jpeg`,
               },
             ],
             id: nanoid(),
@@ -150,7 +150,7 @@ export const SAMPLE_DATA = {
             },
             photos: [
               {
-                value: 'https://wjhjnr.csb.app/orange-juice.jpeg',
+                value: `${ORIGIN}/orange-juice.jpeg`,
               },
             ],
             id: nanoid(),
@@ -162,7 +162,7 @@ export const SAMPLE_DATA = {
             },
             photos: [
               {
-                value: 'https://wjhjnr.csb.app/guava-juice.jpeg',
+                value: `${ORIGIN}/guava-juice.jpeg`,
               },
             ],
             id: nanoid(),
@@ -174,7 +174,7 @@ export const SAMPLE_DATA = {
             },
             photos: [
               {
-                value: 'https://wjhjnr.csb.app/water-melon.jpeg',
+                value: `${ORIGIN}/water-melon.jpeg`,
               },
             ],
             id: nanoid(),
@@ -186,7 +186,7 @@ export const SAMPLE_DATA = {
             },
             photos: [
               {
-                value: 'https://wjhjnr.csb.app/wax-gourd.jpeg',
+                value: `${ORIGIN}/wax-gourd.jpeg`,
               },
             ],
             id: nanoid(),
@@ -204,7 +204,7 @@ export const SAMPLE_DATA = {
             },
             photos: [
               {
-                value: 'https://wjhjnr.csb.app/sour-milk.jpeg',
+                value: `${ORIGIN}/sour-milk.jpeg`,
               },
             ],
             id: nanoid(),
@@ -222,7 +222,7 @@ export const SAMPLE_DATA = {
             },
             photos: [
               {
-                value: 'https://wjhjnr.csb.app/coke.jpg',
+                value: `${ORIGIN}/coke.jpg`,
               },
             ],
             id: nanoid(),
@@ -234,7 +234,7 @@ export const SAMPLE_DATA = {
             },
             photos: [
               {
-                value: 'https://wjhjnr.csb.app/diet-coke.jpg',
+                value: `${ORIGIN}/diet-coke.jpg`,
               },
             ],
             id: nanoid(),
@@ -246,7 +246,7 @@ export const SAMPLE_DATA = {
             },
             photos: [
               {
-                value: 'https://wjhjnr.csb.app/sprite.jpg',
+                value: `${ORIGIN}/sprite.jpg`,
               },
             ],
             id: nanoid(),
@@ -258,7 +258,7 @@ export const SAMPLE_DATA = {
             },
             photos: [
               {
-                value: 'https://wjhjnr.csb.app/fanta.jpg',
+                value: `${ORIGIN}/fanta.jpg`,
               },
             ],
             id: nanoid(),
@@ -270,7 +270,7 @@ export const SAMPLE_DATA = {
             },
             photos: [
               {
-                value: 'https://wjhjnr.csb.app/red-bull.jpeg',
+                value: `${ORIGIN}/red-bull.jpeg`,
               },
             ],
             id: nanoid(),
@@ -282,7 +282,7 @@ export const SAMPLE_DATA = {
             },
             photos: [
               {
-                value: 'https://wjhjnr.csb.app/dr-thanh.jpg',
+                value: `${ORIGIN}/dr-thanh.jpg`,
               },
             ],
             id: nanoid(),
@@ -294,7 +294,7 @@ export const SAMPLE_DATA = {
             },
             photos: [
               {
-                value: 'https://wjhjnr.csb.app/0-degree.jpg',
+                value: `${ORIGIN}/0-degree.jpg`,
               },
             ],
             id: nanoid(),
@@ -306,7 +306,7 @@ export const SAMPLE_DATA = {
             },
             photos: [
               {
-                value: 'https://wjhjnr.csb.app/c2.jpeg',
+                value: `${ORIGIN}/c2.jpeg`,
               },
             ],
             id: nanoid(),
@@ -318,7 +318,7 @@ export const SAMPLE_DATA = {
             },
             photos: [
               {
-                value: 'https://wjhjnr.csb.app/revive.jpeg',
+                value: `${ORIGIN}/revive.jpeg`,
               },
             ],
             id: nanoid(),
@@ -330,7 +330,7 @@ export const SAMPLE_DATA = {
             },
             photos: [
               {
-                value: 'https://wjhjnr.csb.app/tea+-plus.png',
+                value: `${ORIGIN}/tea+-plus.png`,
               },
             ],
             id: nanoid(),
@@ -342,7 +342,7 @@ export const SAMPLE_DATA = {
             },
             photos: [
               {
-                value: 'https://wjhjnr.csb.app/247.jpg',
+                value: `${ORIGIN}/247.jpg`,
               },
             ],
             id: nanoid(),
@@ -354,7 +354,7 @@ export const SAMPLE_DATA = {
             },
             photos: [
               {
-                value: 'https://wjhjnr.csb.app/number-one.jpg',
+                value: `${ORIGIN}/number-one.jpg`,
               },
             ],
             id: nanoid(),

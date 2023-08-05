@@ -21,7 +21,7 @@ const Settings = () => {
         const { wifi, currency } = values
         const uid = user.uid
         const settingsData = {
-          wifi,
+          ...(wifi ? { wifi } : {}),
           currency,
         }
         const settingsDocRef = getDocRef('users', uid)

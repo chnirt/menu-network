@@ -133,7 +133,11 @@ const NewDish = () => {
       >
         <Form.Header>{isEditMode ? 'Edit Dish' : 'New Dish'}</Form.Header>
         <Form.Item name="uploadMethod" label="Upload Method">
-          <Radio.Group>
+          <Radio.Group
+            onChange={() => {
+              form.setFieldsValue({ dishFiles: [] })
+            }}
+          >
             <Space>
               <Radio value="file">File</Radio>
               <Radio value="link">Link</Radio>
@@ -151,12 +155,20 @@ const NewDish = () => {
                 const isJpgOrPng =
                   file.type === 'image/jpeg' || file.type === 'image/png'
                 if (!isJpgOrPng) {
+                  Toast.show({
+                    icon: 'error',
+                    content: 'You can only upload JPG/PNG file!',
+                  })
                   return Promise.reject(
                     new Error('You can only upload JPG/PNG file!')
                   )
                 }
                 const isLt2M = file.size / 1024 / 1024 < 2
                 if (!isLt2M) {
+                  Toast.show({
+                    icon: 'error',
+                    content: 'Image must smaller than 2MB!',
+                  })
                   return Promise.reject(
                     new Error('Image must smaller than 2MB!')
                   )

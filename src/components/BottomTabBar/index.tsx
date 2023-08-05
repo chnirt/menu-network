@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import {
   // CompassOutline,
@@ -19,29 +19,31 @@ const BottomTabBar: FC = () => {
     navigate(value)
   }
 
-  const tabs = [
-    // {
-    //   key: routes.dashboard,
-    //   // title: "Dashboard",
-    //   icon: <CompassOutline />,
-    // },
-    {
-      key: routes.menu.replace(':menuId', auth.currentUser?.uid ?? ''),
-      // title: "Menu",
-      icon: <UnorderedListOutline />,
-    },
-    // {
-    //   key: routes.order,
-    //   // title: "Order",
-    //   icon: <ShopbagOutline />,
-    // },
-    {
-      key: routes.me,
-      // title: "Profile",
-      icon: <UserOutline />,
-    },
-  ]
-
+  const tabs = useMemo(
+    () => [
+      // {
+      //   key: routes.dashboard,
+      //   // title: "Dashboard",
+      //   icon: <CompassOutline />,
+      // },
+      {
+        key: routes.menu.replace(':menuId', auth.currentUser?.uid ?? ''),
+        // title: "Menu",
+        icon: <UnorderedListOutline />,
+      },
+      // {
+      //   key: routes.order,
+      //   // title: "Order",
+      //   icon: <ShopbagOutline />,
+      // },
+      {
+        key: routes.me,
+        // title: "Profile",
+        icon: <UserOutline />,
+      },
+    ],
+    []
+  )
   return (
     <TabBar
       className="bg-white pb-safe"
