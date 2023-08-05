@@ -1,11 +1,7 @@
-import { FC, useMemo } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
-import {
-  // CompassOutline,
-  // ShopbagOutline,
-  UnorderedListOutline,
-  UserOutline,
-} from 'antd-mobile-icons'
+import { FC, useCallback, useMemo } from 'react'
+import { generatePath, useLocation, useNavigate } from 'react-router-dom'
+import { MenuSquare, User2 } from 'lucide-react'
+// import { CompassOutline, ShopbagOutline } from 'antd-mobile-icons'
 import { TabBar } from 'antd-mobile'
 import { routes } from '../../routes'
 import { auth } from '../../firebase'
@@ -15,10 +11,9 @@ const BottomTabBar: FC = () => {
   const location = useLocation()
   const { pathname } = location
 
-  const setRouteActive = (value: string) => {
+  const setRouteActive = useCallback((value: string) => {
     navigate(value)
-  }
-
+  }, [])
   const tabs = useMemo(
     () => [
       // {
@@ -27,9 +22,9 @@ const BottomTabBar: FC = () => {
       //   icon: <CompassOutline />,
       // },
       {
-        key: routes.menu.replace(':menuId', auth.currentUser?.uid ?? ''),
+        key: generatePath(routes.menu, { menuId: auth.currentUser?.uid }),
         // title: "Menu",
-        icon: <UnorderedListOutline />,
+        icon: <MenuSquare />,
       },
       // {
       //   key: routes.order,
@@ -39,7 +34,7 @@ const BottomTabBar: FC = () => {
       {
         key: routes.me,
         // title: "Profile",
-        icon: <UserOutline />,
+        icon: <User2 />,
       },
     ],
     []

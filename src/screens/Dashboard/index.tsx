@@ -1,13 +1,13 @@
 import { ErrorBlock, NavBar } from 'antd-mobile'
 import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { generatePath, useNavigate } from 'react-router-dom'
 import { routes } from '../../routes'
 import { auth } from '../../firebase'
 
 const Dashboard = () => {
   const navigate = useNavigate()
   useEffect(() => {
-    navigate(routes.menu.replace(':menuId', auth.currentUser?.uid ?? ''))
+    navigate(generatePath(routes.menu, { menuId: auth.currentUser?.uid }))
   }, [])
   return (
     <div>

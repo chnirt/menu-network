@@ -1,6 +1,6 @@
 import { Form, Input, Button, Toast } from 'antd-mobile'
 import { Fragment } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 // import useAuth from "../../hooks/useAuth";
 import { routes } from '../../routes'
 import { signInWithEmailAndPasswordFirebase } from '../../firebase/service'
@@ -13,7 +13,6 @@ import { IS_DEVELOP, eventNames } from '../../constants'
 const initialValues = MASTER_MOCK_DATA.LOGIN
 
 const Login = () => {
-  const navigate = useNavigate()
   // const { login } = useAuth();
 
   const onFinish = async (values: typeof initialValues) => {
@@ -84,14 +83,11 @@ const Login = () => {
           <PasswordInput autoComplete="current-password" placeholder="******" />
         </Form.Item>
       </Form>
-      <Button
-        color="primary"
-        fill="none"
-        shape="rounded"
-        onClick={() => navigate(routes.register)}
-      >
-        CREATE ACCOUNT
-      </Button>
+      <Link to={routes.register}>
+        <Button color="primary" fill="none" shape="rounded">
+          CREATE ACCOUNT
+        </Button>
+      </Link>
     </Fragment>
   )
 }

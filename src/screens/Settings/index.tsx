@@ -1,10 +1,21 @@
-import { Button, Form, Input, NavBar, Radio, Space, Toast } from 'antd-mobile'
+import {
+  Button,
+  Form,
+  ImageUploadItem,
+  ImageUploader,
+  Input,
+  NavBar,
+  Radio,
+  Space,
+  Toast,
+} from 'antd-mobile'
 import { useNavigate } from 'react-router-dom'
 import { MASTER_MOCK_DATA } from '../../mocks'
 import { Loading } from '../../global'
 import { useCallback, useEffect } from 'react'
 import useAuth from '../../hooks/useAuth'
 import { getDocRef, updateDocument } from '../../firebase/service'
+import { uploadStorageBytesResumable } from '../../firebase/storage'
 
 const initialValues = MASTER_MOCK_DATA.SETTINGS
 
@@ -18,12 +29,15 @@ const Settings = () => {
       if (user === null) return
       try {
         Loading.get.show()
-        const { wifi, currency } = values
+        const { logo, wifi, currency }: any = values
         const uid = user.uid
+        console.log(logo)
         const settingsData = {
           ...(wifi ? { wifi } : {}),
+          ...(logo.length > 0 ? { logo: logo[0].url } : {}),
           currency,
         }
+        console.log(settingsData)
         const settingsDocRef = getDocRef('users', uid)
         await updateDocument(settingsDocRef, settingsData)
         await fetchUser(user)
@@ -47,7 +61,11 @@ const Settings = () => {
   )
 
   useEffect(() => {
-    form.setFieldsValue({ wifi: user?.wifi, currency: user?.currency })
+    form.setFieldsValue({
+      ...(user?.logo ? { logo: [{ url: user.logo }] } : {}),
+      ...(user?.wifi ? { wifi: user.wifi } : {}),
+      ...(user?.currency ? { currency: user.currency } : {}),
+    })
   }, [user])
 
   return (
@@ -80,6 +98,44 @@ const Settings = () => {
         // }
       >
         <Form.Header>Settings</Form.Header>
+        <Form.Item name="logo" label="Logo">
+          <ImageUploader
+            upload={function (file: File): Promise<ImageUploadItem> {
+              const isJpgOrPng =
+                file.type === 'image/jpeg' || file.type === 'image/png'
+              if (!isJpgOrPng) {
+                Toast.show({
+                  icon: 'error',
+                  content: 'You can only upload JPG/PNG file!',
+                })
+                return Promise.reject(
+                  new Error('You can only upload JPG/PNG file!')
+                )
+              }
+              const isLt2M = file.size / 1024 / 1024 < 2
+              if (!isLt2M) {
+                Toast.show({
+                  icon: 'error',
+                  content: 'Image must smaller than 2MB!',
+                })
+                return Promise.reject(new Error('Image must smaller than 2MB!'))
+              }
+
+              return new Promise((resolve, reject) => {
+                uploadStorageBytesResumable(
+                  file,
+                  undefined,
+                  (error) => reject(error),
+                  async ({ downloadURL }) =>
+                    resolve({
+                      url: downloadURL,
+                    })
+                )
+              })
+            }}
+            maxCount={1}
+          />
+        </Form.Item>
         <Form.Item
           name="wifi"
           label="Wifi"

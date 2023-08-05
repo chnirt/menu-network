@@ -99,6 +99,7 @@ const NewCategory = () => {
             initialValues={initialValues}
             layout="horizontal"
             onFinish={onFinish}
+            mode="card"
             // footer={
             //   <Button
             //     block

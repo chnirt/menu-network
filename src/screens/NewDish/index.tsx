@@ -125,6 +125,7 @@ const NewDish = () => {
         initialValues={initialValues}
         layout="horizontal"
         onFinish={onFinish}
+        mode="card"
         // footer={
         //   <Button block type="submit" color="primary" size="large">
         //     {isEditMode ? "EDIT" : "CREATE"}

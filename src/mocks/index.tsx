@@ -23,6 +23,7 @@ export const MASTER_MOCK_DATA = {
     dishFiles: [],
   },
   SETTINGS: {
+    logo: [],
     wifi: IS_DEVELOP ? '12345678' : '',
     currency: IS_DEVELOP ? 'vnd' : '',
   },
@@ -83,8 +84,7 @@ export const SAMPLE_DATA = {
             },
             photos: [
               {
-                value:
-                  `${ORIGIN}/peach-orange-lemongrass-tea.jpeg`,
+                value: `${ORIGIN}/peach-orange-lemongrass-tea.jpeg`,
               },
             ],
             id: nanoid(),

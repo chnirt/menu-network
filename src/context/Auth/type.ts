@@ -5,6 +5,7 @@ export type IUser = User & {
   fullName?: string
   wifi?: string
   currency?: string
+  logo?: string
 }
 
 export type AuthContextType = {

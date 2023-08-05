@@ -1,11 +1,12 @@
 import { Card, NavBar } from 'antd-mobile'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import RQRCode from 'qrcode.react'
 import { ORIGIN } from '../../constants'
 
 const QRCode = () => {
   const navigate = useNavigate()
   const { menuId } = useParams()
+  const location = useLocation()
   return (
     <div>
       <NavBar
@@ -20,7 +21,7 @@ const QRCode = () => {
             renderAs="svg"
             value={`${ORIGIN}/menu/${menuId}`}
             imageSettings={{
-              src: `${ORIGIN}/favicon.png`,
+              src: location.state?.logo ?? `${ORIGIN}/favicon.png`,
               x: undefined,
               y: undefined,
               height: 24,

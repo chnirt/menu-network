@@ -2,6 +2,7 @@ import { createBrowserRouter } from 'react-router-dom'
 import { Loadable, PrivateRoute, PublicRoute } from './utils'
 import Home from '../screens/Home'
 import App from '../screens/App'
+import Error from '../screens/Error'
 
 export const routes = {
   login: '/login',
@@ -18,12 +19,15 @@ export const routes = {
   newDish: '/categories/:categoryId/new-dish',
   updateDish: '/categories/:categoryId/dishes/:dishId',
   settings: '/settings',
+
+  error: '/error',
 }
 
 export const router = createBrowserRouter([
   {
     // element: <Loadable {...{ factory: () => import("../screens/Home") }} />,
     element: <Home />,
+    errorElement: <Error />,
     children: [
       {
         element: <PrivateRoute />,
@@ -168,6 +172,10 @@ export const router = createBrowserRouter([
             ),
           },
         ],
+      },
+      {
+        element: <Error />,
+        path: routes.error,
       },
     ],
   },

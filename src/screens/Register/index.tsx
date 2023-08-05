@@ -1,6 +1,6 @@
 import { Form, Input, Button, Toast } from 'antd-mobile'
 import { Fragment } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 // import useAuth from "../../hooks/useAuth";
 import { routes } from '../../routes'
 import {
@@ -18,7 +18,6 @@ import { IS_DEVELOP, eventNames } from '../../constants'
 const initialValues = MASTER_MOCK_DATA.REGISTER
 
 const Register = () => {
-  const navigate = useNavigate()
   // const { login } = useAuth();
   const onFinish = async (values: typeof initialValues) => {
     try {
@@ -175,14 +174,11 @@ const Register = () => {
           />
         </Form.Item>
       </Form>
-      <Button
-        color="primary"
-        fill="none"
-        shape="rounded"
-        onClick={() => navigate(routes.login)}
-      >
-        LOGIN
-      </Button>
+      <Link to={routes.login}>
+        <Button color="primary" fill="none" shape="rounded">
+          LOGIN
+        </Button>
+      </Link>
     </Fragment>
   )
 }

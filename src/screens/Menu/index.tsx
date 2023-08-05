@@ -9,7 +9,7 @@ import {
   Toast,
 } from 'antd-mobile'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, generatePath, useNavigate, useParams } from 'react-router-dom'
 import { useDebounce } from 'react-use'
 import { SystemQRcodeOutline } from 'antd-mobile-icons'
 import {
@@ -25,6 +25,12 @@ import { getDocRef, getDocument } from '../../firebase/service'
 import useAuth from '../../hooks/useAuth'
 import useMenu from '../../hooks/useMenu'
 
+type IMenu = {
+  wifi?: string
+  currency?: string
+  logo?: string
+}
+
 const Menu = () => {
   const { user } = useAuth()
   const { menuId } = useParams()
@@ -32,19 +38,18 @@ const Menu = () => {
   const { categories, fetchCategory, refetchCategory } = useMenu()
   const [searchText, setSearchText] = useState('')
   const [debouncedSearchText, setDebouncedSearchText] = useState('')
-  const [wifi, setWifi] = useState<string | null>(null)
-  const [currency, setCurrency] = useState<string | null>(null)
+  const [menu, setMenu] = useState<IMenu | null>(null)
   const formatCategories = categories?.map((category) => ({
     ...category,
     data: category.data.map((item: any) => ({
       ...item,
       price:
-        currency === 'vnd'
+        menu?.currency === 'vnd'
           ? Number(item.price).toLocaleString('vi-VN', {
               style: 'currency',
               currency: 'VND',
             })
-          : currency === 'usd'
+          : menu?.currency === 'usd'
           ? Number(item.price).toLocaleString('en-US', {
               style: 'currency',
               currency: 'USD',
@@ -55,23 +60,16 @@ const Menu = () => {
   const filterCategories = useMemo(() => {
     if (formatCategories === undefined) return undefined
     if (debouncedSearchText.length === 0) return formatCategories
-    const foundDish = formatCategories
-      .map((dishes) => dishes.data)
-      .flat()
-      .find((dish) =>
-        String(dish.name)
-          .toLowerCase()
-          .includes(String(debouncedSearchText).toLowerCase())
-      )
-    if (foundDish) {
-      const foundCategory = formatCategories.find(
-        (category) => category.id === foundDish.parentId
-      )
-      const filter = [{ ...foundCategory, data: [foundDish] }]
-      return filter
-    } else {
-      return []
-    }
+    return formatCategories
+      .map((category) => ({
+        ...category,
+        data: category?.data.filter((dish: any) =>
+          String(dish.name)
+            .toLowerCase()
+            .includes(String(debouncedSearchText).toLowerCase())
+        ),
+      }))
+      .filter((category) => category?.data.length > 0)
   }, [formatCategories, debouncedSearchText])
 
   useDebounce(
@@ -84,14 +82,30 @@ const Menu = () => {
 
   const fetchMenu = useCallback(async (menuId: string) => {
     if (menuId === undefined) return
-    const menuDocRef = getDocRef('users', menuId)
-    const menuDocData: any = await getDocument(menuDocRef)
-    setWifi(menuDocData.wifi)
-    setCurrency(menuDocData.currency)
+    try {
+      const menuDocRef = getDocRef('users', menuId)
+      const menuDocData: any = await getDocument(menuDocRef)
+      setMenu(menuDocData)
+      if (typeof fetchCategory === 'function') {
+        fetchCategory(menuId)
+      }
+    } catch (error) {
+      navigate(routes.error)
+    }
   }, [])
 
   const handleShareQRCode = menuId
-    ? () => navigate(routes.qrCode.replace(':menuId', menuId))
+    ? () =>
+        navigate(
+          generatePath(routes.qrCode, {
+            menuId,
+          }),
+          {
+            state: {
+              logo: menu?.logo,
+            },
+          }
+        )
     : undefined
   const handleCopyWifi = useCallback(() => {
     Toast.show({
@@ -101,9 +115,6 @@ const Menu = () => {
   }, [])
 
   useEffect(() => {
-    if (menuId && typeof fetchCategory === 'function') {
-      fetchCategory(menuId)
-    }
     if (menuId) {
       fetchMenu(menuId)
     }
@@ -137,14 +148,11 @@ const Menu = () => {
 
   const right = useMemo(
     () => (
-      <Button
-        color="primary"
-        fill="none"
-        size="mini"
-        onClick={() => navigate(routes.newCategory)}
-      >
-        NEW CATEGORY
-      </Button>
+      <Link to={routes.newCategory}>
+        <Button color="primary" fill="none" size="mini">
+          NEW CATEGORY
+        </Button>
+      </Link>
     ),
     []
   )
@@ -228,10 +236,10 @@ const Menu = () => {
             </div>
           }
           onClickNewDish={(categoryId: string) =>
-            navigate(routes.newDish.replace(':categoryId', categoryId))
+            navigate(generatePath(routes.newDish, { categoryId }))
           }
           onUpdateConfirmList={(categoryId: string) =>
-            navigate(routes.updateCategory.replace(':categoryId', categoryId))
+            navigate(generatePath(routes.updateCategory, { categoryId }))
           }
           onDeleteConfirmList={async (
             tabItem: QueryDocumentSnapshot<DocumentData, DocumentData>
@@ -254,9 +262,10 @@ const Menu = () => {
             categoryId: string
           ) =>
             navigate(
-              routes.updateDish
-                .replace(':categoryId', categoryId)
-                .replace(':dishId', dataItem.id)
+              generatePath(routes.updateDish, {
+                categoryId,
+                dishId: dataItem.id,
+              })
             )
           }
           readOnly={readOnly}
@@ -286,7 +295,7 @@ const Menu = () => {
         </FloatingBubble>
       )}
 
-      {filterCategories !== undefined && wifi ? (
+      {filterCategories !== undefined && menu?.wifi ? (
         <FloatingBubble
           axis="x"
           magnetic="x"
@@ -297,8 +306,8 @@ const Menu = () => {
             '--edge-distance': '12px',
           }}
         >
-          {wifi ? (
-            <CopyToClipboard text={wifi} onCopy={handleCopyWifi}>
+          {menu?.wifi ? (
+            <CopyToClipboard text={menu?.wifi} onCopy={handleCopyWifi}>
               <Wifi fontSize={16} />
             </CopyToClipboard>
           ) : (
