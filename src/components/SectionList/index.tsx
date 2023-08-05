@@ -16,8 +16,8 @@ import { Action } from 'antd-mobile/es/components/swipe-action'
 // import VerticalSection from "../VerticalSection";
 import ListHeader from '../ListHeader'
 
-const tabContainer = 42
-const tabLine = 2
+const tabContainer = 38
+const tabLine = 0
 const navBarHeight = 45
 const searchHeight = 32
 const top = navBarHeight + searchHeight
@@ -181,7 +181,7 @@ const SectionList = ({
       <div
         className={`sticky z-[100] bg-white`}
         style={{
-          top: top,
+          top,
         }}
       >
         <Tabs

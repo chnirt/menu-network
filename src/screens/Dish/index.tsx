@@ -21,7 +21,11 @@ const Dish = () => {
       <Swiper>
         {dish?.dishFiles.map((dishFile: string, index: number) => (
           <Swiper.Item key={`swiper-${index}`}>
-            <Image src={dishFile} fit="cover" />
+            <Image
+              className="w-full aspect-square"
+              src={dishFile}
+              fit="cover"
+            />
           </Swiper.Item>
         ))}
       </Swiper>

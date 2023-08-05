@@ -87,6 +87,7 @@ const NewDish = () => {
   const fetchDishById = useCallback(
     async (dishId: string) => {
       if (user === null || categoryId === undefined) return
+      Loading.get.show()
       const dishDocRef = getDocRef(
         'users',
         user?.uid,
@@ -103,6 +104,7 @@ const NewDish = () => {
           url: dishFile,
         })),
       })
+      Loading.get.hide()
     },
     [user, categoryId, form]
   )

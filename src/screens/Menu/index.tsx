@@ -5,7 +5,6 @@ import {
   NavBar,
   PullToRefresh,
   SearchBar,
-  Skeleton,
   Toast,
 } from 'antd-mobile'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -18,18 +17,14 @@ import {
 } from 'firebase/firestore'
 import { QrCode, Wifi } from 'lucide-react'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
+import { pick } from 'lodash'
 import SectionList, { tabHeight } from '../../components/SectionList'
 import { routes } from '../../routes'
 import { getDocRef, getDocument } from '../../firebase/service'
 import useAuth from '../../hooks/useAuth'
 import useMenu from '../../hooks/useMenu'
-import { pick } from 'lodash'
-
-type IMenu = {
-  wifi?: string
-  currency?: string
-  logo?: string
-}
+import MenuLoading from './components/MenuLoading'
+import { IMenu } from './type'
 
 const Menu = () => {
   const { user } = useAuth()
@@ -39,24 +34,30 @@ const Menu = () => {
   const [searchText, setSearchText] = useState('')
   const [debouncedSearchText, setDebouncedSearchText] = useState('')
   const [menu, setMenu] = useState<IMenu | null>(null)
-  const formatCategories = categories?.map((category) => ({
-    ...category,
-    data: category.data.map((item: any) => ({
-      ...item,
-      price:
-        menu?.currency === 'vnd'
-          ? Number(item.price).toLocaleString('vi-VN', {
-              style: 'currency',
-              currency: 'VND',
-            })
-          : menu?.currency === 'usd'
-          ? Number(item.price).toLocaleString('en-US', {
-              style: 'currency',
-              currency: 'USD',
-            })
-          : item.price,
-    })),
-  }))
+  const navigate = useNavigate()
+
+  const formatCategories = useMemo(
+    () =>
+      categories?.map((category) => ({
+        ...category,
+        data: category.data.map((item: any) => ({
+          ...item,
+          price:
+            menu?.currency === 'vnd'
+              ? Number(item.price).toLocaleString('vi-VN', {
+                  style: 'currency',
+                  currency: 'VND',
+                })
+              : menu?.currency === 'usd'
+              ? Number(item.price).toLocaleString('en-US', {
+                  style: 'currency',
+                  currency: 'USD',
+                })
+              : item.price,
+        })),
+      })),
+    [categories]
+  )
   const filterCategories = useMemo(() => {
     if (formatCategories === undefined) return undefined
     if (debouncedSearchText.length === 0) return formatCategories
@@ -107,6 +108,7 @@ const Menu = () => {
           }
         )
     : undefined
+
   const handleCopyWifi = useCallback(() => {
     Toast.show({
       icon: 'success',
@@ -114,13 +116,79 @@ const Menu = () => {
     })
   }, [])
 
+  const onRefresh = useCallback(async () => {
+    if (menuId && typeof refetchCategory === 'function') {
+      refetchCategory(menuId)
+    }
+    if (menuId) {
+      fetchMenu(menuId)
+    }
+  }, [])
+
+  const onClickNewDish = useCallback(
+    (categoryId: string) =>
+      navigate(generatePath(routes.newDish, { categoryId })),
+    []
+  )
+
+  const onUpdateConfirmList = useCallback(
+    (categoryId: string) =>
+      navigate(generatePath(routes.updateCategory, { categoryId })),
+    []
+  )
+
+  const onDeleteConfirmList = useCallback(
+    async (tabItem: QueryDocumentSnapshot<DocumentData, DocumentData>) => {
+      await deleteDoc(tabItem.ref)
+      if (menuId && typeof fetchCategory === 'function') {
+        fetchCategory(menuId)
+      }
+    },
+    []
+  )
+
+  const onDeleteConfirmListItem = useCallback(
+    async (dataItem: QueryDocumentSnapshot<DocumentData, DocumentData>) => {
+      await deleteDoc(dataItem.ref)
+      if (menuId && typeof fetchCategory === 'function') {
+        fetchCategory(menuId)
+      }
+    },
+    []
+  )
+
+  const onUpdateConfirmListItem = useCallback(
+    (
+      dataItem: QueryDocumentSnapshot<DocumentData, DocumentData>,
+      categoryId: string
+    ) =>
+      navigate(
+        generatePath(routes.updateDish, {
+          categoryId,
+          dishId: dataItem.id,
+        })
+      ),
+    []
+  )
+
+  const onClickDish = useCallback(
+    (dataItem: QueryDocumentSnapshot<DocumentData, DocumentData>) => {
+      // console.log(dataItem)
+      navigate(generatePath(routes.dish, { dishId: dataItem?.id }), {
+        state: {
+          dish: pick(dataItem, ['id', 'dishFiles', 'dishName', 'price']),
+        },
+      })
+    },
+    []
+  )
+
   useEffect(() => {
     if (menuId) {
       fetchMenu(menuId)
     }
   }, [menuId])
 
-  const navigate = useNavigate()
   useEffect(() => {
     if (debouncedSearchText.length > 0 && Array.isArray(categories)) {
       const isScroll = !true
@@ -169,113 +237,21 @@ const Menu = () => {
       <div className="sticky top-[45px] z-[100] bg-white">
         <SearchBar
           placeholder="Search"
-          // showCancelButton
-          // cancelText="Cancel"
           value={searchText}
           onChange={setSearchText}
         />
       </div>
-      <PullToRefresh
-        onRefresh={async () => {
-          if (menuId && typeof refetchCategory === 'function') {
-            refetchCategory(menuId)
-          }
-          if (menuId) {
-            fetchMenu(menuId)
-          }
-        }}
-      >
+      <PullToRefresh onRefresh={onRefresh}>
         <SectionList
-          // data={data}
           data={filterCategories}
           myKey="title"
-          loadingComponent={
-            <div>
-              <div className="flex">
-                {Array(3)
-                  .fill(null)
-                  .map((_, i) => (
-                    <Skeleton.Title
-                      key={`sk-menu-tab-${i}`}
-                      className="mx-3 !w-1/3"
-                      animated
-                    />
-                  ))}
-              </div>
-              <div>
-                {Array(2)
-                  .fill(null)
-                  .map((_, ii) => (
-                    <div key={`sk-tab-content-${ii}`}>
-                      <div className="flex justify-between">
-                        <Skeleton.Title className="!w-1/4" animated />
-                        <Skeleton.Title className="!w-1/4" animated />
-                      </div>
-                      {Array(3)
-                        .fill(null)
-                        .map((_, iii) => (
-                          <div
-                            key={`sk-tab-content-sub-${iii}`}
-                            className="flex"
-                          >
-                            <div className="flex w-full">
-                              <div className="pr-3">
-                                <Skeleton.Title
-                                  className="!w-8 !h-8 !rounded-full"
-                                  animated
-                                />
-                              </div>
-                              <Skeleton.Title className="!w-1/4" animated />
-                            </div>
-                            <Skeleton.Title className="!w-1/4" animated />
-                          </div>
-                        ))}
-                    </div>
-                  ))}
-              </div>
-            </div>
-          }
-          onClickNewDish={(categoryId: string) =>
-            navigate(generatePath(routes.newDish, { categoryId }))
-          }
-          onUpdateConfirmList={(categoryId: string) =>
-            navigate(generatePath(routes.updateCategory, { categoryId }))
-          }
-          onDeleteConfirmList={async (
-            tabItem: QueryDocumentSnapshot<DocumentData, DocumentData>
-          ) => {
-            await deleteDoc(tabItem.ref)
-            if (menuId && typeof fetchCategory === 'function') {
-              fetchCategory(menuId)
-            }
-          }}
-          onDeleteConfirmListItem={async (
-            dataItem: QueryDocumentSnapshot<DocumentData, DocumentData>
-          ) => {
-            await deleteDoc(dataItem.ref)
-            if (menuId && typeof fetchCategory === 'function') {
-              fetchCategory(menuId)
-            }
-          }}
-          onUpdateConfirmListItem={(
-            dataItem: QueryDocumentSnapshot<DocumentData, DocumentData>,
-            categoryId: string
-          ) =>
-            navigate(
-              generatePath(routes.updateDish, {
-                categoryId,
-                dishId: dataItem.id,
-              })
-            )
-          }
-          onClickDish={(dataItem) => {
-            // console.log(dataItem)
-            navigate(generatePath(routes.dish, { dishId: dataItem?.id }), {
-              state: {
-                dish: pick(dataItem, ['id', 'dishFiles', 'dishName', 'price']),
-              },
-            })
-          }}
+          loadingComponent={<MenuLoading />}
+          onClickNewDish={onClickNewDish}
+          onUpdateConfirmList={onUpdateConfirmList}
+          onDeleteConfirmList={onDeleteConfirmList}
+          onDeleteConfirmListItem={onDeleteConfirmListItem}
+          onUpdateConfirmListItem={onUpdateConfirmListItem}
+          onClickDish={onClickDish}
           emptyComponent={
             <Empty
               style={{ padding: '64px 0' }}

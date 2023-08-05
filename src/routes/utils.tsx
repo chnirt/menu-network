@@ -16,7 +16,11 @@ type ILoadable = {
 export const Loadable = ({ factory, fallback, ...rest }: ILoadable) => {
   const LazyComponent = lazy(factory)
   const { pathname } = useLocation()
-
+  return (
+    <Suspense fallback={fallback ?? <Loading />}>
+      <LazyComponent {...rest} />
+    </Suspense>
+  )
   return (
     <Suspense fallback={fallback ?? <Loading />}>
       <FadeFramer pathname={pathname}>

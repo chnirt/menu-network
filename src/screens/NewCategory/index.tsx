@@ -66,6 +66,7 @@ const NewCategory = () => {
   const fetchCategoryById = useCallback(
     async (categoryId: string) => {
       if (user === null) return
+      Loading.get.show()
       const categoryDocRef = getDocRef(
         'users',
         user?.uid,
@@ -75,6 +76,7 @@ const NewCategory = () => {
       setCategoryDocRefState(categoryDocRef)
       const dishDocData: any = await getDocument(categoryDocRef)
       form.setFieldsValue(dishDocData)
+      Loading.get.hide()
     },
     [user, categoryId]
   )
