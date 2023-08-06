@@ -215,7 +215,11 @@ const Menu = () => {
   )
 
   return (
-    <div className="pb-[132px]">
+    <div
+      style={{
+        paddingBottom: 60 * 3 + 12,
+      }}
+    >
       <NavBar
         className="sticky top-0 z-[100] bg-white"
         back={null}
