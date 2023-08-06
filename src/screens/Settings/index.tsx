@@ -81,21 +81,23 @@ const Settings = () => {
         initialValues={initialValues}
         layout="horizontal"
         onFinish={onFinish}
-        // footer={
-        //   <Button
-        //     block
-        //     type="submit"
-        //     color="primary"
-        //     size="large"
-        //     disabled={
-        //       !form.isFieldsTouched(true) ||
-        //       form.getFieldsError().filter(({ errors }) => errors.length)
-        //         .length > 0
-        //     }
-        //   >
-        //     {isEditMode ? "EDIT" : "CREATE"}
-        //   </Button>
-        // }
+        mode="card"
+        footer={
+          <Button
+            block
+            type="submit"
+            color="primary"
+            size="large"
+            shape="rounded"
+            // disabled={
+            //   !form.isFieldsTouched(true) ||
+            //   form.getFieldsError().filter(({ errors }) => errors.length)
+            //     .length > 0
+            // }
+          >
+            SAVE
+          </Button>
+        }
       >
         <Form.Header>Settings</Form.Header>
         <Form.Item name="logo" label="Logo">
@@ -168,7 +170,7 @@ const Settings = () => {
           </Radio.Group>
         </Form.Item>
 
-        <Form.Item shouldUpdate className="submit" noStyle>
+        {/* <Form.Item shouldUpdate className="submit" noStyle>
           {() => (
             <Button
               block
@@ -189,7 +191,7 @@ const Settings = () => {
               SAVE
             </Button>
           )}
-        </Form.Item>
+        </Form.Item> */}
       </Form>
     </div>
   )
