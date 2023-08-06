@@ -5,13 +5,13 @@ import {
   useCallback,
   useState,
 } from 'react'
-import { getColGroupRef, getColRef } from '../../firebase/service'
 import { getDocs, query, where } from 'firebase/firestore'
+import { getColGroupRef, getColRef } from '../../firebase/service'
 
 type MenuContextType = {
   categories?: any[]
-  fetchCategory?: (menuId: string) => void
-  refetchCategory?: (menuId: string) => void
+  fetchMenu?: (menuId: string) => void
+  refetchMenu?: (menuId: string) => void
 }
 
 export const MenuContext = createContext<MenuContextType>({
@@ -22,7 +22,14 @@ export const MenuProvider: FC<PropsWithChildren> = ({ children }) => {
   const [categories, setCategories] = useState<any[] | undefined>()
 
   let querySnapshot
-  const fetchCategory = useCallback(async (menuId: string) => {
+  const fetchMenu = useCallback(async (menuId: string) => {
+    if (categories?.length) return
+    refetchMenu(menuId)
+    return
+  }, [categories])
+
+  const refetchMenu = useCallback(async (menuId: string) => {
+    setCategories(undefined)
     const categoryColGroupRef = getColGroupRef('categories')
     const q = query(categoryColGroupRef, where('uid', '==', menuId))
     querySnapshot = await getDocs(q)
@@ -57,15 +64,9 @@ export const MenuProvider: FC<PropsWithChildren> = ({ children }) => {
     return
   }, [])
 
-  const refetchCategory = useCallback(async (menuId: string) => {
-    setCategories(undefined)
-    fetchCategory(menuId)
-    return
-  }, [])
-
   return (
     <MenuContext.Provider
-      value={{ categories, fetchCategory, refetchCategory }}
+      value={{ categories, fetchMenu, refetchMenu }}
     >
       {children}
     </MenuContext.Provider>

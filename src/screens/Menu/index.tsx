@@ -30,7 +30,7 @@ const Menu = () => {
   const { user } = useAuth()
   const { menuId } = useParams()
   const readOnly = user?.uid !== menuId
-  const { categories, fetchCategory, refetchCategory } = useMenu()
+  const { categories, fetchMenu, refetchMenu } = useMenu()
   const [searchText, setSearchText] = useState('')
   const [debouncedSearchText, setDebouncedSearchText] = useState('')
   const [menu, setMenu] = useState<IMenu | null>(null)
@@ -81,14 +81,14 @@ const Menu = () => {
     [searchText]
   )
 
-  const fetchMenu = useCallback(async (menuId: string) => {
+  const fetchMenu1 = useCallback(async (menuId: string) => {
     if (menuId === undefined) return
     try {
       const menuDocRef = getDocRef('users', menuId)
       const menuDocData: any = await getDocument(menuDocRef)
       setMenu(menuDocData)
-      if (typeof fetchCategory === 'function') {
-        fetchCategory(menuId)
+      if (typeof fetchMenu === 'function') {
+        fetchMenu(menuId)
       }
     } catch (error) {
       navigate(routes.error)
@@ -117,15 +117,15 @@ const Menu = () => {
   }, [])
 
   const onRefresh = useCallback(async () => {
-    if (menuId && typeof refetchCategory === 'function') {
-      refetchCategory(menuId)
+    if (menuId && typeof refetchMenu === 'function') {
+      refetchMenu(menuId)
     }
     if (menuId) {
-      fetchMenu(menuId)
+      fetchMenu1(menuId)
     }
   }, [])
 
-  const onClickNewDish = useCallback(
+  const onClickNewList = useCallback(
     (categoryId: string) =>
       navigate(generatePath(routes.newDish, { categoryId })),
     []
@@ -140,8 +140,8 @@ const Menu = () => {
   const onDeleteConfirmList = useCallback(
     async (tabItem: QueryDocumentSnapshot<DocumentData, DocumentData>) => {
       await deleteDoc(tabItem.ref)
-      if (menuId && typeof fetchCategory === 'function') {
-        fetchCategory(menuId)
+      if (menuId && typeof fetchMenu === 'function') {
+        fetchMenu(menuId)
       }
     },
     []
@@ -150,8 +150,8 @@ const Menu = () => {
   const onDeleteConfirmListItem = useCallback(
     async (dataItem: QueryDocumentSnapshot<DocumentData, DocumentData>) => {
       await deleteDoc(dataItem.ref)
-      if (menuId && typeof fetchCategory === 'function') {
-        fetchCategory(menuId)
+      if (menuId && typeof fetchMenu === 'function') {
+        fetchMenu(menuId)
       }
     },
     []
@@ -171,7 +171,7 @@ const Menu = () => {
     []
   )
 
-  const onClickDish = useCallback(
+  const onClickListItem = useCallback(
     (dataItem: QueryDocumentSnapshot<DocumentData, DocumentData>) => {
       // console.log(dataItem)
       navigate(generatePath(routes.dish, { dishId: dataItem?.id }), {
@@ -185,7 +185,7 @@ const Menu = () => {
 
   useEffect(() => {
     if (menuId) {
-      fetchMenu(menuId)
+      fetchMenu1(menuId)
     }
   }, [menuId])
 
@@ -246,12 +246,12 @@ const Menu = () => {
           data={filterCategories}
           myKey="title"
           loadingComponent={<MenuLoading />}
-          onClickNewDish={onClickNewDish}
+          onClickNewList={onClickNewList}
           onUpdateConfirmList={onUpdateConfirmList}
           onDeleteConfirmList={onDeleteConfirmList}
           onDeleteConfirmListItem={onDeleteConfirmListItem}
           onUpdateConfirmListItem={onUpdateConfirmListItem}
-          onClickDish={onClickDish}
+          onClickListItem={onClickListItem}
           emptyComponent={
             <Empty
               style={{ padding: '64px 0' }}

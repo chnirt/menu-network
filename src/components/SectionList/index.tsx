@@ -25,25 +25,25 @@ export const tabHeight = tabContainer + tabLine + top
 
 const SectionList = ({
   data: tabItems,
-  onClickNewDish,
+  onClickNewList,
   myKey,
   onDeleteConfirmList,
   onUpdateConfirmList,
   onDeleteConfirmListItem,
   onUpdateConfirmListItem,
-  onClickDish,
+  onClickListItem,
   loadingComponent,
   readOnly,
   emptyComponent,
 }: {
   data?: any[]
-  onClickNewDish?: (categoryId: string) => void
+  onClickNewList?: (categoryId: string) => void
   myKey: string
   onDeleteConfirmList?: (tabItem: any) => void
   onUpdateConfirmList?: (categoryId: string) => void
   onDeleteConfirmListItem?: (dataItem: any) => void
   onUpdateConfirmListItem?: (dataItem: any, categoryId: string) => void
-  onClickDish?: (dataItem: any) => void
+  onClickListItem?: (dataItem: any) => void
   loadingComponent?: JSX.Element
   readOnly?: boolean
   emptyComponent?: JSX.Element
@@ -234,9 +234,9 @@ const SectionList = ({
                     <ListHeader
                       {...{
                         title: tabItem.title,
-                        onClickNewDish:
-                          typeof onClickNewDish === 'function'
-                            ? () => onClickNewDish(tabItem.id)
+                        onClickNewList:
+                          typeof onClickNewList === 'function'
+                            ? () => onClickNewList(tabItem.id)
                             : undefined,
                         readOnly,
                       }}
@@ -277,8 +277,8 @@ const SectionList = ({
                             //   />
                             // }
                             onClick={
-                              typeof onClickDish === 'function'
-                                ? () => onClickDish(dataItem)
+                              typeof onClickListItem === 'function'
+                                ? () => onClickListItem(dataItem)
                                 : undefined
                             }
                           >
@@ -303,7 +303,7 @@ const SectionList = ({
           //         color="primary"
           //         fill="none"
           //         size="mini"
-          //         onClick={onClickNewDish}
+          //         onClick={onClickNewList}
           //       >
           //         NEW DISH
           //       </Button>
