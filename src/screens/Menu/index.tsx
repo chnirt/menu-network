@@ -23,6 +23,7 @@ import { routes } from '../../routes'
 import useAuth from '../../hooks/useAuth'
 import useMenu from '../../hooks/useMenu'
 import MenuLoading from './components/MenuLoading'
+import ScrollToTop from '../../components/ScrollToTop '
 
 const Menu = () => {
   const { user } = useAuth()
@@ -287,6 +288,7 @@ const Menu = () => {
           )}
         </FloatingBubble>
       ) : null}
+      <ScrollToTop />
     </div>
   )
 }
