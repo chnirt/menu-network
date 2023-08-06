@@ -225,8 +225,13 @@ const SectionList = ({
               id={`anchor-category-${tabItem[myKey]}`}
             >
               <List
+                mode="card"
+                // header={tabItem.title}
                 header={
                   <SwipeAction
+                    style={{
+                      '--background': 'transparent',
+                    }}
                     ref={swipeActionRef}
                     rightActions={!readOnly ? rightActions : undefined}
                     onAction={(action) => handleOnActionList(action, tabItem)}
@@ -281,6 +286,7 @@ const SectionList = ({
                                 ? () => onClickListItem(dataItem)
                                 : undefined
                             }
+                            arrow={false}
                           >
                             <div className="flex flex-row justify-between items-between">
                               <div>{dataItem.name}</div>

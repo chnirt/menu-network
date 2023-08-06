@@ -12,6 +12,7 @@ import useAuth from '../../hooks/useAuth'
 import { MASTER_MOCK_DATA } from '../../mocks'
 import { DocumentData, DocumentReference } from 'firebase/firestore'
 import { Loading } from '../../global'
+import useMenu from '../../hooks/useMenu'
 
 const initialValues = MASTER_MOCK_DATA.NEW_CATEGORY
 
@@ -21,6 +22,7 @@ const NewCategory = () => {
   const { categoryId } = useParams()
   const isEditMode = Boolean(categoryId)
   const [form] = Form.useForm()
+  const { refetchMenu } = useMenu()
   const [categoryDocRefState, setCategoryDocRefState] =
     useState<DocumentReference<DocumentData, DocumentData> | null>(null)
 
@@ -42,6 +44,11 @@ const NewCategory = () => {
         } else {
           const categoryDocRef = getColRef('users', uid, 'categories')
           await addDocument(categoryDocRef, categoryData)
+        }
+
+        const menuId = uid
+        if (menuId && typeof refetchMenu === 'function') {
+          refetchMenu(menuId)
         }
 
         navigate(-1)
@@ -102,21 +109,22 @@ const NewCategory = () => {
             layout="horizontal"
             onFinish={onFinish}
             mode="card"
-            // footer={
-            //   <Button
-            //     block
-            //     type="submit"
-            //     color="primary"
-            //     size="large"
-            //     disabled={
-            //       !form.isFieldsTouched(true) ||
-            //       form.getFieldsError().filter(({ errors }) => errors.length)
-            //         .length > 0
-            //     }
-            //   >
-            //     {isEditMode ? "EDIT" : "CREATE"}
-            //   </Button>
-            // }
+            footer={
+              <Button
+                block
+                type="submit"
+                color="primary"
+                size="large"
+                shape="rounded"
+                // disabled={
+                //   !form.isFieldsTouched(true) ||
+                //   form.getFieldsError().filter(({ errors }) => errors.length)
+                //     .length > 0
+                // }
+              >
+                {isEditMode ? "EDIT" : "CREATE"}
+              </Button>
+            }
           >
             <Form.Header>
               {isEditMode ? 'Edit Category' : 'New Category'}
@@ -135,7 +143,7 @@ const NewCategory = () => {
               <Input autoComplete="none" placeholder="chnirt" />
             </Form.Item>
 
-            <Form.Item shouldUpdate className="submit" noStyle>
+            {/* <Form.Item shouldUpdate className="submit" noStyle>
               {() => (
                 <Button
                   block
@@ -152,7 +160,7 @@ const NewCategory = () => {
                   {isEditMode ? 'EDIT' : 'CREATE'}
                 </Button>
               )}
-            </Form.Item>
+            </Form.Item> */}
           </Form>
         </Tabs.Tab>
         {/* <Tabs.Tab title="Templates" key="templates">

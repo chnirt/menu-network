@@ -5,7 +5,7 @@ import useAuth from '../../hooks/useAuth'
 const App = () => {
   const { user } = useAuth()
   return (
-    <div className="h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col">
       <div className="flex flex-1 flex-col">
         <Outlet />
       </div>

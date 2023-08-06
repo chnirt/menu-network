@@ -20,7 +20,9 @@ const Home = () => {
       page_path,
     })
   }, [location])
-  return <Outlet context={auth} />
+  return <div className='bg-[#f8f8f8] min-h-screen'>
+    <Outlet context={auth} />
+  </div>
 }
 
 export default Home

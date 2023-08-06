@@ -25,6 +25,7 @@ import useAuth from '../../hooks/useAuth'
 import { MASTER_MOCK_DATA } from '../../mocks'
 import { uploadStorageBytesResumable } from '../../firebase/storage'
 import { Loading } from '../../global'
+import useMenu from '../../hooks/useMenu'
 
 const initialValues = MASTER_MOCK_DATA.NEW_DISH
 
@@ -34,6 +35,7 @@ const NewDish = () => {
   const { categoryId, dishId } = useParams()
   const isEditMode = Boolean(dishId)
   const [form] = Form.useForm()
+  const { refetchMenu } = useMenu()
   const uploadMethod = Form.useWatch('uploadMethod', form)
   const [dishDocRefState, setDishDocRefState] = useState<DocumentReference<
     DocumentData,
@@ -65,6 +67,12 @@ const NewDish = () => {
           )
           await addDocument(dishColRef, dishData)
         }
+
+        const menuId = uid
+        if (menuId && typeof refetchMenu === 'function') {
+          refetchMenu(menuId)
+        }
+
         navigate(-1)
         Toast.show({
           icon: 'success',
@@ -128,11 +136,11 @@ const NewDish = () => {
         layout="horizontal"
         onFinish={onFinish}
         mode="card"
-        // footer={
-        //   <Button block type="submit" color="primary" size="large">
-        //     {isEditMode ? "EDIT" : "CREATE"}
-        //   </Button>
-        // }
+        footer={
+          <Button block type="submit" color="primary" size="large" shape="rounded">
+            {isEditMode ? "EDIT" : "CREATE"}
+          </Button>
+        }
       >
         <Form.Header>{isEditMode ? 'Edit Dish' : 'New Dish'}</Form.Header>
         <Form.Item name="uploadMethod" label="Upload Method">
@@ -203,7 +211,7 @@ const NewDish = () => {
               </Button>
             )}
             renderHeader={({ index }, { remove }) => (
-              <>
+              <div className='flex justify-between items-center'>
                 <span>Link {index + 1}</span>
                 <Button
                   onClick={() => remove(index)}
@@ -213,7 +221,7 @@ const NewDish = () => {
                 >
                   Delete
                 </Button>
-              </>
+              </div>
             )}
           >
             {(fields) =>
@@ -266,7 +274,7 @@ const NewDish = () => {
             // parser={(text) => parseFloat(text.replace("VND", ""))}
           />
         </Form.Item>
-        <Form.Item shouldUpdate className="submit" noStyle>
+        {/* <Form.Item shouldUpdate className="submit" noStyle>
           {() => (
             <Button
               block
@@ -283,7 +291,7 @@ const NewDish = () => {
               {isEditMode ? 'EDIT' : 'CREATE'}
             </Button>
           )}
-        </Form.Item>
+        </Form.Item> */}
       </Form>
     </Fragment>
   )

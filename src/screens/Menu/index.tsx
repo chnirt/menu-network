@@ -20,20 +20,17 @@ import { CopyToClipboard } from 'react-copy-to-clipboard'
 import { pick } from 'lodash'
 import SectionList, { tabHeight } from '../../components/SectionList'
 import { routes } from '../../routes'
-import { getDocRef, getDocument } from '../../firebase/service'
 import useAuth from '../../hooks/useAuth'
 import useMenu from '../../hooks/useMenu'
 import MenuLoading from './components/MenuLoading'
-import { IMenu } from './type'
 
 const Menu = () => {
   const { user } = useAuth()
   const { menuId } = useParams()
   const readOnly = user?.uid !== menuId
-  const { categories, fetchMenu, refetchMenu } = useMenu()
+  const { fetchMenu, refetchMenu, menu, categories } = useMenu()
   const [searchText, setSearchText] = useState('')
   const [debouncedSearchText, setDebouncedSearchText] = useState('')
-  const [menu, setMenu] = useState<IMenu | null>(null)
   const navigate = useNavigate()
 
   const formatCategories = useMemo(
@@ -81,20 +78,6 @@ const Menu = () => {
     [searchText]
   )
 
-  const fetchMenu1 = useCallback(async (menuId: string) => {
-    if (menuId === undefined) return
-    try {
-      const menuDocRef = getDocRef('users', menuId)
-      const menuDocData: any = await getDocument(menuDocRef)
-      setMenu(menuDocData)
-      if (typeof fetchMenu === 'function') {
-        fetchMenu(menuId)
-      }
-    } catch (error) {
-      navigate(routes.error)
-    }
-  }, [])
-
   const handleShareQRCode = menuId
     ? () =>
         navigate(
@@ -120,9 +103,6 @@ const Menu = () => {
     if (menuId && typeof refetchMenu === 'function') {
       refetchMenu(menuId)
     }
-    if (menuId) {
-      fetchMenu1(menuId)
-    }
   }, [])
 
   const onClickNewList = useCallback(
@@ -140,8 +120,8 @@ const Menu = () => {
   const onDeleteConfirmList = useCallback(
     async (tabItem: QueryDocumentSnapshot<DocumentData, DocumentData>) => {
       await deleteDoc(tabItem.ref)
-      if (menuId && typeof fetchMenu === 'function') {
-        fetchMenu(menuId)
+      if (menuId && typeof refetchMenu === 'function') {
+        refetchMenu(menuId)
       }
     },
     []
@@ -150,8 +130,8 @@ const Menu = () => {
   const onDeleteConfirmListItem = useCallback(
     async (dataItem: QueryDocumentSnapshot<DocumentData, DocumentData>) => {
       await deleteDoc(dataItem.ref)
-      if (menuId && typeof fetchMenu === 'function') {
-        fetchMenu(menuId)
+      if (menuId && typeof refetchMenu === 'function') {
+        refetchMenu(menuId)
       }
     },
     []
@@ -184,9 +164,17 @@ const Menu = () => {
   )
 
   useEffect(() => {
-    if (menuId) {
-      fetchMenu1(menuId)
+    if (menuId === undefined || typeof fetchMenu !== 'function') return
+    const handleFetchMenu = async () => {
+      try {
+        await fetchMenu(menuId)
+        // do something
+      } catch (e) {
+        navigate(routes.error)
+      }
     }
+
+    handleFetchMenu()
   }, [menuId])
 
   useEffect(() => {

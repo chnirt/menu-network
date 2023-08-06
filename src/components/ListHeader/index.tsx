@@ -2,15 +2,15 @@ import { Button } from "antd-mobile";
 
 const ListHeader = ({
   title,
-  onClickNewDish,
+  onClickNewList,
   readOnly,
 }: {
   title: string;
-  onClickNewDish?: () => void;
+  onClickNewList?: () => void;
   readOnly?: boolean;
 }) => {
   return (
-    <div className="flex justify-between py-2">
+    <div className="flex justify-between items-center h-10">
       {title}
 
       {!readOnly ? (
@@ -18,7 +18,7 @@ const ListHeader = ({
           color="primary"
           fill="none"
           size="mini"
-          onClick={onClickNewDish}
+          onClick={onClickNewList}
         >
           NEW DISH
         </Button>

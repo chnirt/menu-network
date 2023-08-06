@@ -52,7 +52,9 @@ const Profile = () => {
         <List.Item onClick={handleLogout} arrow={false}>
           Log out
         </List.Item>
-        <Footer content="@ 2004-2023 https://github.com/chnirt All rights reserved"></Footer>
+        <List.Item arrow={false}>
+          <Footer content="@ 2004-2023 https://github.com/chnirt All rights reserved"></Footer>
+        </List.Item>
       </List>
     </div>
   )
