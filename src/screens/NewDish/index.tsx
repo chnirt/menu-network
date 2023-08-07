@@ -30,7 +30,7 @@ import useMenu from '../../hooks/useMenu'
 const initialValues = MASTER_MOCK_DATA.NEW_DISH
 
 const NewDish = () => {
-  const [loading, setLoading] = useState<boolean>(true)
+  const [loading, setLoading] = useState<boolean>(false)
   const { user } = useAuth()
   const navigate = useNavigate()
   const { categoryId, dishId } = useParams()
@@ -47,11 +47,12 @@ const NewDish = () => {
       if (user === null || categoryId === undefined) return
       try {
         Loading.get.show()
-        const { dishName, price, dishFiles } = values
+        const { dishName, price, dishFiles, dishDescription } = values
         const uid = user.uid
         const dishData = {
           dishFiles: dishFiles.map((dishFile: any) => dishFile.url),
           dishName,
+          dishDescription,
           price,
         }
 
@@ -96,6 +97,7 @@ const NewDish = () => {
   const fetchDishById = useCallback(
     async (dishId: string) => {
       if (user === null || categoryId === undefined) return
+      setLoading(true)
       const dishDocRef = getDocRef(
         'users',
         user?.uid,
@@ -255,6 +257,19 @@ const NewDish = () => {
           rules={[{ required: true, message: 'Dish Name is required' }]}
         >
           <Input placeholder="Phatty’S Nachos" />
+        </Form.Item>
+        <Form.Item
+          name="dishDescription"
+          label="Dish Description"
+          rules={[
+            { required: true, message: 'Dish Name is required' },
+            {
+              max: 200,
+              message: 'Dish Description must have at 200 characters',
+            },
+          ]}
+        >
+          <Input placeholder="They are crispy, cheesy, and spicy, and they go well with a cold beer or a soft drink." />
         </Form.Item>
         <Form.Item
           name="price"

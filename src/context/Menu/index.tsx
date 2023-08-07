@@ -68,6 +68,7 @@ export const MenuProvider: FC<PropsWithChildren> = ({ children }) => {
               ...dishDoc.data(),
               ref: dishDoc.ref,
               name: dishDoc.data().dishName,
+              description: dishDoc.data().dishDescription,
               photo: dishDoc.data().dishFiles?.[0],
               price: dishDoc.data().price,
 

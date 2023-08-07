@@ -24,11 +24,12 @@ import useAuth from '../../hooks/useAuth'
 import useMenu from '../../hooks/useMenu'
 import MenuLoading from './components/MenuLoading'
 import ScrollToTop from '../../components/ScrollToTop '
+import Counter from '../../components/Counter'
 
 const Menu = () => {
   const { user } = useAuth()
   const { menuId } = useParams()
-  const readOnly = user?.uid !== menuId
+  const isOwner = user?.uid === menuId
   const { fetchMenu, refetchMenu, menu, categories } = useMenu()
   const [searchText, setSearchText] = useState('')
   const [debouncedSearchText, setDebouncedSearchText] = useState('')
@@ -157,7 +158,13 @@ const Menu = () => {
       // console.log(dataItem)
       navigate(generatePath(routes.dish, { dishId: dataItem?.id }), {
         state: {
-          dish: pick(dataItem, ['id', 'dishFiles', 'dishName', 'price']),
+          dish: pick(dataItem, [
+            'id',
+            'dishFiles',
+            'dishName',
+            'dishDescription',
+            'price',
+          ]),
         },
       })
     },
@@ -223,7 +230,7 @@ const Menu = () => {
       <NavBar
         className="sticky top-0 z-[100] bg-white"
         back={null}
-        right={!readOnly ? right : null}
+        right={isOwner ? right : null}
       >
         MENU
       </NavBar>
@@ -245,6 +252,34 @@ const Menu = () => {
           onDeleteConfirmListItem={onDeleteConfirmListItem}
           onUpdateConfirmListItem={onUpdateConfirmListItem}
           onClickListItem={onClickListItem}
+          listItemComponent={
+            isOwner
+              ? (dataItem: any) => (
+                  <div className="flex flex-col no-underline gap-1">
+                    <div className="flex-1 flex flex-col">
+                      {dataItem?.name ? (
+                        <p className="m-0 text-base font-bold">
+                          {dataItem.name}
+                        </p>
+                      ) : null}
+                      {dataItem?.description ? (
+                        <p className="m-0 line-clamp-2 text-xs text-[#999999]">
+                          {dataItem.description}
+                        </p>
+                      ) : null}
+                    </div>
+                    <div className="flex-none flex justify-between items-center">
+                      {dataItem?.price ? (
+                        <p className="m-0 text-base font-semibold">
+                          {dataItem.price}
+                        </p>
+                      ) : null}
+                      <Counter min={0} max={10} />
+                    </div>
+                  </div>
+                )
+              : undefined
+          }
           emptyComponent={
             <Empty
               style={{ padding: '64px 0' }}
@@ -252,7 +287,7 @@ const Menu = () => {
               description="No data"
             />
           }
-          readOnly={readOnly}
+          readOnly={!isOwner}
         />
       </PullToRefresh>
 
@@ -292,6 +327,7 @@ const Menu = () => {
           )}
         </FloatingBubble>
       ) : null}
+
       <ScrollToTop />
     </div>
   )

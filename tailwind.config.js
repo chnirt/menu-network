@@ -4,6 +4,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        primary: 'var(--adm-color-primary)',
         clifford: '#da373d',
       },
     },
@@ -11,5 +12,9 @@ module.exports = {
   corePlugins: {
     preflight: false,
   },
-  plugins: [require('tailwindcss-safe-area')],
+  plugins: [
+    require('tailwindcss-safe-area'),
+    require('@tailwindcss/typography'),
+    require('@tailwindcss/line-clamp'),
+  ],
 }

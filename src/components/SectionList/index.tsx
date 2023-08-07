@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
-  // Button,
   Dialog,
   Image,
   List,
@@ -35,6 +34,7 @@ const SectionList = ({
   loadingComponent,
   readOnly,
   emptyComponent,
+  listItemComponent,
 }: {
   data?: any[]
   onClickNewList?: (categoryId: string) => void
@@ -47,6 +47,7 @@ const SectionList = ({
   loadingComponent?: JSX.Element
   readOnly?: boolean
   emptyComponent?: JSX.Element
+  listItemComponent?: (dataItem: any) => JSX.Element
 }) => {
   const scrollRef = useRef<boolean>(true)
   const setTimerRef = useRef<number | null | undefined>(null)
@@ -227,6 +228,7 @@ const SectionList = ({
               <List
                 mode="card"
                 // header={tabItem.title}
+                className="bg-transparent"
                 header={
                   <SwipeAction
                     style={{
@@ -256,6 +258,9 @@ const SectionList = ({
                         id={`anchor-dish-${dataItem?.name}`}
                       >
                         <SwipeAction
+                          style={{
+                            '--background': 'transparent',
+                          }}
                           ref={swipeActionRef}
                           rightActions={!readOnly ? rightActions : undefined}
                           onAction={(action) =>
@@ -263,13 +268,17 @@ const SectionList = ({
                           }
                         >
                           <List.Item
+                            className="bg-transparent"
+                            style={{
+                              '--active-background-color': 'none',
+                            }}
                             prefix={
                               <Image
-                                className="rounded-3xl"
+                                className="rounded-3xl [&_img]:m-0"
                                 src={dataItem.photo ?? ''}
                                 fit="cover"
-                                width={40}
-                                height={40}
+                                width={80}
+                                height={80}
                               />
                             }
                             // prefix={
@@ -288,10 +297,14 @@ const SectionList = ({
                             }
                             arrow={false}
                           >
-                            <div className="flex flex-row justify-between items-between">
-                              <div>{dataItem.name}</div>
-                              <div>{dataItem.price}</div>
-                            </div>
+                            {typeof listItemComponent === 'function' ? (
+                              listItemComponent(dataItem)
+                            ) : (
+                              <div className="flex flex-row justify-between items-between">
+                                <div>{dataItem.name}</div>
+                                <div>{dataItem.price}</div>
+                              </div>
+                            )}
                           </List.Item>
                         </SwipeAction>
                       </div>

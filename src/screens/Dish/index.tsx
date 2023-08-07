@@ -32,21 +32,25 @@ const Dish = () => {
 
       <Card
         className="adm-list-card"
-        title={<div style={{ fontWeight: 'bold' }}>{dish?.dishName}</div>}
+        title={<div style={{ fontWeight: 'bold' }}>{dish.dishName}</div>}
         extra={<Rate allowHalf defaultValue={5} readOnly />}
         // onBodyClick={onBodyClick}
         // onHeaderClick={onHeaderClick}
         style={{ borderRadius: '16px' }}
       >
-        <div className="h-14">Description</div>
-        <div
-          className="pt-3 border-t flex justify-between"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div>{dish.price}</div>
-          <Button color="primary" shape="rounded" disabled>
-            Order
-          </Button>
+        <div className="divide-y">
+          {dish?.dishDescription ? (
+            <div className="h-14">{dish.dishDescription}</div>
+          ) : null}
+          <div
+            className="pt-3 flex justify-between"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {dish?.price ? <div>{dish.price}</div> : null}
+            <Button color="primary" shape="rounded" disabled>
+              Order
+            </Button>
+          </div>
         </div>
       </Card>
     </div>

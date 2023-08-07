@@ -36,7 +36,7 @@ const AvatarUploader = ({
   return (
     <div>
       <label htmlFor="file-input">
-        {photoURL ? <Avatar src={photoURL} /> : <Avatar src={photoURL} />}
+        <Avatar src={photoURL} />
       </label>
       <input
         id="file-input"

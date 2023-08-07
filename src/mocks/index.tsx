@@ -19,6 +19,9 @@ export const MASTER_MOCK_DATA = {
   NEW_DISH: {
     uploadMethod: IS_DEVELOP ? 'link' : 'file',
     dishName: IS_DEVELOP ? 'Phatty’S Nachos' : '',
+    dishDescription: IS_DEVELOP
+      ? 'They are crispy, cheesy, and spicy, and they go well with a cold beer or a soft drink. You can also add some toppings to your nachos, such as chicken, beef, bacon, or jalapeños, for an extra charge'
+      : '',
     price: IS_DEVELOP ? 99000 : 0,
     dishFiles: [],
   },
@@ -47,6 +50,8 @@ export const SAMPLE_DATA = {
             ],
             id: nanoid(),
             name: 'Milk Coffee',
+            description:
+              'Milk coffee is a general term for any coffee drink that is made with milk, either steamed, frothed, or cold.',
           },
           {
             price: {

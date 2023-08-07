@@ -17,7 +17,7 @@ import useMenu from '../../hooks/useMenu'
 const initialValues = MASTER_MOCK_DATA.NEW_CATEGORY
 
 const NewCategory = () => {
-  const [loading, setLoading] = useState<boolean>(true)
+  const [loading, setLoading] = useState<boolean>(false)
   const navigate = useNavigate()
   const { user } = useAuth()
   const { categoryId } = useParams()
@@ -74,6 +74,7 @@ const NewCategory = () => {
   const fetchCategoryById = useCallback(
     async (categoryId: string) => {
       if (user === null) return
+      setLoading(true)
       const categoryDocRef = getDocRef(
         'users',
         user?.uid,
