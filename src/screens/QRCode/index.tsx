@@ -7,7 +7,6 @@ const QRCode = () => {
   const navigate = useNavigate()
   const { menuId } = useParams()
   const location = useLocation()
-  console.log(location.state)
   return (
     <div>
       <NavBar
@@ -16,7 +15,7 @@ const QRCode = () => {
       >
         QR CODE
       </NavBar>
-      <Card className="flex justify-center items-center aspect-square border p-0">
+      <Card className="flex justify-center items-center aspect-square p-0 adm-list-card">
         <div className="[&_svg]:block [&_svg]:w-64 [&_svg]:h-auto">
           <RQRCode
             renderAs="svg"

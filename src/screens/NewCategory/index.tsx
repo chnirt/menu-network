@@ -1,6 +1,7 @@
-import { Button, Form, Input, NavBar, Tabs, Toast } from 'antd-mobile'
+import { Button, Form, Input, NavBar, Toast } from 'antd-mobile'
 import { Fragment, useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { DocumentData, DocumentReference } from 'firebase/firestore'
 import {
   addDocument,
   getColRef,
@@ -10,13 +11,13 @@ import {
 } from '../../firebase/service'
 import useAuth from '../../hooks/useAuth'
 import { MASTER_MOCK_DATA } from '../../mocks'
-import { DocumentData, DocumentReference } from 'firebase/firestore'
 import { Loading } from '../../global'
 import useMenu from '../../hooks/useMenu'
 
 const initialValues = MASTER_MOCK_DATA.NEW_CATEGORY
 
 const NewCategory = () => {
+  const [loading, setLoading] = useState<boolean>(true)
   const navigate = useNavigate()
   const { user } = useAuth()
   const { categoryId } = useParams()
@@ -73,7 +74,6 @@ const NewCategory = () => {
   const fetchCategoryById = useCallback(
     async (categoryId: string) => {
       if (user === null) return
-      Loading.get.show()
       const categoryDocRef = getDocRef(
         'users',
         user?.uid,
@@ -83,7 +83,7 @@ const NewCategory = () => {
       setCategoryDocRefState(categoryDocRef)
       const dishDocData: any = await getDocument(categoryDocRef)
       form.setFieldsValue(dishDocData)
-      Loading.get.hide()
+      setLoading(false)
     },
     [user, categoryId]
   )
@@ -101,101 +101,47 @@ const NewCategory = () => {
       >
         {isEditMode ? 'EDIT CATEGORY' : 'NEW CATEGORY'}
       </NavBar>
-      <Tabs>
-        <Tabs.Tab title={isEditMode ? 'Edit' : 'New'} key="new">
-          <Form
-            form={form}
-            initialValues={initialValues}
-            layout="horizontal"
-            onFinish={onFinish}
-            mode="card"
-            footer={
-              <Button
-                block
-                type="submit"
-                color="primary"
-                size="large"
-                shape="rounded"
-                // disabled={
-                //   !form.isFieldsTouched(true) ||
-                //   form.getFieldsError().filter(({ errors }) => errors.length)
-                //     .length > 0
-                // }
-              >
-                {isEditMode ? "EDIT" : "CREATE"}
-              </Button>
-            }
+      <Form
+        form={form}
+        initialValues={initialValues}
+        layout="horizontal"
+        onFinish={onFinish}
+        mode="card"
+        footer={
+          <Button
+            block
+            type="submit"
+            color="primary"
+            size="large"
+            shape="rounded"
+            // disabled={
+            //   !form.isFieldsTouched(true) ||
+            //   form.getFieldsError().filter(({ errors }) => errors.length)
+            //     .length > 0
+            // }
           >
-            <Form.Header>
-              {isEditMode ? 'Edit Category' : 'New Category'}
-            </Form.Header>
-            <Form.Item
-              name="categoryName"
-              label="Category Name"
-              rules={[
-                {
-                  required: true,
-                  message: 'Category Name is required',
-                },
-              ]}
-              shouldUpdate
-            >
-              <Input autoComplete="none" placeholder="chnirt" />
-            </Form.Item>
-
-            {/* <Form.Item shouldUpdate className="submit" noStyle>
-              {() => (
-                <Button
-                  block
-                  type="submit"
-                  color="primary"
-                  size="large"
-                  shape="rounded"
-                  disabled={
-                    !form.isFieldsTouched(true) ||
-                    form.getFieldsError().filter(({ errors }) => errors.length)
-                      .length > 0
-                  }
-                >
-                  {isEditMode ? 'EDIT' : 'CREATE'}
-                </Button>
-              )}
-            </Form.Item> */}
-          </Form>
-        </Tabs.Tab>
-        {/* <Tabs.Tab title="Templates" key="templates">
-          <Form
-            initialValues={{
-              template: ["coffee"],
-            }}
-            layout="horizontal"
-            onFinish={onFinish}
-            footer={
-              <Button block type="submit" color="primary" size="large">
-                CREATE
-              </Button>
-            }
-          >
-            <Form.Header>New Category</Form.Header>
-            <Form.Item
-              name="template"
-              label="Template"
-              rules={[{ required: true, message: "Template is required" }]}
-            >
-              <Selector
-                columns={3}
-                multiple
-                options={[
-                  { label: "Coffee", value: "coffee" },
-                  { label: "Tea", value: "tea" },
-                  { label: "Juices", value: "juices" },
-                  { label: "Beer", value: "beer" },
-                ]}
-              />
-            </Form.Item>
-          </Form>
-        </Tabs.Tab> */}
-      </Tabs>
+            {isEditMode ? 'EDIT' : 'CREATE'}
+          </Button>
+        }
+        disabled={loading}
+      >
+        <Form.Header>
+          {isEditMode ? 'Edit Category' : 'New Category'}
+        </Form.Header>
+        <Form.Item
+          name="categoryName"
+          label="Category Name"
+          rules={[
+            {
+              required: true,
+              message: 'Category Name is required',
+            },
+          ]}
+          shouldUpdate
+        >
+          <Input autoComplete="none" placeholder="chnirt" />
+        </Form.Item>
+      </Form>
     </Fragment>
   )
 }

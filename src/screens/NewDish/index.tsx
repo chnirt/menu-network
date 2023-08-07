@@ -30,6 +30,7 @@ import useMenu from '../../hooks/useMenu'
 const initialValues = MASTER_MOCK_DATA.NEW_DISH
 
 const NewDish = () => {
+  const [loading, setLoading] = useState<boolean>(true)
   const { user } = useAuth()
   const navigate = useNavigate()
   const { categoryId, dishId } = useParams()
@@ -95,7 +96,6 @@ const NewDish = () => {
   const fetchDishById = useCallback(
     async (dishId: string) => {
       if (user === null || categoryId === undefined) return
-      Loading.get.show()
       const dishDocRef = getDocRef(
         'users',
         user?.uid,
@@ -112,7 +112,7 @@ const NewDish = () => {
           url: dishFile,
         })),
       })
-      Loading.get.hide()
+      setLoading(false)
     },
     [user, categoryId, form]
   )
@@ -137,16 +137,26 @@ const NewDish = () => {
         onFinish={onFinish}
         mode="card"
         footer={
-          <Button block type="submit" color="primary" size="large" shape="rounded">
-            {isEditMode ? "EDIT" : "CREATE"}
+          <Button
+            block
+            type="submit"
+            color="primary"
+            size="large"
+            shape="rounded"
+          >
+            {isEditMode ? 'EDIT' : 'CREATE'}
           </Button>
         }
+        disabled={loading}
       >
         <Form.Header>{isEditMode ? 'Edit Dish' : 'New Dish'}</Form.Header>
         <Form.Item name="uploadMethod" label="Upload Method">
           <Radio.Group
             onChange={() => {
-              form.setFieldsValue({ dishFiles: [] })
+              const dishFiles = form
+                .getFieldValue('dishFiles')
+                .filter((dishFile: any) => Boolean(dishFile))
+              form.setFieldsValue({ dishFiles })
             }}
           >
             <Space>
@@ -211,7 +221,7 @@ const NewDish = () => {
               </Button>
             )}
             renderHeader={({ index }, { remove }) => (
-              <div className='flex justify-between items-center'>
+              <div className="flex justify-between items-center">
                 <span>Link {index + 1}</span>
                 <Button
                   onClick={() => remove(index)}

@@ -31,6 +31,7 @@ const Dish = () => {
       </Swiper>
 
       <Card
+        className="adm-list-card"
         title={<div style={{ fontWeight: 'bold' }}>{dish?.dishName}</div>}
         extra={<Rate allowHalf defaultValue={5} readOnly />}
         // onBodyClick={onBodyClick}
