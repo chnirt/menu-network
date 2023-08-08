@@ -40,7 +40,7 @@ const Counter = (
     <div className="relative flex">
       <Button
         className={classNames(
-          'w-8 h-8 flex justify-center items-center rounded-[10px]',
+          'w-8 h-8 flex justify-center items-center rounded-[10px] leading-none',
           {
             hidden: isMin,
           }
@@ -67,7 +67,7 @@ const Counter = (
         {...props}
       />
       <Button
-        className="w-8 h-8 flex justify-center items-center rounded-[10px]"
+        className="w-8 h-8 flex justify-center items-center rounded-[10px] leading-none"
         color="primary"
         size="mini"
         onMouseDown={onMouseDown}
