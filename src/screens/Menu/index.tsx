@@ -353,7 +353,7 @@ const Menu = () => {
         {/* <ScrollToTop /> */}
       </div>
 
-      {user ? (
+      {user && orderTotal > 0 ? (
         <div className="sticky bottom-16 mx-3">
           <Button
             block
@@ -361,13 +361,13 @@ const Menu = () => {
             color="primary"
             size="large"
             shape="rounded"
-            onClick={() => navigate(routes.order)}
+            onClick={() => navigate(routes.cart)}
           >
             <Space>
               <Badge content={orderTotal}>
                 <ShoppingBag />
               </Badge>
-              Cart
+              CART
             </Space>
           </Button>
         </div>

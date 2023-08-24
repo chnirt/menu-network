@@ -12,6 +12,7 @@ export const routes = {
   dashboard: '/',
   menu: '/menu/:menuId',
   qrCode: '/qr-code/:menuId',
+  cart: '/cart',
   order: '/order',
   me: '/me',
   newCategory: '/new-category',
@@ -46,6 +47,16 @@ export const router = createBrowserRouter([
                   <Loadable
                     {...{
                       factory: () => import('../screens/Dashboard'),
+                    }}
+                  />
+                ),
+              },
+              {
+                path: routes.cart,
+                element: (
+                  <Loadable
+                    {...{
+                      factory: () => import('../screens/Cart'),
                     }}
                   />
                 ),

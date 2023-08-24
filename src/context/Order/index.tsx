@@ -23,10 +23,14 @@ type OrderContextType = {
   addOrder: (order: Order) => void
   order: Order[]
   orderTotal: number
+  clearCart: () => void
+  removeOrder: (dishId: string) => void
 }
 
 export const OrderContext = createContext<OrderContextType>({
   addOrder: () => {},
+  clearCart: () => {},
+  removeOrder: () => {},
   order: [],
   orderTotal: 0,
 })
@@ -56,12 +60,20 @@ export const OrderProvider: FC<PropsWithChildren> = ({ children }) => {
     })
   }, [])
 
+  const clearCart = useCallback(() => setOrder([]), [])
+
+  const removeOrder = useCallback((dishId: string) => {
+    setOrder((prevState) => prevState.filter((dish) => dish.dishId !== dishId))
+  }, [])
+
   return (
     <OrderContext.Provider
       value={{
         addOrder,
         order,
         orderTotal,
+        clearCart,
+        removeOrder,
       }}
     >
       {children}

@@ -1,10 +1,10 @@
 import { ErrorBlock, NavBar } from 'antd-mobile'
 
-const Order = () => {
+const Sample = () => {
   return (
     <div>
       <NavBar className="sticky top-0 z-[100] bg-white" back={null}>
-        ORDER
+        SAMPLE
       </NavBar>
       {/* <img src={"https://wjhjnr.csb.app/water-melon.jpeg"} alt="Logo" /> */}
       <ErrorBlock
@@ -18,4 +18,4 @@ const Order = () => {
   )
 }
 
-export default Order
+export default Sample
