@@ -1,34 +1,34 @@
 import { Button } from 'antd-mobile'
 import classNames from 'classnames'
 import { Minus, Plus } from 'lucide-react'
-import { useCallback, useState } from 'react'
+import { useCallback } from 'react'
 
 const Counter = (
-  props: React.DetailedHTMLProps<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    HTMLInputElement
-  >
+  // props: React.DetailedHTMLProps<
+  //   React.InputHTMLAttributes<HTMLInputElement>,
+  //   HTMLInputElement
+  // >
+  props: any
 ) => {
-  const { min, max } = props
-  const [counter, setCounter] = useState<string | number>(0)
-  const isMin = Number(counter) === Number(min)
-  const isMax = Number(counter) === Number(max)
-  const onChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    setCounter(event.target.value)
-  }, [])
+  const { onChangeValue, ...rest } = props
+  const { value, min, max } = rest
+  const isMin = Number(value) === Number(min)
+  const isMax = Number(value) === Number(max)
   const decrement = useCallback(
     (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       event.stopPropagation()
-      setCounter((prevState) => Number(prevState) - 1)
+      const newCounter = Number(value) - 1
+      onChangeValue(newCounter)
     },
-    [min]
+    [value, onChangeValue]
   )
   const increment = useCallback(
     (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       event.stopPropagation()
-      setCounter((prevState) => Number(prevState) + 1)
+      const newCounter = Number(value) + 1
+      onChangeValue(newCounter)
     },
-    []
+    [value, onChangeValue]
   )
   const onMouseDown = useCallback(
     (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -61,10 +61,9 @@ const Counter = (
           }
         )}
         type="number"
-        value={counter}
-        onChange={onChange}
+        value={value}
         disabled
-        {...props}
+        {...rest}
       />
       <Button
         className="w-8 h-8 flex justify-center items-center rounded-[10px] leading-none"

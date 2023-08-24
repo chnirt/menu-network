@@ -12,6 +12,7 @@ import './styles.css'
 import LoadingMask from './components/LoadingMask'
 import { Loading } from './global'
 import { MenuProvider } from './context/Menu'
+import { OrderProvider } from './context/Order'
 
 const rootElement = document.getElementById('root')!
 const root = ReactDOM.createRoot(rootElement)
@@ -37,9 +38,11 @@ root.render(
   <React.StrictMode>
     <AuthProvider>
       <MenuProvider>
-        <ConfigProvider locale={enUS}>
-          <RouterProvider router={router} />
-        </ConfigProvider>
+        <OrderProvider>
+          <ConfigProvider locale={enUS}>
+            <RouterProvider router={router} />
+          </ConfigProvider>
+        </OrderProvider>
       </MenuProvider>
     </AuthProvider>
     {/* <WaterMark

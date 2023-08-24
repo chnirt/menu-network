@@ -1,7 +1,8 @@
 import { FC, useCallback, useMemo } from 'react'
 import { generatePath, useLocation, useNavigate } from 'react-router-dom'
-import { MenuSquare, User2 } from 'lucide-react'
-// import { CompassOutline, ShopbagOutline } from 'antd-mobile-icons'
+import { MenuSquare, User2, ShoppingBag } from 'lucide-react'
+import // CompassOutline,
+'antd-mobile-icons'
 import { TabBar } from 'antd-mobile'
 import { routes } from '../../routes'
 import { auth } from '../../firebase'
@@ -23,17 +24,17 @@ const BottomTabBar: FC = () => {
       // },
       {
         key: generatePath(routes.menu, { menuId: auth.currentUser?.uid }),
-        // title: "Menu",
+        title: 'Menu',
         icon: <MenuSquare />,
       },
-      // {
-      //   key: routes.order,
-      //   // title: "Order",
-      //   icon: <ShopbagOutline />,
-      // },
+      {
+        key: routes.order,
+        title: 'Order',
+        icon: <ShoppingBag />,
+      },
       {
         key: routes.me,
-        // title: "Profile",
+        title: 'Profile',
         icon: <User2 />,
       },
     ],
@@ -48,7 +49,7 @@ const BottomTabBar: FC = () => {
       }}
     >
       {tabs.map((item) => (
-        <TabBar.Item key={item.key} icon={item.icon} />
+        <TabBar.Item key={item.key} icon={item.icon} title={item.title} />
       ))}
     </TabBar>
   )

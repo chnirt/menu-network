@@ -50,16 +50,16 @@ export const router = createBrowserRouter([
                   />
                 ),
               },
-              // {
-              //   path: routes.order,
-              //   element: (
-              //     <Loadable
-              //       {...{
-              //         factory: () => import('../screens/Order'),
-              //       }}
-              //     />
-              //   ),
-              // },
+              {
+                path: routes.order,
+                element: (
+                  <Loadable
+                    {...{
+                      factory: () => import('../screens/Order'),
+                    }}
+                  />
+                ),
+              },
               {
                 path: routes.me,
                 element: (

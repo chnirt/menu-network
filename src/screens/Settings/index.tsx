@@ -31,7 +31,6 @@ const Settings = () => {
         Loading.get.show()
         const { logo, wifi, currency }: any = values
         const uid = user.uid
-        console.log(logo)
         const settingsData = {
           ...(wifi ? { wifi } : {}),
           ...(logo.length > 0 ? { logo: logo[0].url } : {}),

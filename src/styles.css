@@ -34,7 +34,7 @@
 
 :root:root {
   /* --adm-color-primary: #472f5b; */
-  --adm-color-primary: #E67F2E;
+  --adm-color-primary: #e67f2e;
 }
 
 .h-screen {
@@ -49,7 +49,17 @@
   border-style: solid;
   border-color: theme('borderColor.DEFAULT', currentColor);
 }
+body {
+  margin: 0px !important;
+  padding: 0px !important;
+}
 
 .google-map * {
   border-style: none;
+}
+
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }

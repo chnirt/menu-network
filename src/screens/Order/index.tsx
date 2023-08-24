@@ -1,20 +1,42 @@
-import { ErrorBlock, NavBar } from "antd-mobile";
+import { Button, List, NavBar } from 'antd-mobile'
+import useOrder from '../../hooks/useOrder'
+import { Link, useNavigate } from 'react-router-dom'
+import { useMemo } from 'react'
+import { routes } from '../../routes'
 
 const Order = () => {
+  const navigate = useNavigate()
+  const { order } = useOrder()
+
+  const right = useMemo(
+    () => (
+      <Link to={routes.menu}>
+        <Button color="primary" fill="none" size="mini">
+          MENU
+        </Button>
+      </Link>
+    ),
+    []
+  )
+
   return (
     <div>
-      <NavBar className="sticky top-0 z-[100] bg-white" back={null}>
-        ORDER
+      <NavBar
+        className="sticky top-0 z-[100] bg-white"
+        onBack={() => navigate(-1)}
+        right={right}
+      >
+        NEW ORDER
       </NavBar>
-      <ErrorBlock
-        className="flex flex-col justify-center items-center"
-        fullPage
-        title="Best Coming Soon"
-        description="We're working on something amazing, and we can't wait to share it with
-        you. Stay tuned!"
-      />
+      <List header="Order1" mode="card">
+        {order?.length > 0
+          ? order?.map((dish, di: number) => (
+              <List.Item key={`dish-${di}`}>{dish.dishId}</List.Item>
+            ))
+          : null}
+      </List>
     </div>
-  );
-};
+  )
+}
 
-export default Order;
+export default Order

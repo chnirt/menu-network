@@ -1,11 +1,13 @@
 import {
+  Badge,
   Button,
   Empty,
-  FloatingBubble,
+  // FloatingBubble,
   NavBar,
   PullToRefresh,
   SearchBar,
-  Toast,
+  Space,
+  // Toast,
 } from 'antd-mobile'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, generatePath, useNavigate, useParams } from 'react-router-dom'
@@ -15,22 +17,25 @@ import {
   QueryDocumentSnapshot,
   deleteDoc,
 } from 'firebase/firestore'
-import { QrCode, Wifi } from 'lucide-react'
-import { CopyToClipboard } from 'react-copy-to-clipboard'
+// import { QrCode, Wifi } from 'lucide-react'
+// import { CopyToClipboard } from 'react-copy-to-clipboard'
 import { pick } from 'lodash'
 import SectionList, { tabHeight } from '../../components/SectionList'
 import { routes } from '../../routes'
 import useAuth from '../../hooks/useAuth'
 import useMenu from '../../hooks/useMenu'
 import MenuLoading from './components/MenuLoading'
-import ScrollToTop from '../../components/ScrollToTop '
+// import ScrollToTop from '../../components/ScrollToTop '
 import Counter from '../../components/Counter'
+import { ShoppingBag } from 'lucide-react'
+import useOrder from '../../hooks/useOrder'
 
 const Menu = () => {
   const { user } = useAuth()
   const { menuId } = useParams()
   const isOwner = user?.uid === menuId
   const { fetchMenu, refetchMenu, menu, categories } = useMenu()
+  const { addOrder, orderTotal, order } = useOrder()
   const [searchText, setSearchText] = useState('')
   const [debouncedSearchText, setDebouncedSearchText] = useState('')
   const navigate = useNavigate()
@@ -80,26 +85,26 @@ const Menu = () => {
     [searchText]
   )
 
-  const handleShareQRCode = menuId
-    ? () =>
-        navigate(
-          generatePath(routes.qrCode, {
-            menuId,
-          }),
-          {
-            state: {
-              logo: menu?.logo,
-            },
-          }
-        )
-    : undefined
+  // const handleShareQRCode = menuId
+  //   ? () =>
+  //       navigate(
+  //         generatePath(routes.qrCode, {
+  //           menuId,
+  //         }),
+  //         {
+  //           state: {
+  //             logo: menu?.logo,
+  //           },
+  //         }
+  //       )
+  //   : undefined
 
-  const handleCopyWifi = useCallback(() => {
-    Toast.show({
-      icon: 'success',
-      content: 'Copied',
-    })
-  }, [])
+  // const handleCopyWifi = useCallback(() => {
+  //   Toast.show({
+  //     icon: 'success',
+  //     content: 'Copied',
+  //   })
+  // }, [])
 
   const onRefresh = useCallback(async () => {
     if (menuId && typeof refetchMenu === 'function') {
@@ -222,113 +227,151 @@ const Menu = () => {
   )
 
   return (
-    <div
-      style={{
-        paddingBottom: 60 * 3 + 12,
-      }}
-    >
-      <NavBar
-        className="sticky top-0 z-[100] bg-white"
-        back={null}
-        right={isOwner ? right : null}
+    <div>
+      <div
+        style={{
+          paddingBottom: 60 * 3 + 12,
+        }}
       >
-        MENU
-      </NavBar>
-      <div className="sticky top-[45px] z-[100] bg-white">
-        <SearchBar
-          placeholder="Search"
-          value={searchText}
-          onChange={setSearchText}
-        />
-      </div>
-      <PullToRefresh onRefresh={onRefresh}>
-        <SectionList
-          data={filterCategories}
-          myKey="title"
-          loadingComponent={<MenuLoading />}
-          onClickNewList={onClickNewList}
-          onUpdateConfirmList={onUpdateConfirmList}
-          onDeleteConfirmList={onDeleteConfirmList}
-          onDeleteConfirmListItem={onDeleteConfirmListItem}
-          onUpdateConfirmListItem={onUpdateConfirmListItem}
-          onClickListItem={onClickListItem}
-          listItemComponent={
-            isOwner
-              ? (dataItem: any) => (
-                  <div className="flex flex-col no-underline gap-1">
-                    <div className="flex-1 flex flex-col">
-                      {dataItem?.name ? (
-                        <p className="m-0 text-base font-bold">
-                          {dataItem.name}
-                        </p>
-                      ) : null}
-                      {dataItem?.description ? (
-                        <p className="m-0 line-clamp-2 text-xs text-[#999999]">
-                          {dataItem.description}
-                        </p>
-                      ) : null}
-                    </div>
-                    <div className="flex-none flex justify-between items-center">
-                      {dataItem?.price ? (
-                        <p className="m-0 text-base font-semibold">
-                          {dataItem.price}
-                        </p>
-                      ) : null}
-                      <Counter min={0} max={10} />
-                    </div>
-                  </div>
-                )
-              : undefined
-          }
-          emptyComponent={
-            <Empty
-              style={{ padding: '64px 0' }}
-              imageStyle={{ width: 128 }}
-              description="No data"
-            />
-          }
-          readOnly={!isOwner}
-        />
-      </PullToRefresh>
-
-      {filterCategories !== undefined && (
-        <FloatingBubble
-          axis="x"
-          magnetic="x"
-          style={{
-            '--initial-position-bottom':
-              'calc(60px + env(safe-area-inset-bottom))',
-            '--initial-position-right': '12px',
-            '--edge-distance': '12px',
-          }}
-          onClick={handleShareQRCode}
+        <NavBar
+          className="sticky top-0 z-[100] bg-white"
+          back={null}
+          right={isOwner ? right : null}
         >
-          <QrCode fontSize={16} />
-        </FloatingBubble>
-      )}
+          MENU
+        </NavBar>
+        <div className="sticky top-[45px] z-[100] bg-white">
+          <SearchBar
+            placeholder="Search"
+            value={searchText}
+            onChange={setSearchText}
+          />
+        </div>
+        <PullToRefresh onRefresh={onRefresh}>
+          <SectionList
+            data={filterCategories}
+            myKey="title"
+            loadingComponent={<MenuLoading />}
+            onClickNewList={onClickNewList}
+            onUpdateConfirmList={onUpdateConfirmList}
+            onDeleteConfirmList={onDeleteConfirmList}
+            onDeleteConfirmListItem={onDeleteConfirmListItem}
+            onUpdateConfirmListItem={onUpdateConfirmListItem}
+            onClickListItem={onClickListItem}
+            listItemComponent={
+              isOwner
+                ? (dataItem: any) => {
+                    const foundOrder = order?.find(
+                      (dish: any) => dish.dishId === dataItem.id
+                    )
+                    return (
+                      <div className="flex flex-col no-underline gap-1">
+                        <div className="flex-1 flex flex-col">
+                          {dataItem?.name ? (
+                            <p className="m-0 text-base font-bold">
+                              {dataItem.name}
+                            </p>
+                          ) : null}
+                          {dataItem?.description ? (
+                            <p className="m-0 line-clamp-2 text-xs text-[#999999]">
+                              {dataItem.description}
+                            </p>
+                          ) : null}
+                        </div>
+                        <div className="flex-none flex justify-between items-center">
+                          {dataItem?.price ? (
+                            <p className="m-0 text-base font-semibold">
+                              {dataItem.price}
+                            </p>
+                          ) : null}
+                          <Counter
+                            min={0}
+                            max={10}
+                            value={foundOrder ? foundOrder.count : 0}
+                            onChangeValue={(value: any) => {
+                              if (addOrder === undefined) return
+                              addOrder({
+                                dishId: dataItem.id,
+                                count: value,
+                              })
+                            }}
+                          />
+                        </div>
+                      </div>
+                    )
+                  }
+                : undefined
+            }
+            emptyComponent={
+              <Empty
+                style={{ padding: '64px 0' }}
+                imageStyle={{ width: 128 }}
+                description="No data"
+              />
+            }
+            readOnly={!isOwner}
+          />
+        </PullToRefresh>
 
-      {filterCategories !== undefined && menu?.wifi ? (
-        <FloatingBubble
-          axis="x"
-          magnetic="x"
-          style={{
-            '--initial-position-bottom':
-              'calc(120px + env(safe-area-inset-bottom))',
-            '--initial-position-right': '12px',
-            '--edge-distance': '12px',
-          }}
-        >
-          {menu?.wifi ? (
-            <CopyToClipboard text={menu?.wifi} onCopy={handleCopyWifi}>
+        {/* {filterCategories !== undefined && (
+          <FloatingBubble
+            axis="x"
+            magnetic="x"
+            style={{
+              '--initial-position-bottom':
+                'calc(60px + env(safe-area-inset-bottom))',
+              '--initial-position-right': '12px',
+              '--edge-distance': '12px',
+            }}
+            onClick={handleShareQRCode}
+          >
+            <QrCode fontSize={16} />
+          </FloatingBubble>
+        )}
+
+        {filterCategories !== undefined && menu?.wifi ? (
+          <FloatingBubble
+            axis="x"
+            magnetic="x"
+            style={{
+              '--initial-position-bottom':
+                'calc(120px + env(safe-area-inset-bottom))',
+              '--initial-position-right': '12px',
+              '--edge-distance': '12px',
+            }}
+          >
+            {menu?.wifi ? (
+              <CopyToClipboard text={menu?.wifi} onCopy={handleCopyWifi}>
+                <Wifi fontSize={16} />
+              </CopyToClipboard>
+            ) : (
               <Wifi fontSize={16} />
-            </CopyToClipboard>
-          ) : (
-            <Wifi fontSize={16} />
-          )}
-        </FloatingBubble>
-      ) : null}
+            )}
+          </FloatingBubble>
+        ) : null} */}
 
-      <ScrollToTop />
+        {/* <ScrollToTop /> */}
+      </div>
+
+      {user ? (
+        <div className="sticky bottom-16 mx-3">
+          <Button
+            block
+            type="submit"
+            color="primary"
+            size="large"
+            shape="rounded"
+            onClick={() => navigate(routes.order)}
+          >
+            <Space>
+              <Badge content={orderTotal}>
+                <ShoppingBag />
+              </Badge>
+              Cart
+            </Space>
+          </Button>
+        </div>
+      ) : null}
     </div>
   )
 }
