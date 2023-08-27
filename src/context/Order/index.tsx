@@ -6,6 +6,9 @@ import {
   useMemo,
   useState,
 } from 'react'
+import { getColRef } from '../../firebase/service'
+import { getDocs, query, where } from 'firebase/firestore'
+import useAuth from '../../hooks/useAuth'
 // import { getDocs, query, where } from 'firebase/firestore'
 // import {
 //   getColGroupRef,
@@ -24,19 +27,25 @@ type OrderContextType = {
   order: Order[]
   orderTotal: number
   clearCart: () => void
-  removeOrder: (dishId: string) => void
+  removeDish: (dishId: string) => void
+  fetchOrder: () => Promise<void>
+  orders: any[]
 }
 
 export const OrderContext = createContext<OrderContextType>({
   addOrder: () => {},
   clearCart: () => {},
-  removeOrder: () => {},
+  removeDish: () => {},
   order: [],
   orderTotal: 0,
+  fetchOrder: async () => {},
+  orders: [],
 })
 
 export const OrderProvider: FC<PropsWithChildren> = ({ children }) => {
+  const { user } = useAuth()
   const [order, setOrder] = useState<Order[]>([])
+  const [orders, setOrders] = useState<any[]>([])
 
   const orderTotal = useMemo(
     () => order?.map((dish) => dish.count)?.reduce((a, b) => a + b, 0) ?? 0,
@@ -62,9 +71,27 @@ export const OrderProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const clearCart = useCallback(() => setOrder([]), [])
 
-  const removeOrder = useCallback((dishId: string) => {
+  const removeDish = useCallback((dishId: string) => {
     setOrder((prevState) => prevState.filter((dish) => dish.dishId !== dishId))
   }, [])
+
+  let querySnapshot
+
+  const fetchOrder = useCallback(async () => {
+    if (user === null) return
+    const orderColRef = getColRef('orders')
+    const q = query(orderColRef, where('uid', '==', user.uid))
+    querySnapshot = await getDocs(q)
+    const docs = querySnapshot.docs
+    const data = docs.map((docSnapshot) => {
+      return {
+        id: docSnapshot.id,
+        ref: docSnapshot.ref,
+        ...docSnapshot.data(),
+      }
+    })
+    setOrders(data)
+  }, [user])
 
   return (
     <OrderContext.Provider
@@ -73,7 +100,9 @@ export const OrderProvider: FC<PropsWithChildren> = ({ children }) => {
         order,
         orderTotal,
         clearCart,
-        removeOrder,
+        removeDish,
+        fetchOrder,
+        orders,
       }}
     >
       {children}

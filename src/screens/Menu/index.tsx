@@ -26,9 +26,9 @@ import useAuth from '../../hooks/useAuth'
 import useMenu from '../../hooks/useMenu'
 import MenuLoading from './components/MenuLoading'
 // import ScrollToTop from '../../components/ScrollToTop '
-import Counter from '../../components/Counter'
 import { ShoppingBag } from 'lucide-react'
 import useOrder from '../../hooks/useOrder'
+import DishItem from '../../components/DishItem'
 
 const Menu = () => {
   const { user } = useAuth()
@@ -265,39 +265,17 @@ const Menu = () => {
                       (dish: any) => dish.dishId === dataItem.id
                     )
                     return (
-                      <div className="flex flex-col no-underline gap-1">
-                        <div className="flex-1 flex flex-col">
-                          {dataItem?.name ? (
-                            <p className="m-0 text-base font-bold">
-                              {dataItem.name}
-                            </p>
-                          ) : null}
-                          {dataItem?.description ? (
-                            <p className="m-0 line-clamp-2 text-xs text-[#999999]">
-                              {dataItem.description}
-                            </p>
-                          ) : null}
-                        </div>
-                        <div className="flex-none flex justify-between items-center">
-                          {dataItem?.price ? (
-                            <p className="m-0 text-base font-semibold">
-                              {dataItem.price}
-                            </p>
-                          ) : null}
-                          <Counter
-                            min={0}
-                            max={10}
-                            value={foundOrder ? foundOrder.count : 0}
-                            onChangeValue={(value: any) => {
-                              if (addOrder === undefined) return
-                              addOrder({
-                                dishId: dataItem.id,
-                                count: value,
-                              })
-                            }}
-                          />
-                        </div>
-                      </div>
+                      <DishItem
+                        item={dataItem}
+                        count={foundOrder?.count}
+                        onChangeValue={(value: any) => {
+                          if (addOrder === undefined) return
+                          addOrder({
+                            dishId: dataItem.id,
+                            count: value,
+                          })
+                        }}
+                      />
                     )
                   }
                 : undefined

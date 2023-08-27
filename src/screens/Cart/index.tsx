@@ -1,23 +1,71 @@
-import { Button, Dialog, List, NavBar } from 'antd-mobile'
-import useOrder from '../../hooks/useOrder'
+import { Button, Dialog, List, NavBar, Toast } from 'antd-mobile'
 import { Link, useNavigate } from 'react-router-dom'
 import { useCallback, useMemo, useRef } from 'react'
-import { routes } from '../../routes'
 import { DeleteOutline } from 'antd-mobile-icons'
 import SwipeAction, {
   Action,
   SwipeActionRef,
 } from 'antd-mobile/es/components/swipe-action'
+import useOrder from '../../hooks/useOrder'
+import { routes } from '../../routes'
+import DishItem from '../../components/DishItem'
+import useMenu from '../../hooks/useMenu'
+import { addDocument, getColRef } from '../../firebase/service'
+import useAuth from '../../hooks/useAuth'
+import { Loading } from '../../global'
 
 const Order = () => {
   const navigate = useNavigate()
-  const { order, clearCart, removeOrder } = useOrder()
+  const { order, clearCart, addOrder, removeDish } = useOrder()
+  const { categories } = useMenu()
+  const { user } = useAuth()
   const swipeActionRef = useRef<SwipeActionRef>(null)
 
-  const handleAddOrder = useCallback(() => {
-    clearCart()
-    navigate(routes.order)
-  }, [])
+  const formatCategories = useMemo(
+    () =>
+      categories
+        ?.map((category) =>
+          category.data.map((item: any) => ({
+            ...item,
+          }))
+        )
+        ?.flat(),
+    [categories]
+  )
+
+  const handleAddOrder = useCallback(async () => {
+    if (user === null) return
+    try {
+      Loading.get.show()
+      const uid = user.uid
+      const orderObj = order.reduce((accumulator, value) => {
+        return { ...accumulator, [value.dishId]: value.count }
+      }, {})
+      const orderData = {
+        order: orderObj,
+        uid,
+      }
+      const orderDocRef = getColRef('orders')
+      await addDocument(orderDocRef, orderData)
+
+      navigate(routes.order)
+      Toast.show({
+        icon: 'success',
+        // content: isEditMode ? 'Category is updated' : 'Category is created',
+        content: 'Order is created',
+      })
+
+      clearCart()
+      return
+    } catch (error: any) {
+      Toast.show({
+        icon: 'error',
+        content: error.message,
+      })
+    } finally {
+      Loading.get.hide()
+    }
+  }, [order, user])
 
   const handleOnActionList = useCallback(
     async (action: Action, dishItem: any) => {
@@ -29,7 +77,7 @@ const Order = () => {
               cancelText: 'Cancel',
               confirmText: 'Delete',
               onConfirm: () => {
-                removeOrder(dishItem.dishId)
+                removeDish(dishItem.dishId)
               },
             })
             swipeActionRef.current?.close()
@@ -70,21 +118,38 @@ const Order = () => {
       >
         CART
       </NavBar>
-      <List header="Order1" mode="card">
+      <List mode="card">
         {order?.length > 0
-          ? order?.map((dish, di: number) => (
-              <SwipeAction
-                key={`dish-${di}`}
-                style={{
-                  '--background': 'transparent',
-                }}
-                ref={swipeActionRef}
-                rightActions={rightActions}
-                onAction={(action) => handleOnActionList(action, dish)}
-              >
-                <List.Item>{dish.dishId}</List.Item>
-              </SwipeAction>
-            ))
+          ? order?.map((dish, di: number) => {
+              const dataItem = formatCategories?.find(
+                (category) => category.id === dish.dishId
+              )
+              return (
+                <SwipeAction
+                  key={`dish-${di}`}
+                  style={{
+                    '--background': 'transparent',
+                  }}
+                  ref={swipeActionRef}
+                  rightActions={rightActions}
+                  onAction={(action) => handleOnActionList(action, dish)}
+                >
+                  <List.Item>
+                    <DishItem
+                      item={dataItem}
+                      count={dish.count}
+                      onChangeValue={(value: any) => {
+                        if (addOrder === undefined) return
+                        addOrder({
+                          dishId: dish.dishId,
+                          count: value,
+                        })
+                      }}
+                    />
+                  </List.Item>
+                </SwipeAction>
+              )
+            })
           : null}
       </List>
 

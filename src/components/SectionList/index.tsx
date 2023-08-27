@@ -272,15 +272,15 @@ const SectionList = ({
                             style={{
                               '--active-background-color': 'none',
                             }}
-                            prefix={
-                              <Image
-                                className="rounded-3xl [&_img]:m-0"
-                                src={dataItem.photo ?? ''}
-                                fit="cover"
-                                width={80}
-                                height={80}
-                              />
-                            }
+                            // prefix={
+                            //   <Image
+                            //     className="rounded-3xl [&_img]:m-0"
+                            //     src={dataItem.photo ?? ''}
+                            //     fit="cover"
+                            //     width={80}
+                            //     height={80}
+                            //   />
+                            // }
                             // prefix={
                             //   <LazyLoadImage
                             //     className="rounded-3xl"
@@ -300,9 +300,18 @@ const SectionList = ({
                             {typeof listItemComponent === 'function' ? (
                               listItemComponent(dataItem)
                             ) : (
-                              <div className="flex flex-row justify-between items-between">
-                                <div>{dataItem.name}</div>
-                                <div>{dataItem.price}</div>
+                              <div className="flex items-center">
+                                <Image
+                                  className="rounded-3xl [&_img]:m-0"
+                                  src={dataItem.photo ?? ''}
+                                  fit="cover"
+                                  width={80}
+                                  height={80}
+                                />
+                                <div className="flex flex-1 flex-row justify-between items-between">
+                                  <div>{dataItem.name}</div>
+                                  <div>{dataItem.price}</div>
+                                </div>
                               </div>
                             )}
                           </List.Item>

@@ -9,7 +9,7 @@ const App = () => {
       <div className="flex flex-1 flex-col">
         <Outlet />
       </div>
-      <div className="border-t sticky bottom-0">{user && <BottomTabBar />}</div>
+      <div className="sticky bottom-0">{user && <BottomTabBar />}</div>
     </div>
   )
 }
