@@ -333,7 +333,7 @@ const Menu = () => {
 
       {user && orderTotal > 0 ? (
         <div
-          className="sticky mx-3"
+          className="sticky mx-3 pb-safe"
           style={{
             bottom: 76,
           }}
