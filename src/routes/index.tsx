@@ -21,6 +21,8 @@ export const routes = {
   updateDish: '/categories/:categoryId/dishes/:dishId',
   settings: '/settings',
   dish: '/dish/:dishId',
+  newObject: '/new-object',
+  updateObject: '/objects/:objectId',
 
   error: '/error',
 }
@@ -84,6 +86,26 @@ export const router = createBrowserRouter([
             ],
           },
           {
+            path: routes.newCategory,
+            element: (
+              <Loadable
+                {...{
+                  factory: () => import('../screens/NewCategory'),
+                }}
+              />
+            ),
+          },
+          {
+            path: routes.updateCategory,
+            element: (
+              <Loadable
+                {...{
+                  factory: () => import('../screens/NewCategory'),
+                }}
+              />
+            ),
+          },
+          {
             path: routes.newDish,
             element: (
               <Loadable
@@ -104,21 +126,21 @@ export const router = createBrowserRouter([
             ),
           },
           {
-            path: routes.newCategory,
+            path: routes.newObject,
             element: (
               <Loadable
                 {...{
-                  factory: () => import('../screens/NewCategory'),
+                  factory: () => import('../screens/NewObject'),
                 }}
               />
             ),
           },
           {
-            path: routes.updateCategory,
+            path: routes.updateObject,
             element: (
               <Loadable
                 {...{
-                  factory: () => import('../screens/NewCategory'),
+                  factory: () => import('../screens/NewObject'),
                 }}
               />
             ),

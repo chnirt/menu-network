@@ -25,6 +25,10 @@ export const MASTER_MOCK_DATA = {
     price: IS_DEVELOP ? 99000 : 0,
     dishFiles: [],
   },
+  NEW_OBJECT: {
+    objectType: 'table',
+    objectName: '',
+  },
   SETTINGS: {
     logo: [],
     wifi: IS_DEVELOP ? '12345678' : '',

@@ -1,6 +1,6 @@
 import { Button, Dialog, List, NavBar, Toast } from 'antd-mobile'
-import { Link, useNavigate } from 'react-router-dom'
-import { useCallback, useMemo, useRef } from 'react'
+import { Link, generatePath, useNavigate } from 'react-router-dom'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { DeleteOutline } from 'antd-mobile-icons'
 import SwipeAction, {
   Action,
@@ -10,16 +10,20 @@ import useOrder from '../../hooks/useOrder'
 import { routes } from '../../routes'
 import DishItem from '../../components/DishItem'
 import useMenu from '../../hooks/useMenu'
-import { addDocument, getColRef } from '../../firebase/service'
+import { addDocument, getColRef, updateDocument } from '../../firebase/service'
 import useAuth from '../../hooks/useAuth'
 import { Loading } from '../../global'
+import AutoComplete from '../../components/AutoComplete'
 
 const Order = () => {
   const navigate = useNavigate()
-  const { order, clearCart, addOrder, removeDish } = useOrder()
+  const { order, clearCart, addOrder, removeDish, fetchObject, objects } =
+    useOrder()
   const { categories } = useMenu()
   const { user } = useAuth()
   const swipeActionRef = useRef<SwipeActionRef>(null)
+  const [objectType, setObjectType] = useState('')
+  const [errors, setErrors] = useState<any>()
 
   const formatCategories = useMemo(
     () =>
@@ -32,10 +36,23 @@ const Order = () => {
         ?.flat(),
     [categories]
   )
+  const tableObjects = useMemo(
+    () => objects.filter((object) => object.objectType === 'table'),
+    [objects]
+  )
+  const customerObjects = useMemo(
+    () => objects.filter((object) => object.objectType === 'customer'),
+    [objects]
+  )
 
   const handleAddOrder = useCallback(async () => {
     if (user === null) return
     try {
+      if (objectType === '')
+        return setErrors({
+          objectType: 'required',
+        })
+      setErrors(null)
       Loading.get.show()
       const uid = user.uid
       const orderObj = order.reduce((accumulator, value) => {
@@ -49,13 +66,12 @@ const Order = () => {
       await addDocument(orderDocRef, orderData)
 
       navigate(routes.order)
+      clearCart()
       Toast.show({
         icon: 'success',
-        // content: isEditMode ? 'Category is updated' : 'Category is created',
         content: 'Order is created',
       })
 
-      clearCart()
       return
     } catch (error: any) {
       Toast.show({
@@ -66,6 +82,17 @@ const Order = () => {
       Loading.get.hide()
     }
   }, [order, user])
+
+  const handleCancelOrder = useCallback(() => {
+    navigate(-1)
+    clearCart()
+
+    return
+  }, [])
+
+  useEffect(() => {
+    fetchObject()
+  }, [])
 
   const handleOnActionList = useCallback(
     async (action: Action, dishItem: any) => {
@@ -92,9 +119,9 @@ const Order = () => {
 
   const right = useMemo(
     () => (
-      <Link to={routes.menu}>
+      <Link to={routes.newObject}>
         <Button color="primary" fill="none" size="mini">
-          MENU
+          NEW OBJECT
         </Button>
       </Link>
     ),
@@ -118,6 +145,46 @@ const Order = () => {
       >
         CART
       </NavBar>
+
+      <div className="m-3">
+        <div className="flex gap-3">
+          <AutoComplete
+            items={tableObjects}
+            buttonText="Table"
+            searchPlaceholder="Search table"
+            selected={objectType}
+            onSelect={setObjectType}
+            onUpdate={(object: any) => {
+              console.log('A----', object)
+              navigate(
+                generatePath(routes.updateObject, { objectId: object.id })
+              )
+            }}
+            onDelete={async (object: any) => {
+              const objectData = {
+                deleted: true,
+              }
+              await updateDocument(object.ref, objectData)
+              if (typeof fetchObject === 'function') {
+                fetchObject()
+              }
+            }}
+          />
+          <AutoComplete
+            items={customerObjects}
+            buttonText="Customer"
+            searchPlaceholder="Search customer"
+            selected={objectType}
+            onSelect={setObjectType}
+          />
+        </div>
+        {errors?.['objectType'] ? (
+          <div className="adm-form-item-feedback-error">
+            Object Type is required
+          </div>
+        ) : null}
+      </div>
+
       <List mode="card">
         {order?.length > 0
           ? order?.map((dish, di: number) => {
@@ -153,7 +220,7 @@ const Order = () => {
           : null}
       </List>
 
-      <div className="mx-3">
+      <div className="flex flex-col m-3 gap-3">
         <Button
           block
           type="submit"
@@ -164,6 +231,18 @@ const Order = () => {
           disabled={order?.length === 0}
         >
           ORDER
+        </Button>
+        <Button
+          block
+          type="button"
+          color="primary"
+          size="large"
+          shape="rounded"
+          fill="outline"
+          onClick={handleCancelOrder}
+          disabled={order?.length === 0}
+        >
+          CANCEL
         </Button>
       </div>
     </div>

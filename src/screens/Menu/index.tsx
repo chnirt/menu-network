@@ -332,7 +332,12 @@ const Menu = () => {
       </div>
 
       {user && orderTotal > 0 ? (
-        <div className="sticky bottom-16 mx-3">
+        <div
+          className="sticky mx-3"
+          style={{
+            bottom: 76,
+          }}
+        >
           <Button
             block
             type="submit"

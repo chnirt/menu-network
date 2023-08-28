@@ -30,6 +30,8 @@ type OrderContextType = {
   removeDish: (dishId: string) => void
   fetchOrder: () => Promise<void>
   orders: any[]
+  fetchObject: () => Promise<void>
+  objects: any[]
 }
 
 export const OrderContext = createContext<OrderContextType>({
@@ -40,12 +42,15 @@ export const OrderContext = createContext<OrderContextType>({
   orderTotal: 0,
   fetchOrder: async () => {},
   orders: [],
+  fetchObject: async () => {},
+  objects: [],
 })
 
 export const OrderProvider: FC<PropsWithChildren> = ({ children }) => {
   const { user } = useAuth()
   const [order, setOrder] = useState<Order[]>([])
   const [orders, setOrders] = useState<any[]>([])
+  const [objects, setObjects] = useState<any[]>([])
 
   const orderTotal = useMemo(
     () => order?.map((dish) => dish.count)?.reduce((a, b) => a + b, 0) ?? 0,
@@ -93,6 +98,26 @@ export const OrderProvider: FC<PropsWithChildren> = ({ children }) => {
     setOrders(data)
   }, [user])
 
+  const fetchObject = useCallback(async () => {
+    if (user === null) return
+    const orderColRef = getColRef('objects')
+    const q = query(
+      orderColRef,
+      where('uid', '==', user.uid),
+      where('deleted', '==', false)
+    )
+    querySnapshot = await getDocs(q)
+    const docs = querySnapshot.docs
+    const data = docs.map((docSnapshot) => {
+      return {
+        id: docSnapshot.id,
+        ref: docSnapshot.ref,
+        ...docSnapshot.data(),
+      }
+    })
+    setObjects(data)
+  }, [user])
+
   return (
     <OrderContext.Provider
       value={{
@@ -103,6 +128,8 @@ export const OrderProvider: FC<PropsWithChildren> = ({ children }) => {
         removeDish,
         fetchOrder,
         orders,
+        fetchObject,
+        objects,
       }}
     >
       {children}
