@@ -23,6 +23,7 @@ export const routes = {
   dish: '/dish/:dishId',
   newObject: '/new-object',
   updateObject: '/objects/:objectId',
+  updateOrder: '/orders/:orderId',
 
   error: '/error',
 }
@@ -55,6 +56,16 @@ export const router = createBrowserRouter([
               },
               {
                 path: routes.cart,
+                element: (
+                  <Loadable
+                    {...{
+                      factory: () => import('../screens/Cart'),
+                    }}
+                  />
+                ),
+              },
+              {
+                path: routes.updateOrder,
                 element: (
                   <Loadable
                     {...{

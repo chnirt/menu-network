@@ -30,34 +30,38 @@ const AutoComplete = ({
     }
   }, [items, searchText])
 
-  const isSelected = filteredItems?.some((item: any) => item.id === selected.id)
+  const isSelected = filteredItems?.some(
+    (item: any) => item.id === selected?.id
+  )
 
-  const handleOnAction = useCallback(async (action: Action, dataItem: any) => {
-    console.log(dataItem)
-    switch (action.key) {
-      case 'update':
-        {
-          typeof onUpdate === 'function' ? onUpdate(dataItem) : undefined
-          swipeActionRef.current?.close()
-        }
-        return
-      case 'delete':
-        {
-          await Dialog.confirm({
-            content: 'Are you sure want to delete?',
-            cancelText: 'Cancel',
-            confirmText: 'Delete',
-            onConfirm: () => {
-              typeof onDelete === 'function' ? onDelete(dataItem) : undefined
-            },
-          })
-          swipeActionRef.current?.close()
-        }
-        return
-      default:
-        return
-    }
-  }, [])
+  const handleOnAction = useCallback(
+    async (action: Action, dataItem: any) => {
+      switch (action.key) {
+        case 'update':
+          {
+            typeof onUpdate === 'function' ? onUpdate(dataItem) : undefined
+            swipeActionRef.current?.close()
+          }
+          return
+        case 'delete':
+          {
+            await Dialog.confirm({
+              content: 'Are you sure want to delete?',
+              cancelText: 'Cancel',
+              confirmText: 'Delete',
+              onConfirm: () => {
+                typeof onDelete === 'function' ? onDelete(dataItem) : undefined
+              },
+            })
+            swipeActionRef.current?.close()
+          }
+          return
+        default:
+          return
+      }
+    },
+    [onUpdate, onDelete]
+  )
 
   const rightActions: Action[] = [
     {
@@ -79,7 +83,7 @@ const AutoComplete = ({
         size="middle"
         shape="rounded"
         color={isSelected ? 'primary' : 'default'}
-        fill={isSelected ? 'outline' : 'none'}
+        fill={isSelected ? 'outline' : 'solid'}
         onClick={() => {
           setVisible(true)
         }}

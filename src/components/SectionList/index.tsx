@@ -152,7 +152,7 @@ const SectionList = ({
 
   useEffect(() => {
     setActiveKey(tabItems?.[0]?.[myKey])
-  }, [tabItems])
+  }, [tabItems, myKey])
 
   const rightActions: Action[] = [
     {

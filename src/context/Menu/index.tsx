@@ -32,17 +32,8 @@ export const MenuProvider: FC<PropsWithChildren> = ({ children }) => {
   const [menu, setMenu] = useState<IMenu | undefined>()
   const [categories, setCategories] = useState<any[] | undefined>()
 
-  let querySnapshot
-  const fetchMenu = useCallback(
-    async (menuId: string) => {
-      if (categories?.length) return
-      await refetchMenu(menuId)
-      return
-    },
-    [categories]
-  )
-
   const refetchMenu = useCallback(async (menuId: string) => {
+    let querySnapshot
     const menuDocRef = getDocRef('users', menuId)
     const menuDocData: any = await getDocument(menuDocRef)
 
@@ -83,6 +74,15 @@ export const MenuProvider: FC<PropsWithChildren> = ({ children }) => {
       setCategories(data)
     }
   }, [])
+
+  const fetchMenu = useCallback(
+    async (menuId: string) => {
+      if (categories?.length) return
+      await refetchMenu(menuId)
+      return
+    },
+    [categories, refetchMenu]
+  )
 
   return (
     <MenuContext.Provider value={{ categories, fetchMenu, refetchMenu, menu }}>

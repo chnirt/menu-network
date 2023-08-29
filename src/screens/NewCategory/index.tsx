@@ -68,7 +68,7 @@ const NewCategory = () => {
         Loading.get.hide()
       }
     },
-    [user, isEditMode, categoryDocRefState]
+    [user, isEditMode, categoryDocRefState, navigate, refetchMenu]
   )
 
   const fetchCategoryById = useCallback(
@@ -86,7 +86,7 @@ const NewCategory = () => {
       form.setFieldsValue(dishDocData)
       setLoading(false)
     },
-    [user, categoryId]
+    [user, form]
   )
 
   useEffect(() => {

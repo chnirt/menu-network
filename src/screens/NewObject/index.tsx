@@ -67,7 +67,7 @@ const NewObject = () => {
         Loading.get.hide()
       }
     },
-    [user, isEditMode, objectDocRefState]
+    [user, isEditMode, objectDocRefState, navigate]
   )
 
   const fetchObjectById = useCallback(
@@ -80,7 +80,7 @@ const NewObject = () => {
       form.setFieldsValue(objectDocData)
       setLoading(false)
     },
-    [user, objectId]
+    [user, form]
   )
 
   useEffect(() => {

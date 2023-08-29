@@ -60,7 +60,7 @@ const Menu = () => {
               : item.price,
         })),
       })),
-    [categories]
+    [categories, menu]
   )
   const filterCategories = useMemo(() => {
     if (formatCategories === undefined) return undefined
@@ -110,18 +110,18 @@ const Menu = () => {
     if (menuId && typeof refetchMenu === 'function') {
       refetchMenu(menuId)
     }
-  }, [])
+  }, [menuId, refetchMenu])
 
   const onClickNewList = useCallback(
     (categoryId: string) =>
       navigate(generatePath(routes.newDish, { categoryId })),
-    []
+    [navigate]
   )
 
   const onUpdateConfirmList = useCallback(
     (categoryId: string) =>
       navigate(generatePath(routes.updateCategory, { categoryId })),
-    []
+    [navigate]
   )
 
   const onDeleteConfirmList = useCallback(
@@ -131,7 +131,7 @@ const Menu = () => {
         refetchMenu(menuId)
       }
     },
-    []
+    [menuId, refetchMenu]
   )
 
   const onDeleteConfirmListItem = useCallback(
@@ -141,7 +141,7 @@ const Menu = () => {
         refetchMenu(menuId)
       }
     },
-    []
+    [menuId, refetchMenu]
   )
 
   const onUpdateConfirmListItem = useCallback(
@@ -155,7 +155,7 @@ const Menu = () => {
           dishId: dataItem.id,
         })
       ),
-    []
+    [navigate]
   )
 
   const onClickListItem = useCallback(
@@ -173,7 +173,7 @@ const Menu = () => {
         },
       })
     },
-    []
+    [navigate]
   )
 
   useEffect(() => {
@@ -188,7 +188,7 @@ const Menu = () => {
     }
 
     handleFetchMenu()
-  }, [menuId])
+  }, [menuId, fetchMenu, navigate])
 
   useEffect(() => {
     if (debouncedSearchText.length > 0 && Array.isArray(categories)) {
@@ -333,7 +333,7 @@ const Menu = () => {
 
       {user && orderTotal > 0 ? (
         <div
-          className="sticky mx-3 pb-safe"
+          className="sticky m-3 pb-safe"
           style={{
             bottom: 76,
           }}

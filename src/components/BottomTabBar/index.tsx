@@ -1,8 +1,6 @@
 import { FC, useCallback, useMemo } from 'react'
 import { generatePath, useLocation, useNavigate } from 'react-router-dom'
 import { MenuSquare, User2, ShoppingBag } from 'lucide-react'
-import // CompassOutline,
-'antd-mobile-icons'
 import { TabBar } from 'antd-mobile'
 import { routes } from '../../routes'
 import { auth } from '../../firebase'
@@ -12,9 +10,13 @@ const BottomTabBar: FC = () => {
   const location = useLocation()
   const { pathname } = location
 
-  const setRouteActive = useCallback((value: string) => {
-    navigate(value)
-  }, [])
+  const setRouteActive = useCallback(
+    (value: string) => {
+      navigate(value)
+    },
+    [navigate]
+  )
+
   const tabs = useMemo(
     () => [
       // {

@@ -6,9 +6,11 @@ import { auth } from '../../firebase'
 
 const Dashboard = () => {
   const navigate = useNavigate()
+
   useEffect(() => {
     navigate(generatePath(routes.menu, { menuId: auth.currentUser?.uid }))
-  }, [])
+  }, [navigate])
+
   return (
     <div>
       <NavBar className="sticky top-0 z-[100] bg-white" back={null}>

@@ -23,7 +23,7 @@ const Home = () => {
       page_path,
     })
     scrollToTop()
-  }, [location])
+  }, [location, scrollToTop])
   return (
     <div className="bg-[#f8f8f8] min-h-screen">
       <Outlet context={auth} />

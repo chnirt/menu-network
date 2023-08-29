@@ -9,30 +9,34 @@ const AvatarUploader = ({
   photoURL: string
   onUpload: (downloadURL: string) => void
 }) => {
-  const upload = useCallback((file: File): Promise<ImageUploadItem> => {
-    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png'
-    if (!isJpgOrPng) {
-      return Promise.reject(new Error('You can only upload JPG/PNG file!'))
-    }
-    const isLt2M = file.size / 1024 / 1024 < 2
-    if (!isLt2M) {
-      return Promise.reject(new Error('Image must smaller than 2MB!'))
-    }
+  const upload = useCallback(
+    (file: File): Promise<ImageUploadItem> => {
+      const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png'
+      if (!isJpgOrPng) {
+        return Promise.reject(new Error('You can only upload JPG/PNG file!'))
+      }
+      const isLt2M = file.size / 1024 / 1024 < 2
+      if (!isLt2M) {
+        return Promise.reject(new Error('Image must smaller than 2MB!'))
+      }
 
-    return new Promise((resolve, reject) => {
-      uploadStorageBytesResumable(
-        file,
-        undefined,
-        (error) => reject(error),
-        async ({ downloadURL }) => {
-          typeof onUpload === 'function' ? onUpload(downloadURL) : undefined
-          resolve({
-            url: downloadURL,
-          })
-        }
-      )
-    })
-  }, [])
+      return new Promise((resolve, reject) => {
+        uploadStorageBytesResumable(
+          file,
+          undefined,
+          (error) => reject(error),
+          async ({ downloadURL }) => {
+            typeof onUpload === 'function' ? onUpload(downloadURL) : undefined
+            resolve({
+              url: downloadURL,
+            })
+          }
+        )
+      })
+    },
+    [onUpload]
+  )
+
   return (
     <div>
       <label htmlFor="file-input">

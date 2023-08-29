@@ -56,7 +56,7 @@ const Settings = () => {
         Loading.get.hide()
       }
     },
-    [user]
+    [user, fetchUser, navigate]
   )
 
   useEffect(() => {
@@ -65,7 +65,7 @@ const Settings = () => {
       ...(user?.wifi ? { wifi: user.wifi } : {}),
       ...(user?.currency ? { currency: user.currency } : {}),
     })
-  }, [user])
+  }, [user, form])
 
   return (
     <div>

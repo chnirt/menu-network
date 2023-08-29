@@ -1,5 +1,5 @@
 import { Button, Dialog, List, NavBar, Toast } from 'antd-mobile'
-import { Link, generatePath, useNavigate } from 'react-router-dom'
+import { Link, generatePath, useNavigate, useParams } from 'react-router-dom'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { DeleteOutline } from 'antd-mobile-icons'
 import SwipeAction, {
@@ -10,20 +10,40 @@ import useOrder from '../../hooks/useOrder'
 import { routes } from '../../routes'
 import DishItem from '../../components/DishItem'
 import useMenu from '../../hooks/useMenu'
-import { addDocument, getColRef, updateDocument } from '../../firebase/service'
+import {
+  addDocument,
+  getColRef,
+  getDocRef,
+  getDocument,
+  updateDocument,
+} from '../../firebase/service'
 import useAuth from '../../hooks/useAuth'
 import { Loading } from '../../global'
 import AutoComplete from '../../components/AutoComplete'
+import { DocumentData, DocumentReference } from 'firebase/firestore'
 
 const Order = () => {
   const navigate = useNavigate()
-  const { order, clearCart, addOrder, removeDish, fetchObject, objects } =
-    useOrder()
+  const {
+    order,
+    clearCart,
+    addOrder,
+    removeDish,
+    fetchObject,
+    objects,
+    setOrder,
+  } = useOrder()
+  const { orderId } = useParams()
+  const isEditMode = Boolean(orderId)
   const { categories } = useMenu()
   const { user } = useAuth()
   const swipeActionRef = useRef<SwipeActionRef>(null)
-  const [objectType, setObjectType] = useState('')
+  const [objectType, setObjectType] = useState<any>()
   const [errors, setErrors] = useState<any>()
+  const [orderDocRefState, setOrderDocRefState] = useState<DocumentReference<
+    DocumentData,
+    DocumentData
+  > | null>(null)
 
   const formatCategories = useMemo(
     () =>
@@ -48,7 +68,7 @@ const Order = () => {
   const handleAddOrder = useCallback(async () => {
     if (user === null) return
     try {
-      if (objectType === '')
+      if (objectType === undefined)
         return setErrors({
           objectType: 'required',
         })
@@ -60,10 +80,17 @@ const Order = () => {
       }, {})
       const orderData = {
         order: orderObj,
+        objectType,
+        status: 'new',
         uid,
       }
-      const orderDocRef = getColRef('orders')
-      await addDocument(orderDocRef, orderData)
+      if (isEditMode) {
+        if (orderDocRefState === null) return
+        await updateDocument(orderDocRefState, orderData)
+      } else {
+        const orderDocRef = getColRef('orders')
+        await addDocument(orderDocRef, orderData)
+      }
 
       navigate(routes.order)
       clearCart()
@@ -81,18 +108,26 @@ const Order = () => {
     } finally {
       Loading.get.hide()
     }
-  }, [order, user])
+  }, [
+    order,
+    user,
+    objectType,
+    isEditMode,
+    clearCart,
+    navigate,
+    orderDocRefState,
+  ])
 
   const handleCancelOrder = useCallback(() => {
     navigate(-1)
     clearCart()
 
     return
-  }, [])
+  }, [clearCart, navigate])
 
   useEffect(() => {
     fetchObject()
-  }, [])
+  }, [fetchObject])
 
   const handleOnActionList = useCallback(
     async (action: Action, dishItem: any) => {
@@ -114,8 +149,35 @@ const Order = () => {
           return
       }
     },
-    []
+    [removeDish]
   )
+
+  const fetchOrderById = useCallback(
+    async (orderId: string) => {
+      if (user === null) return
+      // setLoading(true)
+      const orderDocRef = getDocRef('orders', orderId)
+      setOrderDocRefState(orderDocRef)
+      const orderDocData: any = await getDocument(orderDocRef)
+      const orderArray: any = Object.entries(orderDocData?.order).map(
+        ([key, value]) => ({ dishId: key, count: value })
+      )
+      setOrder(orderArray)
+      setObjectType(orderDocData?.objectType)
+      // setLoading(false)
+    },
+    [user, setOrder]
+  )
+
+  useEffect(() => {
+    if (orderId === undefined) return
+    fetchOrderById(orderId)
+
+    return () => {
+      if (orderId === undefined) return
+      clearCart()
+    }
+  }, [orderId, fetchOrderById, clearCart])
 
   const right = useMemo(
     () => (
@@ -138,112 +200,120 @@ const Order = () => {
 
   return (
     <div>
-      <NavBar
-        className="sticky top-0 z-[100] bg-white"
-        onBack={() => navigate(-1)}
-        right={right}
-      >
-        CART
-      </NavBar>
+      <div>
+        <NavBar
+          className="sticky top-0 z-[100] bg-white"
+          onBack={() => navigate(-1)}
+          right={right}
+        >
+          {isEditMode ? orderId : 'CART'}
+        </NavBar>
 
-      <div className="m-3">
-        <div className="flex gap-3">
-          <AutoComplete
-            items={tableObjects}
-            buttonText="Table"
-            searchPlaceholder="Search table"
-            selected={objectType}
-            onSelect={setObjectType}
-            onUpdate={(object: any) => {
-              console.log('A----', object)
-              navigate(
-                generatePath(routes.updateObject, { objectId: object.id })
-              )
-            }}
-            onDelete={async (object: any) => {
-              const objectData = {
-                deleted: true,
-              }
-              await updateDocument(object.ref, objectData)
-              if (typeof fetchObject === 'function') {
-                fetchObject()
-              }
-            }}
-          />
-          <AutoComplete
-            items={customerObjects}
-            buttonText="Customer"
-            searchPlaceholder="Search customer"
-            selected={objectType}
-            onSelect={setObjectType}
-          />
-        </div>
-        {errors?.['objectType'] ? (
-          <div className="adm-form-item-feedback-error">
-            Object Type is required
+        <div className="m-3">
+          <div className="flex gap-3">
+            <AutoComplete
+              items={tableObjects}
+              buttonText="Table"
+              searchPlaceholder="Search table"
+              selected={objectType}
+              onSelect={setObjectType}
+              onUpdate={(object: any) => {
+                navigate(
+                  generatePath(routes.updateObject, { objectId: object.id })
+                )
+              }}
+              onDelete={async (object: any) => {
+                const objectData = {
+                  deleted: true,
+                }
+                await updateDocument(object.ref, objectData)
+                if (typeof fetchObject === 'function') {
+                  fetchObject()
+                }
+              }}
+            />
+            <AutoComplete
+              items={customerObjects}
+              buttonText="Customer"
+              searchPlaceholder="Search customer"
+              selected={objectType}
+              onSelect={setObjectType}
+            />
           </div>
-        ) : null}
-      </div>
+          {errors?.['objectType'] ? (
+            <div className="adm-form-item-feedback-error">
+              Object Type is required
+            </div>
+          ) : null}
+        </div>
 
-      <List mode="card">
-        {order?.length > 0
-          ? order?.map((dish, di: number) => {
-              const dataItem = formatCategories?.find(
-                (category) => category.id === dish.dishId
-              )
-              return (
-                <SwipeAction
-                  key={`dish-${di}`}
-                  style={{
-                    '--background': 'transparent',
-                  }}
-                  ref={swipeActionRef}
-                  rightActions={rightActions}
-                  onAction={(action) => handleOnActionList(action, dish)}
-                >
-                  <List.Item>
-                    <DishItem
-                      item={dataItem}
-                      count={dish.count}
-                      onChangeValue={(value: any) => {
-                        if (addOrder === undefined) return
-                        addOrder({
-                          dishId: dish.dishId,
-                          count: value,
-                        })
-                      }}
-                    />
-                  </List.Item>
-                </SwipeAction>
-              )
-            })
-          : null}
-      </List>
+        <List mode="card">
+          {order?.length > 0
+            ? order?.map((dish, di: number) => {
+                const dataItem = formatCategories?.find(
+                  (category) => category.id === dish.dishId
+                )
+                return (
+                  <SwipeAction
+                    key={`dish-${di}`}
+                    style={{
+                      '--background': 'transparent',
+                    }}
+                    ref={swipeActionRef}
+                    rightActions={rightActions}
+                    onAction={(action) => handleOnActionList(action, dish)}
+                  >
+                    <List.Item>
+                      <DishItem
+                        item={dataItem}
+                        count={dish.count}
+                        onChangeValue={(value: any) => {
+                          if (addOrder === undefined) return
+                          addOrder({
+                            dishId: dish.dishId,
+                            count: value,
+                          })
+                        }}
+                      />
+                    </List.Item>
+                  </SwipeAction>
+                )
+              })
+            : null}
+        </List>
 
-      <div className="flex flex-col m-3 gap-3">
-        <Button
-          block
-          type="submit"
-          color="primary"
-          size="large"
-          shape="rounded"
-          onClick={handleAddOrder}
-          disabled={order?.length === 0}
+        <div
+          className="flex flex-col m-3 gap-3 sticky pb-safe"
+          style={{
+            bottom: 76,
+          }}
         >
-          ORDER
-        </Button>
-        <Button
-          block
-          type="button"
-          color="primary"
-          size="large"
-          shape="rounded"
-          fill="outline"
-          onClick={handleCancelOrder}
-          disabled={order?.length === 0}
-        >
-          CANCEL
-        </Button>
+          <Button
+            block
+            type="submit"
+            color="primary"
+            size="large"
+            shape="rounded"
+            onClick={handleAddOrder}
+            disabled={order?.length === 0}
+          >
+            {isEditMode ? 'SAVE' : 'ORDER'}
+          </Button>
+          {isEditMode ? (
+            <Button
+              block
+              type="button"
+              color="primary"
+              size="large"
+              shape="rounded"
+              fill="outline"
+              onClick={handleCancelOrder}
+              disabled={order?.length === 0}
+            >
+              CANCEL
+            </Button>
+          ) : null}
+        </div>
       </div>
     </div>
   )

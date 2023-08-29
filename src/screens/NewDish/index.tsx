@@ -91,7 +91,7 @@ const NewDish = () => {
         Loading.get.hide()
       }
     },
-    [user, isEditMode, dishDocRefState]
+    [user, isEditMode, dishDocRefState, categoryId, navigate, refetchMenu]
   )
 
   const fetchDishById = useCallback(

@@ -89,7 +89,7 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
       }
     })
     return unsubscribe
-  }, [])
+  }, [debounceFetchUser, user])
 
   return (
     <AuthContext.Provider

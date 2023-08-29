@@ -7,7 +7,7 @@ const DishItem = ({ item, count, onChangeValue }: any) => {
       <div className="mr-3">
         <Image
           className="rounded-3xl [&_img]:m-0"
-          src={item.photo ?? ''}
+          src={item?.photo ?? ''}
           fit="cover"
           width={80}
           height={80}

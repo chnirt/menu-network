@@ -1,6 +1,8 @@
 import {
+  Dispatch,
   FC,
   PropsWithChildren,
+  SetStateAction,
   createContext,
   useCallback,
   useMemo,
@@ -9,13 +11,6 @@ import {
 import { getColRef } from '../../firebase/service'
 import { getDocs, query, where } from 'firebase/firestore'
 import useAuth from '../../hooks/useAuth'
-// import { getDocs, query, where } from 'firebase/firestore'
-// import {
-//   getColGroupRef,
-//   getColRef,
-//   getDocRef,
-//   getDocument,
-// } from '../../firebase/service'
 
 type Order = {
   dishId: string
@@ -32,6 +27,7 @@ type OrderContextType = {
   orders: any[]
   fetchObject: () => Promise<void>
   objects: any[]
+  setOrder: Dispatch<SetStateAction<Order[]>>
 }
 
 export const OrderContext = createContext<OrderContextType>({
@@ -44,6 +40,7 @@ export const OrderContext = createContext<OrderContextType>({
   orders: [],
   fetchObject: async () => {},
   objects: [],
+  setOrder: () => {},
 })
 
 export const OrderProvider: FC<PropsWithChildren> = ({ children }) => {
@@ -80,14 +77,12 @@ export const OrderProvider: FC<PropsWithChildren> = ({ children }) => {
     setOrder((prevState) => prevState.filter((dish) => dish.dishId !== dishId))
   }, [])
 
-  let querySnapshot
-
   const fetchOrder = useCallback(async () => {
     if (user === null) return
     const orderColRef = getColRef('orders')
     const q = query(orderColRef, where('uid', '==', user.uid))
-    querySnapshot = await getDocs(q)
-    const docs = querySnapshot.docs
+    const queryOrderSnapshot = await getDocs(q)
+    const docs = queryOrderSnapshot.docs
     const data = docs.map((docSnapshot) => {
       return {
         id: docSnapshot.id,
@@ -106,8 +101,8 @@ export const OrderProvider: FC<PropsWithChildren> = ({ children }) => {
       where('uid', '==', user.uid),
       where('deleted', '==', false)
     )
-    querySnapshot = await getDocs(q)
-    const docs = querySnapshot.docs
+    const queryObjectSnapshot = await getDocs(q)
+    const docs = queryObjectSnapshot.docs
     const data = docs.map((docSnapshot) => {
       return {
         id: docSnapshot.id,
@@ -130,6 +125,7 @@ export const OrderProvider: FC<PropsWithChildren> = ({ children }) => {
         orders,
         fetchObject,
         objects,
+        setOrder,
       }}
     >
       {children}
