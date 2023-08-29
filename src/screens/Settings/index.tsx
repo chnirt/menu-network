@@ -36,7 +36,7 @@ const Settings = () => {
           ...(logo.length > 0 ? { logo: logo[0].url } : {}),
           currency,
         }
-        console.log(settingsData)
+        // console.log(settingsData)
         const settingsDocRef = getDocRef('users', uid)
         await updateDocument(settingsDocRef, settingsData)
         await fetchUser(user)
