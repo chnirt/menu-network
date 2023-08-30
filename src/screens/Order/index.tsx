@@ -8,7 +8,7 @@ import {
   SwipeActionRef,
   Tag,
 } from 'antd-mobile'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import useOrder from '../../hooks/useOrder'
 import { DeleteOutline, EditSOutline } from 'antd-mobile-icons'
 import { Action } from 'antd-mobile/es/components/swipe-action'
@@ -17,6 +17,9 @@ import moment from 'moment'
 import { generatePath, useNavigate } from 'react-router-dom'
 import { routes } from '../../routes'
 import useAuth from '../../hooks/useAuth'
+import DatePicker from '../../components/DatePicker'
+import dayjs from 'dayjs'
+// import { addDocument, getColRef } from '../../firebase/service'
 
 const Order = () => {
   const { fetchOrder, orders } = useOrder()
@@ -24,6 +27,13 @@ const Order = () => {
   const { user } = useAuth()
   const swipeActionRef = useRef<SwipeActionRef>(null)
   const [orderSelected, setOrderSelected] = useState<any>()
+  const today = dayjs()
+  const [val, setVal] = useState<[Date, Date] | null>(() => [
+    today.toDate(),
+    today.toDate(),
+    // today.subtract(2, 'day').toDate(),
+    // today.add(2, 'day').toDate(),
+  ])
 
   const handleOnActionList = useCallback(
     async (action: Action, orderItem: any) => {
@@ -58,11 +68,43 @@ const Order = () => {
     [fetchOrder, navigate]
   )
 
-  const handlePay = useCallback(() => {}, [])
+  const handlePay = useCallback(async () => {
+    console.log('orderSelected---', orderSelected)
+    // const billData = {}
+    // const billDocRef = getColRef('bills')
+    // await addDocument(billDocRef, billData)
+  }, [orderSelected])
 
   useEffect(() => {
     fetchOrder()
   }, [fetchOrder])
+
+  const filterOrders = useMemo(() => {
+    // if (formatCategories === undefined) return undefined
+    // if (debouncedSearchText.length === 0) return formatCategories
+    return orders
+      .filter((order) => {
+        return moment(order.createdAt.toDate()).isBetween(
+          moment(val?.[0]).set({
+            hour: 0,
+            minute: 0,
+            second: 0,
+            millisecond: 0,
+          }),
+          moment(val?.[1]).set({
+            hour: 23,
+            minute: 59,
+            second: 59,
+            millisecond: 999,
+          })
+        )
+      })
+      .map((order) => {
+        return {
+          ...order,
+        }
+      })
+  }, [orders, val])
 
   const rightActions: Action[] = [
     {
@@ -83,6 +125,10 @@ const Order = () => {
         ORDER
       </NavBar>
 
+      <div className="m-3">
+        <DatePicker value={val} onChange={setVal} />
+      </div>
+
       <CheckList
         mode="card"
         multiple
@@ -90,8 +136,8 @@ const Order = () => {
         defaultValue={orderSelected ?? []}
         onChange={setOrderSelected}
       >
-        {user && orders?.length > 0
-          ? orders.map((order, oi) => {
+        {user && filterOrders?.length > 0
+          ? filterOrders.map((order, oi) => {
               return (
                 <SwipeAction
                   key={`order-${oi}`}

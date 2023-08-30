@@ -97,9 +97,7 @@ const AutoComplete = ({
 
       <Popup
         visible={visible}
-        onMaskClick={() => {
-          setVisible(false)
-        }}
+        onMaskClick={() => setVisible(false)}
         destroyOnClose
       >
         <div className="p-3">
