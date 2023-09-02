@@ -34,7 +34,7 @@ const Menu = () => {
   const { user } = useAuth()
   const { menuId } = useParams()
   const isOwner = user?.uid === menuId
-  const { fetchMenu, refetchMenu, menu, categories } = useMenu()
+  const { categories, dishes, fetchCategories, fetchDishes } = useMenu()
   const { addOrder, orderTotal, order } = useOrder()
   const [searchText, setSearchText] = useState('')
   const [debouncedSearchText, setDebouncedSearchText] = useState('')
@@ -44,23 +44,29 @@ const Menu = () => {
     () =>
       categories?.map((category) => ({
         ...category,
-        data: category.data.map((item: any) => ({
-          ...item,
-          price:
-            menu?.currency === 'vnd'
-              ? Number(item.price).toLocaleString('vi-VN', {
-                  style: 'currency',
-                  currency: 'VND',
-                })
-              : menu?.currency === 'usd'
-              ? Number(item.price).toLocaleString('en-US', {
-                  style: 'currency',
-                  currency: 'USD',
-                })
-              : item.price,
-        })),
+        data:
+          dishes !== undefined
+            ? dishes
+                .filter((item: any) => item?.categoryId === category?.id)
+                .map((item: any) => ({
+                  ...item,
+                  // price:
+                  //   menu?.currency === 'vnd'
+                  //     ? Number(item.price).toLocaleString('vi-VN', {
+                  //         style: 'currency',
+                  //         currency: 'VND',
+                  //       })
+                  //     : menu?.currency === 'usd'
+                  //     ? Number(item.price).toLocaleString('en-US', {
+                  //         style: 'currency',
+                  //         currency: 'USD',
+                  //       })
+                  //     : item.price,
+                }))
+            : [],
       })),
-    [categories, menu]
+    // [categories, menu]
+    [categories, dishes]
   )
   const filterCategories = useMemo(() => {
     if (formatCategories === undefined) return undefined
@@ -107,10 +113,8 @@ const Menu = () => {
   // }, [])
 
   const onRefresh = useCallback(async () => {
-    if (menuId && typeof refetchMenu === 'function') {
-      refetchMenu(menuId)
-    }
-  }, [menuId, refetchMenu])
+    fetchCategories()
+  }, [fetchCategories])
 
   const onClickNewList = useCallback(
     (categoryId: string) =>
@@ -127,21 +131,17 @@ const Menu = () => {
   const onDeleteConfirmList = useCallback(
     async (tabItem: QueryDocumentSnapshot<DocumentData, DocumentData>) => {
       await deleteDoc(tabItem.ref)
-      if (menuId && typeof refetchMenu === 'function') {
-        refetchMenu(menuId)
-      }
+      fetchCategories()
     },
-    [menuId, refetchMenu]
+    [fetchCategories]
   )
 
   const onDeleteConfirmListItem = useCallback(
     async (dataItem: QueryDocumentSnapshot<DocumentData, DocumentData>) => {
       await deleteDoc(dataItem.ref)
-      if (menuId && typeof refetchMenu === 'function') {
-        refetchMenu(menuId)
-      }
+      fetchDishes()
     },
-    [menuId, refetchMenu]
+    [fetchDishes]
   )
 
   const onUpdateConfirmListItem = useCallback(
@@ -177,18 +177,18 @@ const Menu = () => {
   )
 
   useEffect(() => {
-    if (menuId === undefined || typeof fetchMenu !== 'function') return
-    const handleFetchMenu = async () => {
-      try {
-        await fetchMenu(menuId)
-        // do something
-      } catch (e) {
-        navigate(routes.error)
-      }
-    }
-
-    handleFetchMenu()
-  }, [menuId, fetchMenu, navigate])
+    // if (menuId === undefined || typeof fetchMenu !== 'function') return
+    // const handleFetchMenu = async () => {
+    //   try {
+    //     await fetchMenu(menuId)
+    //     // do something
+    //   } catch (e) {
+    //     navigate(routes.error)
+    //   }
+    // }
+    // handleFetchMenu()
+    // }, [menuId, fetchMenu, navigate])
+  }, [])
 
   useEffect(() => {
     if (debouncedSearchText.length > 0 && Array.isArray(categories)) {
@@ -250,7 +250,6 @@ const Menu = () => {
         <PullToRefresh onRefresh={onRefresh}>
           <SectionList
             data={filterCategories}
-            myKey="title"
             loadingComponent={<MenuLoading />}
             onClickNewList={onClickNewList}
             onUpdateConfirmList={onUpdateConfirmList}

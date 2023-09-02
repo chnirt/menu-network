@@ -25,7 +25,7 @@ export const tabHeight = tabContainer + tabLine + top
 const SectionList = ({
   data: tabItems,
   onClickNewList,
-  myKey,
+  myKey = 'name',
   onDeleteConfirmList,
   onUpdateConfirmList,
   onDeleteConfirmListItem,
@@ -38,7 +38,7 @@ const SectionList = ({
 }: {
   data?: any[]
   onClickNewList?: (categoryId: string) => void
-  myKey: string
+  myKey?: string
   onDeleteConfirmList?: (tabItem: any) => void
   onUpdateConfirmList?: (categoryId: string) => void
   onDeleteConfirmListItem?: (dataItem: any) => void
@@ -214,7 +214,7 @@ const SectionList = ({
           }}
         >
           {tabItems.map((item: any) => (
-            <Tabs.Tab key={`${item[myKey]}`} title={item.title} />
+            <Tabs.Tab key={`${item?.[myKey]}`} title={item?.[myKey]} />
           ))}
         </Tabs>
       </div>
@@ -240,7 +240,7 @@ const SectionList = ({
                   >
                     <ListHeader
                       {...{
-                        title: tabItem.title,
+                        title: tabItem?.[myKey],
                         onClickNewList:
                           typeof onClickNewList === 'function'
                             ? () => onClickNewList(tabItem.id)
@@ -252,72 +252,79 @@ const SectionList = ({
                 }
               >
                 {tabItem?.data?.length > 0
-                  ? tabItem.data.map((dataItem: any, dii: number) => (
-                      <div
-                        key={`data-item-${dii}`}
-                        id={`anchor-dish-${dataItem?.name}`}
-                      >
-                        <SwipeAction
-                          style={{
-                            '--background': 'transparent',
-                          }}
-                          ref={swipeActionRef}
-                          rightActions={!readOnly ? rightActions : undefined}
-                          onAction={(action) =>
-                            handleOnActionListItem(action, dataItem, tabItem.id)
-                          }
+                  ? tabItem.data.map((dataItem: any, dii: number) => {
+                      // console.log("dataItem---", dataItem)
+                      return (
+                        <div
+                          key={`data-item-${dii}`}
+                          id={`anchor-dish-${dataItem?.name}`}
                         >
-                          <List.Item
-                            className="bg-transparent"
+                          <SwipeAction
                             style={{
-                              '--active-background-color': 'none',
+                              '--background': 'transparent',
                             }}
-                            // prefix={
-                            //   <Image
-                            //     className="rounded-3xl [&_img]:m-0"
-                            //     src={dataItem.photo ?? ''}
-                            //     fit="cover"
-                            //     width={80}
-                            //     height={80}
-                            //   />
-                            // }
-                            // prefix={
-                            //   <LazyLoadImage
-                            //     className="rounded-3xl"
-                            //     alt={`dish-${dii}`}
-                            //     height={40}
-                            //     src={dataItem.photo ?? ''}
-                            //     width={40}
-                            //   />
-                            // }
-                            onClick={
-                              typeof onClickListItem === 'function'
-                                ? () => onClickListItem(dataItem)
-                                : undefined
+                            ref={swipeActionRef}
+                            rightActions={!readOnly ? rightActions : undefined}
+                            onAction={(action) =>
+                              handleOnActionListItem(
+                                action,
+                                dataItem,
+                                tabItem.id
+                              )
                             }
-                            arrow={false}
                           >
-                            {typeof listItemComponent === 'function' ? (
-                              listItemComponent(dataItem)
-                            ) : (
-                              <div className="flex items-center">
-                                <Image
-                                  className="rounded-3xl [&_img]:m-0"
-                                  src={dataItem.photo ?? ''}
-                                  fit="cover"
-                                  width={80}
-                                  height={80}
-                                />
-                                <div className="flex flex-1 flex-row justify-between items-between">
-                                  <div>{dataItem.name}</div>
-                                  <div>{dataItem.price}</div>
+                            <List.Item
+                              className="bg-transparent"
+                              style={{
+                                '--active-background-color': 'none',
+                              }}
+                              // prefix={
+                              //   <Image
+                              //     className="rounded-3xl [&_img]:m-0"
+                              //     src={dataItem.photo ?? ''}
+                              //     fit="cover"
+                              //     width={80}
+                              //     height={80}
+                              //   />
+                              // }
+                              // prefix={
+                              //   <LazyLoadImage
+                              //     className="rounded-3xl"
+                              //     alt={`dish-${dii}`}
+                              //     height={40}
+                              //     src={dataItem.photo ?? ''}
+                              //     width={40}
+                              //   />
+                              // }
+                              onClick={
+                                typeof onClickListItem === 'function'
+                                  ? () => onClickListItem(dataItem)
+                                  : undefined
+                              }
+                              arrow={false}
+                            >
+                              {typeof listItemComponent === 'function' ? (
+                                listItemComponent(dataItem)
+                              ) : (
+                                <div className="flex items-center">
+                                  <Image
+                                    className="rounded-3xl [&_img]:m-0"
+                                    src={dataItem.photo ?? ''}
+                                    fit="cover"
+                                    width={80}
+                                    height={80}
+                                  />
+                                  <div className="flex flex-1 flex-row justify-between items-between">
+                                    <div>{dataItem.name}</div>
+                                    <div>{dataItem.price}</div>
+                                  </div>
                                 </div>
-                              </div>
-                            )}
-                          </List.Item>
-                        </SwipeAction>
-                      </div>
-                    ))
+                              )}
+                            </List.Item>
+                          </SwipeAction>
+                        </div>
+                      )
+                    })
                   : null}
               </List>
             </div>

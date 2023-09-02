@@ -36,7 +36,7 @@ const NewDish = () => {
   const { categoryId, dishId } = useParams()
   const isEditMode = Boolean(dishId)
   const [form] = Form.useForm()
-  const { refetchMenu } = useMenu()
+  const { fetchDishes } = useMenu()
   const uploadMethod = Form.useWatch('uploadMethod', form)
   const [dishDocRefState, setDishDocRefState] = useState<DocumentReference<
     DocumentData,
@@ -54,25 +54,20 @@ const NewDish = () => {
           dishName,
           dishDescription,
           price,
+          categoryId,
+          uid,
         }
 
         if (isEditMode) {
           if (dishDocRefState === null) return
           await updateDocument(dishDocRefState, dishData)
         } else {
-          const dishColRef = getColRef(
-            'users',
-            uid,
-            'categories',
-            categoryId,
-            'dishes'
-          )
+          const dishColRef = getColRef('dishes')
           await addDocument(dishColRef, dishData)
         }
 
-        const menuId = uid
-        if (menuId && typeof refetchMenu === 'function') {
-          refetchMenu(menuId)
+        if (typeof fetchDishes === 'function') {
+          fetchDishes()
         }
 
         navigate(-1)
@@ -91,21 +86,14 @@ const NewDish = () => {
         Loading.get.hide()
       }
     },
-    [user, isEditMode, dishDocRefState, categoryId, navigate, refetchMenu]
+    [user, isEditMode, dishDocRefState, categoryId, navigate, fetchDishes]
   )
 
   const fetchDishById = useCallback(
     async (dishId: string) => {
       if (user === null || categoryId === undefined) return
       setLoading(true)
-      const dishDocRef = getDocRef(
-        'users',
-        user?.uid,
-        'categories',
-        categoryId,
-        'dishes',
-        dishId
-      )
+      const dishDocRef = getDocRef('dishes', dishId)
       setDishDocRefState(dishDocRef)
       const dishDocData: any = await getDocument(dishDocRef)
       form.setFieldsValue({

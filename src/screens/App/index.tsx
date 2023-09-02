@@ -3,13 +3,20 @@ import BottomTabBar from '../../components/BottomTabBar'
 import useAuth from '../../hooks/useAuth'
 import { useEffectOnce } from 'react-use'
 import useOrder from '../../hooks/useOrder'
+import useMenu from '../../hooks/useMenu'
 
 const App = () => {
   const { user } = useAuth()
+  const { fetchCategories, fetchDishes } = useMenu()
   const { fetchOrder, fetchBill } = useOrder()
   useEffectOnce(() => {
     const fetchAll = async () => {
-      await Promise.all([fetchOrder(), fetchBill()])
+      await Promise.all([
+        fetchCategories(),
+        fetchDishes(),
+        fetchOrder(),
+        fetchBill(),
+      ])
     }
 
     fetchAll()

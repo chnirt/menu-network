@@ -23,7 +23,7 @@ const NewCategory = () => {
   const { categoryId } = useParams()
   const isEditMode = Boolean(categoryId)
   const [form] = Form.useForm()
-  const { refetchMenu } = useMenu()
+  const { fetchCategories } = useMenu()
   const [categoryDocRefState, setCategoryDocRefState] =
     useState<DocumentReference<DocumentData, DocumentData> | null>(null)
 
@@ -43,13 +43,12 @@ const NewCategory = () => {
           if (categoryDocRefState === null) return
           await updateDocument(categoryDocRefState, categoryData)
         } else {
-          const categoryDocRef = getColRef('users', uid, 'categories')
+          const categoryDocRef = getColRef('categories')
           await addDocument(categoryDocRef, categoryData)
         }
 
-        const menuId = uid
-        if (menuId && typeof refetchMenu === 'function') {
-          refetchMenu(menuId)
+        if (typeof fetchCategories === 'function') {
+          fetchCategories()
         }
 
         navigate(-1)
@@ -68,19 +67,14 @@ const NewCategory = () => {
         Loading.get.hide()
       }
     },
-    [user, isEditMode, categoryDocRefState, navigate, refetchMenu]
+    [user, isEditMode, categoryDocRefState, navigate, fetchCategories]
   )
 
   const fetchCategoryById = useCallback(
     async (categoryId: string) => {
       if (user === null) return
       setLoading(true)
-      const categoryDocRef = getDocRef(
-        'users',
-        user?.uid,
-        'categories',
-        categoryId
-      )
+      const categoryDocRef = getDocRef('categories', categoryId)
       setCategoryDocRefState(categoryDocRef)
       const dishDocData: any = await getDocument(categoryDocRef)
       form.setFieldsValue(dishDocData)

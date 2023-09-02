@@ -83,7 +83,6 @@ export const OrderProvider: FC<PropsWithChildren> = ({ children }) => {
   }, [])
 
   const fetchOrder = useCallback(async () => {
-    console.log('hellooooooo', user)
     if (user === null) return
     const orderColRef = getColRef('orders')
     const q = query(orderColRef, where('uid', '==', user.uid))

@@ -3,90 +3,77 @@ import {
   PropsWithChildren,
   createContext,
   useCallback,
+  useMemo,
   useState,
 } from 'react'
 import { getDocs, query, where } from 'firebase/firestore'
-import {
-  getColGroupRef,
-  getColRef,
-  getDocRef,
-  getDocument,
-} from '../../firebase/service'
-
-type IMenu = {
-  wifi?: string
-  currency?: string
-  logo?: string
-}
+import { getColRef } from '../../firebase/service'
+import useAuth from '../../hooks/useAuth'
 
 type MenuContextType = {
+  fetchCategories: () => Promise<void>
   categories?: any[]
-  fetchMenu?: (menuId: string) => Promise<void>
-  refetchMenu?: (menuId: string) => Promise<void>
-  menu?: IMenu
+  fetchDishes: () => Promise<void>
+  dishes?: any[]
 }
 
-export const MenuContext = createContext<MenuContextType>({})
+export const MenuContext = createContext<MenuContextType>({
+  fetchCategories: async () => {},
+  fetchDishes: async () => {},
+})
 
 export const MenuProvider: FC<PropsWithChildren> = ({ children }) => {
-  const [menu, setMenu] = useState<IMenu | undefined>()
+  const { user } = useAuth()
   const [categories, setCategories] = useState<any[] | undefined>()
+  const [dishes, setDishes] = useState<any[] | undefined>()
 
-  const refetchMenu = useCallback(async (menuId: string) => {
-    let querySnapshot
-    const menuDocRef = getDocRef('users', menuId)
-    const menuDocData: any = await getDocument(menuDocRef)
+  const fetchCategories = useCallback(async () => {
+    if (user === null) return
+    const categoryColRef = getColRef('categories')
+    const q = query(categoryColRef, where('uid', '==', user.uid))
+    const queryOrderSnapshot = await getDocs(q)
+    const docs = queryOrderSnapshot.docs
+    const data = docs.map((docSnapshot) => {
+      const data = docSnapshot.data()
+      return {
+        id: docSnapshot.id,
+        ref: docSnapshot.ref,
+        ...data,
+        name: data?.categoryName,
+      }
+    })
+    setCategories(data)
+  }, [user])
 
-    if (menuDocData) {
-      setCategories(undefined)
-      const categoryColGroupRef = getColGroupRef('categories')
-      const q = query(categoryColGroupRef, where('uid', '==', menuId))
-      querySnapshot = await getDocs(q)
-      const docs = querySnapshot.docs
-      const data = await Promise.all(
-        docs.map(async (docSnapshot) => {
-          const dishesDocs = await getDocs(
-            getColRef(docSnapshot.ref.path, 'dishes')
-          )
-          return {
-            // ...docSnapshot,
-            id: docSnapshot.id,
-            ...docSnapshot.data(),
-            ref: docSnapshot.ref,
-            title: docSnapshot.data().categoryName,
-            data: dishesDocs.docs.map((dishDoc) => ({
-              id: dishDoc.id,
-              ...dishDoc.data(),
-              ref: dishDoc.ref,
-              name: dishDoc.data().dishName,
-              description: dishDoc.data().dishDescription,
-              photo: dishDoc.data().dishFiles?.[0],
-              price: dishDoc.data().price,
+  const fetchDishes = useCallback(async () => {
+    if (user === null) return
+    const categoryColRef = getColRef('dishes')
+    const q = query(categoryColRef, where('uid', '==', user.uid))
+    const queryOrderSnapshot = await getDocs(q)
+    const docs = queryOrderSnapshot.docs
+    const data = docs.map((docSnapshot) => {
+      const data = docSnapshot.data()
+      return {
+        id: docSnapshot.id,
+        ref: docSnapshot.ref,
+        ...data,
+        photo: data?.dishFiles?.[0],
+        name: data?.dishName,
+        description: data?.dishDescription,
+      }
+    })
+    setDishes(data)
+  }, [user])
 
-              parentId: docSnapshot.id,
-            })),
-          }
-        })
-      )
-
-      // console.log(data)
-      setMenu(menuDocData)
-      setCategories(data)
-    }
-  }, [])
-
-  const fetchMenu = useCallback(
-    async (menuId: string) => {
-      if (categories?.length) return
-      await refetchMenu(menuId)
-      return
-    },
-    [categories, refetchMenu]
+  const value = useMemo(
+    () => ({
+      fetchCategories,
+      categories,
+      fetchDishes,
+      dishes,
+    }),
+    [fetchCategories, categories, fetchDishes, dishes]
   )
 
-  return (
-    <MenuContext.Provider value={{ categories, fetchMenu, refetchMenu, menu }}>
-      {children}
-    </MenuContext.Provider>
-  )
+  return <MenuContext.Provider value={value}>{children}</MenuContext.Provider>
 }

@@ -56,6 +56,16 @@ export const router = createBrowserRouter([
                 ),
               },
               {
+                path: routes.menu,
+                element: (
+                  <Loadable
+                    {...{
+                      factory: () => import('../screens/Menu'),
+                    }}
+                  />
+                ),
+              },
+              {
                 path: routes.cart,
                 element: (
                   <Loadable
