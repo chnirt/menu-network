@@ -20,10 +20,11 @@ export const routes = {
   newDish: '/categories/:categoryId/new-dish',
   updateDish: '/categories/:categoryId/dishes/:dishId',
   settings: '/settings',
-  dish: '/dish/:dishId',
+  dish: '/dishes/:dishId',
   newObject: '/new-object',
   updateObject: '/objects/:objectId',
   updateOrder: '/orders/:orderId',
+  bill: '/bills',
 
   error: '/error',
 }
@@ -80,6 +81,16 @@ export const router = createBrowserRouter([
                   <Loadable
                     {...{
                       factory: () => import('../screens/Order'),
+                    }}
+                  />
+                ),
+              },
+              {
+                path: routes.bill,
+                element: (
+                  <Loadable
+                    {...{
+                      factory: () => import('../screens/Bill'),
                     }}
                   />
                 ),

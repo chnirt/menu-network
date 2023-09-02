@@ -1,6 +1,6 @@
 import { FC, useCallback, useMemo } from 'react'
 import { generatePath, useLocation, useNavigate } from 'react-router-dom'
-import { MenuSquare, User2, ShoppingBag } from 'lucide-react'
+import { MenuSquare, User2, ShoppingBag, Receipt } from 'lucide-react'
 import { TabBar } from 'antd-mobile'
 import { routes } from '../../routes'
 import { auth } from '../../firebase'
@@ -19,11 +19,6 @@ const BottomTabBar: FC = () => {
 
   const tabs = useMemo(
     () => [
-      // {
-      //   key: routes.dashboard,
-      //   // title: "Dashboard",
-      //   icon: <CompassOutline />,
-      // },
       {
         key: generatePath(routes.menu, { menuId: auth.currentUser?.uid }),
         title: 'Menu',
@@ -33,6 +28,11 @@ const BottomTabBar: FC = () => {
         key: routes.order,
         title: 'Order',
         icon: <ShoppingBag />,
+      },
+      {
+        key: routes.bill,
+        title: 'Bill',
+        icon: <Receipt />,
       },
       {
         key: routes.me,

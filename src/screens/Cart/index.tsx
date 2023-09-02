@@ -299,20 +299,18 @@ const Order = () => {
           >
             {isEditMode ? 'SAVE' : 'ORDER'}
           </Button>
-          {isEditMode ? (
-            <Button
-              block
-              type="button"
-              color="primary"
-              size="large"
-              shape="rounded"
-              fill="outline"
-              onClick={handleCancelOrder}
-              disabled={order?.length === 0}
-            >
-              CANCEL
-            </Button>
-          ) : null}
+          <Button
+            block
+            type="button"
+            color="primary"
+            size="large"
+            shape="rounded"
+            fill="outline"
+            onClick={handleCancelOrder}
+            disabled={order?.length === 0}
+          >
+            CANCEL
+          </Button>
         </div>
       </div>
     </div>

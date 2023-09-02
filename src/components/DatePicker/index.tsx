@@ -8,6 +8,7 @@ const DatePicker = ({ value, onChange }: any) => {
         selectionMode="range"
         value={value}
         onChange={onChange}
+        max={new Date()}
       />
     </div>
   )

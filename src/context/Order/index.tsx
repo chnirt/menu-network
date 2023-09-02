@@ -28,6 +28,8 @@ type OrderContextType = {
   fetchObject: () => Promise<void>
   objects: any[]
   setOrder: Dispatch<SetStateAction<Order[]>>
+  bills: any[]
+  fetchBill: () => Promise<void>
 }
 
 export const OrderContext = createContext<OrderContextType>({
@@ -41,6 +43,8 @@ export const OrderContext = createContext<OrderContextType>({
   fetchObject: async () => {},
   objects: [],
   setOrder: () => {},
+  bills: [],
+  fetchBill: async () => {},
 })
 
 export const OrderProvider: FC<PropsWithChildren> = ({ children }) => {
@@ -48,6 +52,7 @@ export const OrderProvider: FC<PropsWithChildren> = ({ children }) => {
   const [order, setOrder] = useState<Order[]>([])
   const [orders, setOrders] = useState<any[]>([])
   const [objects, setObjects] = useState<any[]>([])
+  const [bills, setBills] = useState<any[]>([])
 
   const orderTotal = useMemo(
     () => order?.map((dish) => dish.count)?.reduce((a, b) => a + b, 0) ?? 0,
@@ -78,6 +83,7 @@ export const OrderProvider: FC<PropsWithChildren> = ({ children }) => {
   }, [])
 
   const fetchOrder = useCallback(async () => {
+    console.log('hellooooooo', user)
     if (user === null) return
     const orderColRef = getColRef('orders')
     const q = query(orderColRef, where('uid', '==', user.uid))
@@ -113,6 +119,26 @@ export const OrderProvider: FC<PropsWithChildren> = ({ children }) => {
     setObjects(data)
   }, [user])
 
+  const fetchBill = useCallback(async () => {
+    if (user === null) return
+    const billColRef = getColRef('bills')
+    const q = query(
+      billColRef,
+      where('uid', '==', user.uid)
+      // where('deleted', '==', false)
+    )
+    const queryBillSnapshot = await getDocs(q)
+    const docs = queryBillSnapshot.docs
+    const data = docs.map((docSnapshot) => {
+      return {
+        id: docSnapshot.id,
+        ref: docSnapshot.ref,
+        ...docSnapshot.data(),
+      }
+    })
+    setBills(data)
+  }, [user])
+
   return (
     <OrderContext.Provider
       value={{
@@ -126,6 +152,8 @@ export const OrderProvider: FC<PropsWithChildren> = ({ children }) => {
         fetchObject,
         objects,
         setOrder,
+        fetchBill,
+        bills,
       }}
     >
       {children}

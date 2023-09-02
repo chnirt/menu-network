@@ -8,7 +8,7 @@ import {
   SwipeActionRef,
   Tag,
 } from 'antd-mobile'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import useOrder from '../../hooks/useOrder'
 import { DeleteOutline, EditSOutline } from 'antd-mobile-icons'
 import { Action } from 'antd-mobile/es/components/swipe-action'
@@ -19,10 +19,10 @@ import { routes } from '../../routes'
 import useAuth from '../../hooks/useAuth'
 import DatePicker from '../../components/DatePicker'
 import dayjs from 'dayjs'
-// import { addDocument, getColRef } from '../../firebase/service'
+import { addDocument, getColRef } from '../../firebase/service'
 
 const Order = () => {
-  const { fetchOrder, orders } = useOrder()
+  const { fetchOrder, orders, bills } = useOrder()
   const navigate = useNavigate()
   const { user } = useAuth()
   const swipeActionRef = useRef<SwipeActionRef>(null)
@@ -69,19 +69,17 @@ const Order = () => {
   )
 
   const handlePay = useCallback(async () => {
-    console.log('orderSelected---', orderSelected)
-    // const billData = {}
-    // const billDocRef = getColRef('bills')
-    // await addDocument(billDocRef, billData)
-  }, [orderSelected])
-
-  useEffect(() => {
-    fetchOrder()
-  }, [fetchOrder])
+    if (user === null) return
+    const billData = {
+      orders: orderSelected,
+      uid: user.uid,
+    }
+    const billDocRef = getColRef('bills')
+    await addDocument(billDocRef, billData)
+  }, [orderSelected, user])
 
   const filterOrders = useMemo(() => {
-    // if (formatCategories === undefined) return undefined
-    // if (debouncedSearchText.length === 0) return formatCategories
+    if (val === null) return []
     return orders
       .filter((order) => {
         return moment(order.createdAt.toDate()).isBetween(
@@ -138,6 +136,13 @@ const Order = () => {
       >
         {user && filterOrders?.length > 0
           ? filterOrders.map((order, oi) => {
+              const foundBill = bills
+                .map((bill) => bill?.orders ?? [])
+                .flat()
+                .some((flatBillOrder) => flatBillOrder === order?.id)
+              const status = foundBill ? 'complete' : order?.status
+              const isCancel = status === 'cancel'
+              const isComplete = status === 'complete'
               return (
                 <SwipeAction
                   key={`order-${oi}`}
@@ -148,15 +153,18 @@ const Order = () => {
                   rightActions={rightActions}
                   onAction={(action) => handleOnActionList(action, order)}
                 >
-                  <CheckList.Item value={order?.id}>
+                  <CheckList.Item
+                    value={order?.id}
+                    disabled={isCancel || isComplete}
+                  >
                     <div className="">
                       <div className="flex justify-between">
                         <div className="flex gap-3 items-center">
-                          {order?.status === 'new' ? (
+                          {status === 'new' ? (
                             <Tag className="rounded-full" color="default">
                               NEW
                             </Tag>
-                          ) : order?.status === 'cancel' ? (
+                          ) : status === 'cancel' ? (
                             <Tag className="rounded-full" color="danger">
                               CANCEL
                             </Tag>
