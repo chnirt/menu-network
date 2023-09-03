@@ -32,11 +32,11 @@ const Order = () => {
     fetchObject,
     objects,
     setOrder,
+    fetchOrder,
   } = useOrder()
   const { orderId } = useParams()
   const isEditMode = Boolean(orderId)
   const { dishes } = useMenu()
-  const { fetchOrder } = useOrder()
   const { user } = useAuth()
   const swipeActionRef = useRef<SwipeActionRef>(null)
   const [objectType, setObjectType] = useState<any>()
@@ -114,10 +114,6 @@ const Order = () => {
 
     return
   }, [clearCart, navigate])
-
-  useEffect(() => {
-    fetchObject()
-  }, [fetchObject])
 
   const handleOnActionList = useCallback(
     async (action: Action, dishItem: any) => {

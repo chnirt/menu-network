@@ -8,12 +8,13 @@ import useMenu from '../../hooks/useMenu'
 const App = () => {
   const { user } = useAuth()
   const { fetchCategories, fetchDishes } = useMenu()
-  const { fetchOrder, fetchBill } = useOrder()
+  const { fetchObject, fetchOrder, fetchBill } = useOrder()
   useEffectOnce(() => {
     const fetchAll = async () => {
       await Promise.all([
         fetchCategories(),
         fetchDishes(),
+        fetchObject(),
         fetchOrder(),
         fetchBill(),
       ])

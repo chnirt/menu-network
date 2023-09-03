@@ -22,7 +22,7 @@ import dayjs from 'dayjs'
 import { addDocument, getColRef } from '../../firebase/service'
 
 const Order = () => {
-  const { fetchOrder, orders, bills, fetchBill } = useOrder()
+  const { fetchOrder, orders, bills, fetchBill, objects } = useOrder()
   const navigate = useNavigate()
   const { user } = useAuth()
   const swipeActionRef = useRef<SwipeActionRef>(null)
@@ -140,6 +140,8 @@ const Order = () => {
       >
         {user && filterOrders?.length > 0
           ? filterOrders.map((order, oi) => {
+              const orderId = order?.id
+              const createdAt = order?.createdAt
               const foundBill = bills
                 .map((bill) => bill?.orders ?? [])
                 .flat()
@@ -148,6 +150,11 @@ const Order = () => {
               const isCancel = status === 'cancel'
               const isComplete = status === 'complete'
               const disabled = isCancel || isComplete
+              const foundObjectType = objects?.find(
+                (object) => object.id === order?.objectType?.id
+              )
+              const objectType = foundObjectType?.objectType
+              const objectName = foundObjectType?.objectName
               return (
                 <SwipeAction
                   key={`order-${oi}`}
@@ -179,21 +186,21 @@ const Order = () => {
                             className="rounded-full uppercase"
                             color="primary"
                           >
-                            {order?.objectType?.objectType}
+                            {objectType}
                           </Tag>
                         </div>
                         <div>
                           <p className="m-0">
-                            {moment(order?.createdAt.toDate()).format(
+                            {moment(createdAt.toDate()).format(
                               'DD MMM YYYY HH:mm'
                             )}
                           </p>
                         </div>
                       </div>
                       <div>
-                        <h2 className="m-0">{order?.objectType?.objectName}</h2>
+                        <h2 className="m-0">{objectName}</h2>
                         <p className="m-0 line-clamp-2 text-xs text-[#999999]">
-                          {order?.id}
+                          {orderId}
                         </p>
                       </div>
                     </div>

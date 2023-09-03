@@ -196,6 +196,7 @@ const Bill = () => {
                                               item={billOrderOrderDish}
                                               count={billOrderOrderDish?.count}
                                               note={billOrderOrderDish?.note}
+                                              placeholder=""
                                               disabled
                                             />
                                           </List.Item>
