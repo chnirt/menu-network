@@ -204,11 +204,11 @@ const Order = () => {
               searchPlaceholder="Search table"
               selected={objectType}
               onSelect={setObjectType}
-              onUpdate={(object: any) => {
+              onUpdate={(object: any) =>
                 navigate(
                   generatePath(routes.updateObject, { objectId: object.id })
                 )
-              }}
+              }
               onDelete={async (object: any) => {
                 const objectData = {
                   deleted: true,
@@ -225,6 +225,20 @@ const Order = () => {
               searchPlaceholder="Search customer"
               selected={objectType}
               onSelect={setObjectType}
+              onUpdate={(object: any) =>
+                navigate(
+                  generatePath(routes.updateObject, { objectId: object.id })
+                )
+              }
+              onDelete={async (object: any) => {
+                const objectData = {
+                  deleted: true,
+                }
+                await updateDocument(object.ref, objectData)
+                if (typeof fetchObject === 'function') {
+                  fetchObject()
+                }
+              }}
             />
           </div>
           {errors?.['objectType'] ? (

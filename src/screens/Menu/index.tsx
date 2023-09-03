@@ -46,7 +46,7 @@ const Menu = () => {
         ...category,
         data:
           dishes !== undefined
-            ? dishes.filter((item: any) => item?.categoryId === category?.id)
+            ? dishes?.filter((item: any) => item?.categoryId === category?.id)
             : [],
       })),
     [categories, dishes]
@@ -57,13 +57,13 @@ const Menu = () => {
     return formatCategories
       .map((category) => ({
         ...category,
-        data: category?.data.filter((dish: any) =>
-          String(dish.name)
+        data: category?.data?.filter((dish: any) =>
+          String(dish?.name)
             .toLowerCase()
             .includes(String(debouncedSearchText).toLowerCase())
         ),
       }))
-      .filter((category) => category?.data.length > 0)
+      .filter((category) => category?.data?.length > 0)
   }, [formatCategories, debouncedSearchText])
 
   useDebounce(
@@ -333,7 +333,7 @@ const Menu = () => {
               <Badge content={orderTotal}>
                 <ShoppingBag />
               </Badge>
-              CART
+              MY CART
             </Space>
           </Button>
         </div>

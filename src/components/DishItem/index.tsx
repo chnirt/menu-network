@@ -48,9 +48,9 @@ const DishItem = ({ item, count, note, onChangeValue, disabled }: any) => {
                   min={0}
                   max={10}
                   value={count ?? 0}
-                  onChangeValue={(value: number) => {
-                    onChangeValue({ count: value })
-                  }}
+                  onChangeValue={(value: number) =>
+                    onChangeValue({ count: value, note })
+                  }
                   disabled={disabled}
                 />
               </div>
@@ -58,9 +58,9 @@ const DishItem = ({ item, count, note, onChangeValue, disabled }: any) => {
                 className={classNames(count > 0 ? 'flex' : 'hidden')}
                 placeholder="Note"
                 value={note ?? ''}
-                onChange={(value: string) => {
+                onChange={(value: string) =>
                   onChangeValue({ count, note: value })
-                }}
+                }
                 onClick={(e) => e.stopPropagation()}
                 maxLength={200}
                 rows={3}

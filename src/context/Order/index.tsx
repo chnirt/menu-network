@@ -62,26 +62,28 @@ export const OrderProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const addOrder = useCallback((order: Order) => {
     setOrder((prevState: any) => {
-      const foundDish = prevState.find(
+      const foundDish = prevState?.find(
         (dish: any) => dish?.dishId === order?.dishId
       )
       if (foundDish) {
         return prevState
           .map((dish: any) => ({
             ...dish,
-            ...order,
             count: dish?.dishId === order?.dishId ? order?.count : dish?.count,
+            note: dish?.dishId === order?.dishId ? order?.note : dish?.note,
           }))
           .filter((dish: any) => dish?.count > 0)
       }
-      return [...prevState, order].filter((dish: any) => dish?.count > 0)
+      return [...prevState, order]?.filter((dish: any) => dish?.count > 0)
     })
   }, [])
 
   const clearCart = useCallback(() => setOrder([]), [])
 
   const removeDish = useCallback((dishId: string) => {
-    setOrder((prevState) => prevState?.filter((dish) => dish?.dishId !== dishId))
+    setOrder(
+      (prevState) => prevState?.filter((dish) => dish?.dishId !== dishId)
+    )
   }, [])
 
   const fetchOrder = useCallback(async () => {

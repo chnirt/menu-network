@@ -13,6 +13,7 @@ import {
 import useAuth from '../../hooks/useAuth'
 import { MASTER_MOCK_DATA } from '../../mocks'
 import { Loading } from '../../global'
+import useOrder from '../../hooks/useOrder'
 // import useMenu from '../../hooks/useMenu'
 
 const initialValues = MASTER_MOCK_DATA.NEW_OBJECT
@@ -22,6 +23,7 @@ const NewObject = () => {
   const navigate = useNavigate()
   const { user } = useAuth()
   const { objectId } = useParams()
+  const { fetchObject } = useOrder()
   const isEditMode = Boolean(objectId)
   const [form] = Form.useForm()
   const [objectDocRefState, setObjectDocRefState] = useState<DocumentReference<
@@ -51,6 +53,10 @@ const NewObject = () => {
           await addDocument(objectDocRef, categoryData)
         }
 
+        if (typeof fetchObject === 'function') {
+          fetchObject()
+        }
+
         navigate(-1)
         Toast.show({
           icon: 'success',
@@ -67,7 +73,7 @@ const NewObject = () => {
         Loading.get.hide()
       }
     },
-    [user, isEditMode, objectDocRefState, navigate]
+    [user, isEditMode, objectDocRefState, navigate, fetchObject]
   )
 
   const fetchObjectById = useCallback(
