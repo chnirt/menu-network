@@ -53,6 +53,19 @@ export const MenuProvider: FC<PropsWithChildren> = ({ children }) => {
     const docs = queryOrderSnapshot.docs
     const data = docs.map((docSnapshot) => {
       const data = docSnapshot.data()
+      const price = data?.price ?? 0
+      // const priceText =
+      //   user.currency === 'vnd'
+      //     ? Number(price).toLocaleString('vi-VN', {
+      //         style: 'currency',
+      //         currency: 'VND',
+      //       })
+      //     : user.currency === 'usd'
+      //     ? Number(price).toLocaleString('en-US', {
+      //         style: 'currency',
+      //         currency: 'USD',
+      //       })
+      //     : price
       return {
         id: docSnapshot.id,
         ref: docSnapshot.ref,
@@ -60,6 +73,8 @@ export const MenuProvider: FC<PropsWithChildren> = ({ children }) => {
         photo: data?.dishFiles?.[0],
         name: data?.dishName,
         description: data?.dishDescription,
+        price,
+        // priceText,
       }
     })
     setDishes(data)

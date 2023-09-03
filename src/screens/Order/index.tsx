@@ -22,7 +22,7 @@ import dayjs from 'dayjs'
 import { addDocument, getColRef } from '../../firebase/service'
 
 const Order = () => {
-  const { fetchOrder, orders, bills } = useOrder()
+  const { fetchOrder, orders, bills, fetchBill } = useOrder()
   const navigate = useNavigate()
   const { user } = useAuth()
   const swipeActionRef = useRef<SwipeActionRef>(null)
@@ -76,7 +76,11 @@ const Order = () => {
     }
     const billDocRef = getColRef('bills')
     await addDocument(billDocRef, billData)
-  }, [orderSelected, user])
+
+    fetchBill()
+
+    navigate(routes.bill)
+  }, [orderSelected, user, navigate, fetchBill])
 
   const filterOrders = useMemo(() => {
     if (val === null) return []

@@ -35,7 +35,8 @@ const Order = () => {
   } = useOrder()
   const { orderId } = useParams()
   const isEditMode = Boolean(orderId)
-  const { categories } = useMenu()
+  const { dishes } = useMenu()
+  const { fetchOrder } = useOrder()
   const { user } = useAuth()
   const swipeActionRef = useRef<SwipeActionRef>(null)
   const [objectType, setObjectType] = useState<any>()
@@ -45,17 +46,6 @@ const Order = () => {
     DocumentData
   > | null>(null)
 
-  const formatCategories = useMemo(
-    () =>
-      categories
-        ?.map((category) =>
-          category.data.map((item: any) => ({
-            ...item,
-          }))
-        )
-        ?.flat(),
-    [categories]
-  )
   const tableObjects = useMemo(
     () => objects.filter((object) => object.objectType === 'table'),
     [objects]
@@ -75,11 +65,8 @@ const Order = () => {
       setErrors(null)
       Loading.get.show()
       const uid = user.uid
-      const orderObj = order.reduce((accumulator, value) => {
-        return { ...accumulator, [value.dishId]: value.count }
-      }, {})
       const orderData = {
-        order: orderObj,
+        order,
         objectType,
         status: 'new',
         uid,
@@ -91,6 +78,8 @@ const Order = () => {
         const orderDocRef = getColRef('orders')
         await addDocument(orderDocRef, orderData)
       }
+
+      fetchOrder()
 
       navigate(routes.order)
       clearCart()
@@ -116,6 +105,7 @@ const Order = () => {
     clearCart,
     navigate,
     orderDocRefState,
+    fetchOrder,
   ])
 
   const handleCancelOrder = useCallback(() => {
@@ -159,10 +149,7 @@ const Order = () => {
       const orderDocRef = getDocRef('orders', orderId)
       setOrderDocRefState(orderDocRef)
       const orderDocData: any = await getDocument(orderDocRef)
-      const orderArray: any = Object.entries(orderDocData?.order).map(
-        ([key, value]) => ({ dishId: key, count: value })
-      )
-      setOrder(orderArray)
+      setOrder(orderDocData?.order)
       setObjectType(orderDocData?.objectType)
       // setLoading(false)
     },
@@ -250,7 +237,7 @@ const Order = () => {
         <List mode="card">
           {order?.length > 0
             ? order?.map((dish, di: number) => {
-                const dataItem = formatCategories?.find(
+                const dataItem = dishes?.find(
                   (category) => category.id === dish.dishId
                 )
                 return (
@@ -305,7 +292,7 @@ const Order = () => {
             color="primary"
             size="large"
             shape="rounded"
-            fill="outline"
+            fill="none"
             onClick={handleCancelOrder}
             disabled={order?.length === 0}
           >

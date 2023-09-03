@@ -11,7 +11,7 @@ const Counter = (
   props: any
 ) => {
   const { onChangeValue, ...rest } = props
-  const { value, min, max } = rest
+  const { value, min, max, disabled } = rest
   const isMin = Number(value) === Number(min)
   const isMax = Number(value) === Number(max)
   const decrement = useCallback(
@@ -38,21 +38,23 @@ const Counter = (
   )
   return (
     <div className="relative flex">
-      <Button
-        className={classNames(
-          'w-8 h-8 flex justify-center items-center rounded-[10px] leading-none',
-          {
-            hidden: isMin,
-          }
-        )}
-        color="primary"
-        size="mini"
-        onMouseDown={onMouseDown}
-        onClick={decrement}
-        disabled={isMin}
-      >
-        <Minus className="flex justify-between items-center w-4 h-4" />
-      </Button>
+      {!disabled ? (
+        <Button
+          className={classNames(
+            'w-8 h-8 flex justify-center items-center rounded-[10px] leading-none',
+            {
+              hidden: isMin,
+            }
+          )}
+          color="primary"
+          size="mini"
+          onMouseDown={onMouseDown}
+          onClick={decrement}
+          disabled={isMin}
+        >
+          <Minus className="flex justify-between items-center w-4 h-4" />
+        </Button>
+      ) : null}
       <input
         className={classNames(
           'w-12 h-8 bg-transparent text-center text-primary text-xl font-bold',
@@ -65,16 +67,18 @@ const Counter = (
         disabled
         {...rest}
       />
-      <Button
-        className="w-8 h-8 flex justify-center items-center rounded-[10px] leading-none"
-        color="primary"
-        size="mini"
-        onMouseDown={onMouseDown}
-        onClick={increment}
-        disabled={isMax}
-      >
-        <Plus className="flex justify-between items-center w-4 h-4" />
-      </Button>
+      {!disabled ? (
+        <Button
+          className="w-8 h-8 flex justify-center items-center rounded-[10px] leading-none"
+          color="primary"
+          size="mini"
+          onMouseDown={onMouseDown}
+          onClick={increment}
+          disabled={isMax}
+        >
+          <Plus className="flex justify-between items-center w-4 h-4" />
+        </Button>
+      ) : null}
     </div>
   )
 }

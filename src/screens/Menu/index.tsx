@@ -46,26 +46,9 @@ const Menu = () => {
         ...category,
         data:
           dishes !== undefined
-            ? dishes
-                .filter((item: any) => item?.categoryId === category?.id)
-                .map((item: any) => ({
-                  ...item,
-                  // price:
-                  //   menu?.currency === 'vnd'
-                  //     ? Number(item.price).toLocaleString('vi-VN', {
-                  //         style: 'currency',
-                  //         currency: 'VND',
-                  //       })
-                  //     : menu?.currency === 'usd'
-                  //     ? Number(item.price).toLocaleString('en-US', {
-                  //         style: 'currency',
-                  //         currency: 'USD',
-                  //       })
-                  //     : item.price,
-                }))
+            ? dishes.filter((item: any) => item?.categoryId === category?.id)
             : [],
       })),
-    // [categories, menu]
     [categories, dishes]
   )
   const filterCategories = useMemo(() => {

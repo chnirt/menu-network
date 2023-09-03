@@ -14,6 +14,8 @@ import { useCallback, useMemo, useRef, useState } from 'react'
 import { DeleteOutline } from 'antd-mobile-icons'
 import { Action, SwipeActionRef } from 'antd-mobile/es/components/swipe-action'
 import { deleteDoc } from 'firebase/firestore'
+import useMenu from '../../hooks/useMenu'
+import DishItem from '../../components/DishItem'
 
 const rightActions: Action[] = [
   {
@@ -25,6 +27,7 @@ const rightActions: Action[] = [
 
 const Bill = () => {
   const { fetchBill, bills, orders } = useOrder()
+  const { dishes } = useMenu()
   const today = dayjs()
   const [val, setVal] = useState<[Date, Date] | null>(() => [
     today.toDate(),
@@ -105,6 +108,18 @@ const Bill = () => {
         {filterBills.length > 0 ? (
           <List mode="card">
             {filterBills.map((bill, bi) => {
+              const total = orders
+                ?.filter((order: any) => bill?.orders.includes(order?.id))
+                ?.map((order: any) => order?.order)
+                ?.flat()
+                ?.map((orderDish) => {
+                  const price =
+                    dishes?.find((dish) => dish?.id === orderDish?.dishId)
+                      ?.price ?? 0
+                  const orderDishTotal = price * orderDish?.count
+                  return orderDishTotal
+                })
+                .reduce((a, b) => a + b, 0)
               return (
                 <SwipeAction
                   key={`bill-${bi}`}
@@ -126,31 +141,66 @@ const Bill = () => {
                     </div>
                     <div>
                       {bill?.orders?.length > 0 ? (
-                        <Collapse accordion>
-                          {bill.orders.map((billOrder: any, oi: number) => {
-                            const foundOrder = orders?.find(
-                              (order) => order.id === billOrder
-                            )
-                            const uid = foundOrder?.uid
-                            const objectName =
-                              foundOrder?.objectType?.objectName
-                            const objectType =
-                              foundOrder?.objectType?.objectType
-                            const title = `${uid}-${objectType}-${objectName}`
-                            return (
-                              <Collapse.Panel
-                                key={`order-${oi}`}
-                                title={
-                                  <Tag color="primary" className="uppercase">
-                                    {objectType}-{objectName}
-                                  </Tag>
+                        <div>
+                          <Collapse>
+                            {bill.orders.map((billOrder: any, oi: number) => {
+                              const foundBillOrder = orders?.find(
+                                (order) => order?.id === billOrder
+                              )
+                              const objectName =
+                                foundBillOrder?.objectType?.objectName
+                              const objectType =
+                                foundBillOrder?.objectType?.objectType
+                              const billOrderOrder = foundBillOrder?.order?.map(
+                                (orderDish: any) => {
+                                  const foundDish = dishes?.find(
+                                    (dish) => dish?.id === orderDish?.dishId
+                                  )
+                                  return { ...orderDish, ...foundDish }
                                 }
-                              >
-                                {title}
-                              </Collapse.Panel>
-                            )
-                          })}
-                        </Collapse>
+                              )
+                              return (
+                                <Collapse.Panel
+                                  key={`order-${oi}`}
+                                  title={
+                                    <Tag color="primary" className="uppercase">
+                                      {objectType}-{objectName}
+                                    </Tag>
+                                  }
+                                >
+                                  {billOrderOrder?.length > 0 ? (
+                                    <List>
+                                      {billOrderOrder.map(
+                                        (
+                                          billOrderOrderDish: any,
+                                          boodi: number
+                                        ) => (
+                                          <List.Item
+                                            key={`bill-order-order-dish-${boodi}`}
+                                          >
+                                            <DishItem
+                                              item={billOrderOrderDish}
+                                              count={
+                                                billOrderOrderDish?.count ?? 0
+                                              }
+                                              disabled
+                                            />
+                                          </List.Item>
+                                        )
+                                      )}
+                                    </List>
+                                  ) : null}
+                                  <List></List>
+                                </Collapse.Panel>
+                              )
+                            })}
+                          </Collapse>
+                          <div className="flex justify-end">
+                            <p className="m-0 text-base font-semibold">
+                              {total}
+                            </p>
+                          </div>
+                        </div>
                       ) : null}
                     </div>
                   </List.Item>

@@ -1,7 +1,7 @@
 import { Image } from 'antd-mobile'
 import Counter from '../Counter'
 
-const DishItem = ({ item, count, onChangeValue }: any) => {
+const DishItem = ({ item, count, onChangeValue, disabled }: any) => {
   return (
     <div className="flex items-center">
       <div className="mr-3">
@@ -24,16 +24,19 @@ const DishItem = ({ item, count, onChangeValue }: any) => {
             </p>
           ) : null}
         </div>
-        <div className="flex-none flex justify-between items-center">
+        <div className="flex-none">
           {item?.price ? (
-            <p className="m-0 text-base font-semibold">{item.price}</p>
+            <div className="flex justify-between items-center">
+              <p className="m-0 text-base font-semibold">{item.price}</p>
+              <Counter
+                min={0}
+                max={10}
+                value={count || 0}
+                onChangeValue={onChangeValue}
+                disabled={disabled}
+              />
+            </div>
           ) : null}
-          <Counter
-            min={0}
-            max={10}
-            value={count || 0}
-            onChangeValue={onChangeValue}
-          />
         </div>
       </div>
     </div>
