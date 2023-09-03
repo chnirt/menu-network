@@ -28,7 +28,7 @@ const rightActions: Action[] = [
 
 const Bill = () => {
   const { user } = useAuth()
-  const { fetchBill, bills, orders } = useOrder()
+  const { fetchBill, bills, orders, objects } = useOrder()
   const { dishes } = useMenu()
   const today = dayjs()
   const [val, setVal] = useState<[Date, Date] | null>(() => [
@@ -161,10 +161,13 @@ const Bill = () => {
                               const foundBillOrder = orders?.find(
                                 (order) => order?.id === billOrder
                               )
+                              const foundObjectType = objects?.find(
+                                (object) => object.id === foundBillOrder?.objectType?.id
+                              )
                               const objectName =
-                                foundBillOrder?.objectType?.objectName
+                                foundObjectType?.objectName
                               const objectType =
-                                foundBillOrder?.objectType?.objectType
+                                foundObjectType?.objectType
                               const billOrderOrder = foundBillOrder?.order?.map(
                                 (orderDish: any) => {
                                   const foundDish = dishes?.find(
@@ -204,7 +207,6 @@ const Bill = () => {
                                       )}
                                     </List>
                                   ) : null}
-                                  <List></List>
                                 </Collapse.Panel>
                               )
                             })}
