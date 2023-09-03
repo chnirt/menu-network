@@ -4,6 +4,7 @@
   "description": "",
   "keywords": [],
   "main": "src/index.tsx",
+  "homepage": "/",
   "dependencies": {
     "@types/lodash": "4.14.195",
     "@types/qrcode.react": "1.0.2",
