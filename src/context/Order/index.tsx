@@ -121,11 +121,7 @@ export const OrderProvider: FC<PropsWithChildren> = ({ children }) => {
   const fetchBill = useCallback(async () => {
     if (user === null) return
     const billColRef = getColRef('bills')
-    const q = query(
-      billColRef,
-      where('uid', '==', user.uid)
-      // where('deleted', '==', false)
-    )
+    const q = query(billColRef, where('uid', '==', user.uid))
     const queryBillSnapshot = await getDocs(q)
     const docs = queryBillSnapshot.docs
     const data = docs.map((docSnapshot) => {

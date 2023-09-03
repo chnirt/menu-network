@@ -57,7 +57,7 @@ const Counter = (
       ) : null}
       <input
         className={classNames(
-          'w-12 h-8 bg-transparent text-center text-primary text-xl font-bold',
+          'w-8 h-8 bg-transparent text-center text-primary text-xl font-bold',
           {
             invisible: isMin,
           }

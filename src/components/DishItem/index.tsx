@@ -1,7 +1,21 @@
 import { Image } from 'antd-mobile'
 import Counter from '../Counter'
+import useAuth from '../../hooks/useAuth'
 
 const DishItem = ({ item, count, onChangeValue, disabled }: any) => {
+  const { user } = useAuth()
+  const formatPrice =
+    user?.currency === 'vnd'
+      ? Number(item?.price).toLocaleString('vi-VN', {
+          style: 'currency',
+          currency: 'VND',
+        })
+      : user?.currency === 'usd'
+      ? Number(item?.price).toLocaleString('en-US', {
+          style: 'currency',
+          currency: 'USD',
+        })
+      : item?.price
   return (
     <div className="flex items-center">
       <div className="mr-3">
@@ -27,7 +41,7 @@ const DishItem = ({ item, count, onChangeValue, disabled }: any) => {
         <div className="flex-none">
           {item?.price ? (
             <div className="flex justify-between items-center">
-              <p className="m-0 text-base font-semibold">{item.price}</p>
+              <p className="m-0 text-base font-semibold">{formatPrice}</p>
               <Counter
                 min={0}
                 max={10}

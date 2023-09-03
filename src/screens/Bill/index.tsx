@@ -16,6 +16,7 @@ import { Action, SwipeActionRef } from 'antd-mobile/es/components/swipe-action'
 import { deleteDoc } from 'firebase/firestore'
 import useMenu from '../../hooks/useMenu'
 import DishItem from '../../components/DishItem'
+import useAuth from '../../hooks/useAuth'
 
 const rightActions: Action[] = [
   {
@@ -26,6 +27,7 @@ const rightActions: Action[] = [
 ]
 
 const Bill = () => {
+  const { user } = useAuth()
   const { fetchBill, bills, orders } = useOrder()
   const { dishes } = useMenu()
   const today = dayjs()
@@ -120,6 +122,18 @@ const Bill = () => {
                   return orderDishTotal
                 })
                 .reduce((a, b) => a + b, 0)
+              const formatTotal =
+                user?.currency === 'vnd'
+                  ? Number(total).toLocaleString('vi-VN', {
+                      style: 'currency',
+                      currency: 'VND',
+                    })
+                  : user?.currency === 'usd'
+                  ? Number(total).toLocaleString('en-US', {
+                      style: 'currency',
+                      currency: 'USD',
+                    })
+                  : total
               return (
                 <SwipeAction
                   key={`bill-${bi}`}
@@ -197,7 +211,7 @@ const Bill = () => {
                           </Collapse>
                           <div className="flex justify-end">
                             <p className="m-0 text-base font-semibold">
-                              {total}
+                              {formatTotal}
                             </p>
                           </div>
                         </div>
