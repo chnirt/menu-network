@@ -74,7 +74,7 @@ const Dish = () => {
           >
             {dish?.price ? <div>{formatPrice}</div> : null}
             <Button color="primary" shape="rounded" onClick={handleOrder}>
-              Order
+              Add
             </Button>
           </div>
         </div>

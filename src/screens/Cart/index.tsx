@@ -254,6 +254,7 @@ const Order = () => {
                       <DishItem
                         item={dataItem}
                         count={dish.count}
+                        note={dish.note}
                         onChangeValue={(value: any) => {
                           if (addOrder === undefined) return
                           addOrder({

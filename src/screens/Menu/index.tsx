@@ -250,11 +250,12 @@ const Menu = () => {
                       <DishItem
                         item={dataItem}
                         count={foundOrder?.count}
+                        note={foundOrder?.note}
                         onChangeValue={(value: any) => {
                           if (addOrder === undefined) return
                           addOrder({
                             dishId: dataItem.id,
-                            count: value,
+                            ...value,
                           })
                         }}
                       />

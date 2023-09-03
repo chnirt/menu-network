@@ -194,9 +194,8 @@ const Bill = () => {
                                           >
                                             <DishItem
                                               item={billOrderOrderDish}
-                                              count={
-                                                billOrderOrderDish?.count ?? 0
-                                              }
+                                              count={billOrderOrderDish?.count}
+                                              note={billOrderOrderDish?.note}
                                               disabled
                                             />
                                           </List.Item>
