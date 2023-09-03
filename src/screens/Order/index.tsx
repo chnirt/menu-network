@@ -147,6 +147,7 @@ const Order = () => {
               const status = foundBill ? 'complete' : order?.status
               const isCancel = status === 'cancel'
               const isComplete = status === 'complete'
+              const disabled = isCancel || isComplete
               return (
                 <SwipeAction
                   key={`order-${oi}`}
@@ -154,13 +155,10 @@ const Order = () => {
                     '--background': 'transparent',
                   }}
                   ref={swipeActionRef}
-                  rightActions={rightActions}
+                  rightActions={disabled ? [] : rightActions}
                   onAction={(action) => handleOnActionList(action, order)}
                 >
-                  <CheckList.Item
-                    value={order?.id}
-                    disabled={isCancel || isComplete}
-                  >
+                  <CheckList.Item value={order?.id} disabled={disabled}>
                     <div className="">
                       <div className="flex justify-between">
                         <div className="flex gap-3 items-center">
