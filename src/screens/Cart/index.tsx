@@ -268,8 +268,8 @@ const Order = () => {
                         onChangeValue={(value: any) => {
                           if (addOrder === undefined) return
                           addOrder({
-                            dishId: dish.dishId,
-                            count: value,
+                            dishId: dataItem.id,
+                            ...value,
                           })
                         }}
                       />
