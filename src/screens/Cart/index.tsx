@@ -33,13 +33,15 @@ const Order = () => {
     objects,
     setOrder,
     fetchOrder,
+    setOrderId,
+    orderId: orderIdState,
   } = useOrder()
   const { orderId } = useParams()
   const isEditMode = Boolean(orderId)
   const { dishes } = useMenu()
   const { user } = useAuth()
+  const { objectType, setObjectType } = useOrder()
   const swipeActionRef = useRef<SwipeActionRef>(null)
-  const [objectType, setObjectType] = useState<any>()
   const [errors, setErrors] = useState<any>()
   const [orderDocRefState, setOrderDocRefState] = useState<DocumentReference<
     DocumentData,
@@ -71,7 +73,6 @@ const Order = () => {
         status: 'new',
         uid,
       }
-      console.log("orderData---", orderData)
       if (isEditMode) {
         if (orderDocRefState === null) return
         await updateDocument(orderDocRefState, orderData)
@@ -148,20 +149,17 @@ const Order = () => {
       const orderDocData: any = await getDocument(orderDocRef)
       setOrder(orderDocData?.order)
       setObjectType(orderDocData?.objectType)
+      setOrderId(orderId)
       // setLoading(false)
     },
-    [user, setOrder]
+    [user, setOrder, setOrderId, setObjectType]
   )
 
   useEffect(() => {
     if (orderId === undefined) return
+    if (orderIdState === orderId) return
     fetchOrderById(orderId)
-
-    return () => {
-      if (orderId === undefined) return
-      clearCart()
-    }
-  }, [orderId, fetchOrderById, clearCart])
+  }, [orderId, fetchOrderById, clearCart, orderIdState])
 
   const right = useMemo(
     () => (

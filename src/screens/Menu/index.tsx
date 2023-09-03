@@ -35,7 +35,7 @@ const Menu = () => {
   const { menuId } = useParams()
   const isOwner = user?.uid === menuId
   const { categories, dishes, fetchCategories, fetchDishes } = useMenu()
-  const { addOrder, orderTotal, order } = useOrder()
+  const { addOrder, orderTotal, order, orderId } = useOrder()
   const [searchText, setSearchText] = useState('')
   const [debouncedSearchText, setDebouncedSearchText] = useState('')
   const navigate = useNavigate()
@@ -212,9 +212,11 @@ const Menu = () => {
   return (
     <div>
       <div
-        style={{
-          paddingBottom: 60 * 3 + 12,
-        }}
+        style={
+          {
+            // paddingBottom: 60 * 3 + 12,
+          }
+        }
       >
         <NavBar
           className="sticky top-0 z-[100] bg-white"
@@ -327,13 +329,17 @@ const Menu = () => {
             color="primary"
             size="large"
             shape="rounded"
-            onClick={() => navigate(routes.cart)}
+            onClick={() =>
+              orderId
+                ? navigate(generatePath(routes.updateOrder, { orderId }))
+                : navigate(routes.cart)
+            }
           >
             <Space>
               <Badge content={orderTotal}>
                 <ShoppingBag />
               </Badge>
-              MY CART
+              {orderId ? `ORDER - ${orderId}` : 'MY CART'}
             </Space>
           </Button>
         </div>

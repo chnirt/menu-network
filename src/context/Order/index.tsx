@@ -31,6 +31,10 @@ type OrderContextType = {
   setOrder: Dispatch<SetStateAction<Order[]>>
   bills: any[]
   fetchBill: () => Promise<void>
+  orderId?: string
+  setOrderId: Dispatch<SetStateAction<string | undefined>>
+  objectType?: string
+  setObjectType: Dispatch<SetStateAction<string | undefined>>
 }
 
 export const OrderContext = createContext<OrderContextType>({
@@ -46,10 +50,14 @@ export const OrderContext = createContext<OrderContextType>({
   setOrder: () => {},
   bills: [],
   fetchBill: async () => {},
+  setOrderId: () => {},
+  setObjectType: () => {},
 })
 
 export const OrderProvider: FC<PropsWithChildren> = ({ children }) => {
   const { user } = useAuth()
+  const [orderId, setOrderId] = useState<string>()
+  const [objectType, setObjectType] = useState<string>()
   const [order, setOrder] = useState<Order[]>([])
   const [orders, setOrders] = useState<any[]>([])
   const [objects, setObjects] = useState<any[]>([])
@@ -78,7 +86,11 @@ export const OrderProvider: FC<PropsWithChildren> = ({ children }) => {
     })
   }, [])
 
-  const clearCart = useCallback(() => setOrder([]), [])
+  const clearCart = useCallback(() => {
+    setOrder([])
+    setOrderId(undefined)
+    setObjectType(undefined)
+  }, [])
 
   const removeDish = useCallback((dishId: string) => {
     setOrder(
@@ -153,6 +165,10 @@ export const OrderProvider: FC<PropsWithChildren> = ({ children }) => {
         setOrder,
         fetchBill,
         bills,
+        orderId,
+        setOrderId,
+        objectType,
+        setObjectType,
       }}
     >
       {children}

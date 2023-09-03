@@ -10,7 +10,7 @@ import {
 } from 'antd-mobile'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import useOrder from '../../hooks/useOrder'
-import { DeleteOutline, EditSOutline } from 'antd-mobile-icons'
+import { AddOutline, DeleteOutline, EditSOutline } from 'antd-mobile-icons'
 import { Action } from 'antd-mobile/es/components/swipe-action'
 import { deleteDoc } from 'firebase/firestore'
 import moment from 'moment'
@@ -19,10 +19,24 @@ import { routes } from '../../routes'
 import useAuth from '../../hooks/useAuth'
 import DatePicker from '../../components/DatePicker'
 import dayjs from 'dayjs'
-import { addDocument, getColRef } from '../../firebase/service'
+import {
+  addDocument,
+  getColRef,
+  getDocRef,
+  getDocument,
+} from '../../firebase/service'
 
 const Order = () => {
-  const { fetchOrder, orders, bills, fetchBill, objects } = useOrder()
+  const {
+    fetchOrder,
+    orders,
+    bills,
+    fetchBill,
+    objects,
+    setOrder,
+    setObjectType,
+    setOrderId,
+  } = useOrder()
   const navigate = useNavigate()
   const { user } = useAuth()
   const swipeActionRef = useRef<SwipeActionRef>(null)
@@ -38,6 +52,16 @@ const Order = () => {
   const handleOnActionList = useCallback(
     async (action: Action, orderItem: any) => {
       switch (action.key) {
+        case 'add':
+          {
+            const orderDocRef = getDocRef('orders', orderItem.id)
+            const orderDocData: any = await getDocument(orderDocRef)
+            setOrder(orderDocData?.order)
+            setObjectType(orderDocData?.objectType)
+            setOrderId(orderItem.id)
+            navigate(routes.dashboard)
+          }
+          return
         case 'update':
           {
             navigate(
@@ -65,7 +89,7 @@ const Order = () => {
           return
       }
     },
-    [fetchOrder, navigate]
+    [fetchOrder, navigate, setObjectType, setOrder, setOrderId]
   )
 
   const handlePay = useCallback(async () => {
@@ -107,6 +131,14 @@ const Order = () => {
         }
       })
   }, [orders, val])
+
+  const leftActions: Action[] = [
+    {
+      key: 'add',
+      text: <AddOutline />,
+      color: 'primary',
+    },
+  ]
 
   const rightActions: Action[] = [
     {
@@ -162,6 +194,7 @@ const Order = () => {
                     '--background': 'transparent',
                   }}
                   ref={swipeActionRef}
+                  leftActions={disabled ? [] : leftActions}
                   rightActions={disabled ? [] : rightActions}
                   onAction={(action) => handleOnActionList(action, order)}
                 >
