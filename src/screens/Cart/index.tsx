@@ -71,6 +71,7 @@ const Order = () => {
         status: 'new',
         uid,
       }
+      console.log("orderData---", orderData)
       if (isEditMode) {
         if (orderDocRefState === null) return
         await updateDocument(orderDocRefState, orderData)

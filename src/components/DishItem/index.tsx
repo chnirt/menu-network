@@ -49,7 +49,7 @@ const DishItem = ({ item, count, note, onChangeValue, disabled }: any) => {
                   max={10}
                   value={count ?? 0}
                   onChangeValue={(value: number) =>
-                    onChangeValue({ count: value, note })
+                    onChangeValue({ count: value, note: note ?? '' })
                   }
                   disabled={disabled}
                 />
@@ -65,7 +65,7 @@ const DishItem = ({ item, count, note, onChangeValue, disabled }: any) => {
                 placeholder={'Note'}
                 value={note ?? ''}
                 onChange={(value: string) =>
-                  onChangeValue({ count, note: value })
+                  onChangeValue({ count: count ?? 0, note: value })
                 }
                 onClick={(e) => e.stopPropagation()}
                 maxLength={200}
