@@ -36,6 +36,7 @@ const Order = () => {
     setOrder,
     setObjectType,
     setOrderId,
+    setOrderDocRefState
   } = useOrder()
   const navigate = useNavigate()
   const { user } = useAuth()
@@ -55,6 +56,7 @@ const Order = () => {
         case 'add':
           {
             const orderDocRef = getDocRef('orders', orderItem.id)
+            setOrderDocRefState(orderDocRef)
             const orderDocData: any = await getDocument(orderDocRef)
             setOrder(orderDocData?.order)
             setObjectType(orderDocData?.objectType)
@@ -89,7 +91,7 @@ const Order = () => {
           return
       }
     },
-    [fetchOrder, navigate, setObjectType, setOrder, setOrderId]
+    [fetchOrder, navigate, setObjectType, setOrder, setOrderId, setOrderDocRefState]
   )
 
   const handlePay = useCallback(async () => {

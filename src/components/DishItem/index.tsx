@@ -56,7 +56,7 @@ const DishItem = ({ item, count, note, onChangeValue, disabled }: any) => {
               </div>
               <TextArea
                 className={classNames(
-                  disabled && note === undefined
+                  disabled && note === ''
                     ? 'hidden'
                     : count > 0
                     ? 'flex'

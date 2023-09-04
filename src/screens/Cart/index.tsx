@@ -20,7 +20,6 @@ import {
 import useAuth from '../../hooks/useAuth'
 import { Loading } from '../../global'
 import AutoComplete from '../../components/AutoComplete'
-import { DocumentData, DocumentReference } from 'firebase/firestore'
 
 const Order = () => {
   const navigate = useNavigate()
@@ -40,13 +39,10 @@ const Order = () => {
   const isEditMode = Boolean(orderId)
   const { dishes } = useMenu()
   const { user } = useAuth()
-  const { objectType, setObjectType } = useOrder()
+  const { objectType, setObjectType, orderDocRefState, setOrderDocRefState } =
+    useOrder()
   const swipeActionRef = useRef<SwipeActionRef>(null)
   const [errors, setErrors] = useState<any>()
-  const [orderDocRefState, setOrderDocRefState] = useState<DocumentReference<
-    DocumentData,
-    DocumentData
-  > | null>(null)
 
   const tableObjects = useMemo(
     () => objects.filter((object) => object.objectType === 'table'),
@@ -74,7 +70,7 @@ const Order = () => {
         uid,
       }
       if (isEditMode) {
-        if (orderDocRefState === null) return
+        if (orderDocRefState === undefined) return
         await updateDocument(orderDocRefState, orderData)
       } else {
         const orderDocRef = getColRef('orders')
@@ -111,8 +107,8 @@ const Order = () => {
   ])
 
   const handleCancelOrder = useCallback(() => {
-    navigate(-1)
     clearCart()
+    navigate(-1)
 
     return
   }, [clearCart, navigate])
@@ -152,7 +148,7 @@ const Order = () => {
       setOrderId(orderId)
       // setLoading(false)
     },
-    [user, setOrder, setOrderId, setObjectType]
+    [user, setOrder, setOrderId, setObjectType, setOrderDocRefState]
   )
 
   useEffect(() => {

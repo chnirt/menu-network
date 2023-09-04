@@ -64,12 +64,10 @@ const Dish = () => {
         // onHeaderClick={onHeaderClick}
         style={{ borderRadius: '16px' }}
       >
-        <div className="divide-y">
-          {dish?.dishDescription ? (
-            <div className="h-14">{dish.dishDescription}</div>
-          ) : null}
+        <div className="flex flex-col gap-3">
+          {dish?.dishDescription ? <div>{dish.dishDescription}</div> : null}
           <div
-            className="pt-3 flex justify-between"
+            className="flex justify-between items-center gap-3"
             onClick={(e) => e.stopPropagation()}
           >
             {dish?.price ? <div>{formatPrice}</div> : null}

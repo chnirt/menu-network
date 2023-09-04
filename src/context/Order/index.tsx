@@ -9,7 +9,13 @@ import {
   useState,
 } from 'react'
 import { getColRef } from '../../firebase/service'
-import { getDocs, query, where } from 'firebase/firestore'
+import {
+  DocumentData,
+  DocumentReference,
+  getDocs,
+  query,
+  where,
+} from 'firebase/firestore'
 import useAuth from '../../hooks/useAuth'
 
 type Order = {
@@ -35,6 +41,10 @@ type OrderContextType = {
   setOrderId: Dispatch<SetStateAction<string | undefined>>
   objectType?: string
   setObjectType: Dispatch<SetStateAction<string | undefined>>
+  orderDocRefState?: DocumentReference<DocumentData, DocumentData>
+  setOrderDocRefState: Dispatch<
+    SetStateAction<DocumentReference<DocumentData, DocumentData> | undefined>
+  >
 }
 
 export const OrderContext = createContext<OrderContextType>({
@@ -52,12 +62,15 @@ export const OrderContext = createContext<OrderContextType>({
   fetchBill: async () => {},
   setOrderId: () => {},
   setObjectType: () => {},
+  setOrderDocRefState: () => {},
 })
 
 export const OrderProvider: FC<PropsWithChildren> = ({ children }) => {
   const { user } = useAuth()
   const [orderId, setOrderId] = useState<string>()
   const [objectType, setObjectType] = useState<string>()
+  const [orderDocRefState, setOrderDocRefState] =
+    useState<DocumentReference<DocumentData, DocumentData>>()
   const [order, setOrder] = useState<Order[]>([])
   const [orders, setOrders] = useState<any[]>([])
   const [objects, setObjects] = useState<any[]>([])
@@ -90,6 +103,7 @@ export const OrderProvider: FC<PropsWithChildren> = ({ children }) => {
     setOrder([])
     setOrderId(undefined)
     setObjectType(undefined)
+    setOrderDocRefState(undefined)
   }, [])
 
   const removeDish = useCallback((dishId: string) => {
@@ -169,6 +183,8 @@ export const OrderProvider: FC<PropsWithChildren> = ({ children }) => {
         setOrderId,
         objectType,
         setObjectType,
+        orderDocRefState,
+        setOrderDocRefState,
       }}
     >
       {children}
