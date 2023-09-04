@@ -24,14 +24,17 @@ const AutoComplete = ({
   const [searchText, setSearchText] = useState('')
   const filteredItems = useMemo(() => {
     if (searchText) {
-      return items.filter((item: any) => item.includes(searchText))
-    } else {
-      return items
+      return items.filter((item: any) =>
+        String(item?.objectName)
+          .toLowerCase()
+          .includes(String(searchText).toLowerCase())
+      )
     }
+    return items
   }, [items, searchText])
 
   const isSelected = filteredItems?.some(
-    (item: any) => item.id === selected?.id
+    (item: any) => item?.id === selected?.id
   )
 
   const handleOnAction = useCallback(

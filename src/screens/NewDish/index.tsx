@@ -250,7 +250,7 @@ const NewDish = () => {
           name="dishDescription"
           label="Dish Description"
           rules={[
-            { required: true, message: 'Dish Name is required' },
+            { required: true, message: 'Dish Description is required' },
             {
               max: 200,
               message: 'Dish Description must have at 200 characters',
