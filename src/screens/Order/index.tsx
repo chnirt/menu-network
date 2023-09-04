@@ -36,7 +36,9 @@ const Order = () => {
     setOrder,
     setObjectType,
     setOrderId,
-    setOrderDocRefState
+    setOrderDocRefState,
+    orderId,
+    clearCart,
   } = useOrder()
   const navigate = useNavigate()
   const { user } = useAuth()
@@ -82,6 +84,9 @@ const Order = () => {
                 if (typeof fetchOrder === 'function') {
                   fetchOrder()
                 }
+                if (orderItem.id === orderId) {
+                  clearCart()
+                }
               },
             })
             swipeActionRef.current?.close()
@@ -91,7 +96,16 @@ const Order = () => {
           return
       }
     },
-    [fetchOrder, navigate, setObjectType, setOrder, setOrderId, setOrderDocRefState]
+    [
+      fetchOrder,
+      navigate,
+      setObjectType,
+      setOrder,
+      setOrderId,
+      setOrderDocRefState,
+      orderId,
+      clearCart,
+    ]
   )
 
   const handlePay = useCallback(async () => {
