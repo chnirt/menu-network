@@ -43,6 +43,7 @@ const Order = () => {
     useOrder()
   const swipeActionRef = useRef<SwipeActionRef>(null)
   const [errors, setErrors] = useState<any>()
+  const deleteFlagRef = useRef(false)
 
   const tableObjects = useMemo(
     () => objects.filter((object) => object.objectType === 'table'),
@@ -107,6 +108,7 @@ const Order = () => {
   ])
 
   const handleCancelOrder = useCallback(() => {
+    deleteFlagRef.current = true
     clearCart()
     navigate(-1)
 
@@ -154,8 +156,9 @@ const Order = () => {
   useEffect(() => {
     if (orderId === undefined) return
     if (orderIdState === orderId) return
+    if (deleteFlagRef.current) return
     fetchOrderById(orderId)
-  }, [orderId, fetchOrderById, clearCart, orderIdState])
+  }, [orderId, orderIdState, fetchOrderById])
 
   const right = useMemo(
     () => (
